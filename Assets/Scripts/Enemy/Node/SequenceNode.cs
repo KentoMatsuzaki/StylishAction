@@ -8,19 +8,19 @@ namespace Enemy.Nodes
     public class SequenceNode : BaseNode
     {
         /// <summary>子ノードのリスト</summary>
-        readonly List<BaseNode> _nodes = new List<BaseNode>();
+        readonly List<BaseNode> _nodeList = new List<BaseNode>();
 
         /// <summary>子ノードを追加する</summary>
         public void AddNode(BaseNode node)
         {
-            _nodes.Add(node);
+            _nodeList.Add(node);
         }
 
         /// <summary>ノードの評価結果を返す</summary>
         /// <returns>Success = 成功, Failure = 失敗, Running = 実行中</returns>
         public override EnemyEnum.NodeStatus Execute()
         {
-            foreach (var status in _nodes.Select(node => node.Execute()))
+            foreach (var status in _nodeList.Select(node => node.Execute()))
             {
                 if (status != EnemyEnum.NodeStatus.Success) return status;
             }
