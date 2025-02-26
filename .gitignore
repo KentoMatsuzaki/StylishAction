@@ -72,3 +72,6 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 Assets/AssetStoreTools/
+Assets/Plugins/UniTask.meta
+Assets/Plugins/UniTask/Editor.meta
+Assets/Plugins/
