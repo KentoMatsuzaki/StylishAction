@@ -1,16 +1,16 @@
 using System.Threading;
-using Enemy.AsyncNodes;
+using Enemy.AsyncNode;
 using Cysharp.Threading.Tasks;
 using Enemy.Handler;
 using Enum;
 using UnityEngine;
 
-namespace Enemy
+namespace Enemy.AI
 {
     /// <summary>敵のAIを制御するクラス</summary>
-    public class EnemyAI : MonoBehaviour
+    public class Phase1AI : MonoBehaviour, IEnemyAI
     {
-        private CancellationTokenSource _cts = new();
+        private readonly CancellationTokenSource _cts = new();
         private BaseAsyncNode _rootNode;
         private EnemyAnimationHandler _animationHandler;
 
@@ -29,10 +29,11 @@ namespace Enemy
             sequence.AddNode(attack);
             _rootNode = sequence;
 
-            RunAI(_cts.Token).Forget();
+            ExecuteAsync(_cts.Token).Forget();
         }
 
-        private async UniTask RunAI(CancellationToken token)
+        /// <summary>ビヘイビアツリーを実行する</summary>
+        public async UniTask ExecuteAsync(CancellationToken token)
         {
             while (!token.IsCancellationRequested)
             {
@@ -41,10 +42,15 @@ namespace Enemy
             }
         }
 
+        /// <summary>ビヘイビアツリーを構築する</summary>
+        public AsyncSelectorNode ConstructBehaviourTree()
+        {
+            return new AsyncSelectorNode();
+        }
+
         //-------------------------------------------------------------------------------
         // 攻撃に関する処理
         //-------------------------------------------------------------------------------
-
-
+        
     }
 }
