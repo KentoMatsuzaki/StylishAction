@@ -33,12 +33,13 @@ namespace Enemy.Handler
         //-------------------------------------------------------------------------------
         // 攻撃アニメーションに関する処理
         //-------------------------------------------------------------------------------
-
-        public async UniTask WaitForAnimationEnd(string stateName, CancellationToken token)
+        
+        /// <summary>アニメーションの再生終了を待つ</summary>
+        public async UniTask WaitForAnimationEnd(CancellationToken token)
         {
             var stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
 
-            while (stateInfo.IsName(stateName) && stateInfo.normalizedTime < 1.0f)
+            while (stateInfo.normalizedTime < 1.0f)
             {
                 await UniTask.Yield(PlayerLoopTiming.Update, token);
                 stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
