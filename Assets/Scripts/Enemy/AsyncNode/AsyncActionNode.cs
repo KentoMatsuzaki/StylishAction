@@ -3,13 +3,13 @@ using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 
-namespace Enemy.AsyncNodes
+namespace Enemy.AsyncNode
 {
     /// <summary>非同期アクションノード</summary>
     public class AsyncActionNode : BaseAsyncNode
     {
         /// <summary>非同期アクション</summary>
-        readonly Func<CancellationToken, UniTask<EnemyEnum.NodeStatus>> _action;
+        private readonly Func<CancellationToken, UniTask<EnemyEnum.NodeStatus>> _action;
 
         /// <summary>コンストラクター</summary>
         public AsyncActionNode(Func<CancellationToken, UniTask<EnemyEnum.NodeStatus>> action)

@@ -3,13 +3,13 @@ using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 
-namespace Enemy.AsyncNodes
+namespace Enemy.AsyncNode
 {
     /// <summary>非同期条件ノード</summary>
     public class AsyncConditionNode : BaseAsyncNode
     {
         /// <summary>条件</summary>
-        readonly Func<bool> _condition;
+        private readonly Func<bool> _condition;
 
         /// <summary>コンストラクター</summary>
         public AsyncConditionNode(Func<bool> condition)

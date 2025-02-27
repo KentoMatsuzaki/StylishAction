@@ -3,13 +3,13 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 
-namespace Enemy.AsyncNodes
+namespace Enemy.AsyncNode
 {
     /// <summary>非同期シーケンスノード</summary>
     public class AsyncSequenceNode : BaseAsyncNode
     {
         /// <summary>子ノードのリスト</summary>
-        readonly List<BaseAsyncNode> _nodeList = new List<BaseAsyncNode>();
+        private readonly List<BaseAsyncNode> _nodeList = new List<BaseAsyncNode>();
 
         /// <summary>子ノードを追加する</summary>
         public void AddNode(BaseAsyncNode node)

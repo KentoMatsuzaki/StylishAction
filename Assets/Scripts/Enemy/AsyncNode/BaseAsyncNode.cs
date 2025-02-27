@@ -2,7 +2,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using Enum;
 
-namespace Enemy.AsyncNodes
+namespace Enemy.AsyncNode
 {
     /// <summary>非同期ノードの基底クラス</summary>
     public abstract class BaseAsyncNode
