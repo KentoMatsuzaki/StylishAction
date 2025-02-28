@@ -29,11 +29,11 @@ namespace Enemy.AI
             sequence.AddNode(attack);
             _rootNode = sequence;
 
-            ExecuteAsync(_cts.Token).Forget();
+            RunBehaviourTree(_cts.Token).Forget();
         }
 
         /// <summary>ビヘイビアツリーを実行する</summary>
-        public async UniTask ExecuteAsync(CancellationToken token)
+        public async UniTask RunBehaviourTree(CancellationToken token)
         {
             while (!token.IsCancellationRequested)
             {
@@ -51,6 +51,10 @@ namespace Enemy.AI
         //-------------------------------------------------------------------------------
         // 攻撃に関する処理
         //-------------------------------------------------------------------------------
-        
+
+        private void ConstructSkill1Sequence()
+        {
+            
+        }
     }
 }
