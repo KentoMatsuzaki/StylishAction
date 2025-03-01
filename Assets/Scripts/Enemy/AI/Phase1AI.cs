@@ -1,9 +1,11 @@
+using System;
 using System.Threading;
 using Enemy.AsyncNode;
 using Cysharp.Threading.Tasks;
 using Enemy.Handler;
 using Enum;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Enemy.AI
 {
@@ -11,7 +13,7 @@ namespace Enemy.AI
     public class Phase1AI : MonoBehaviour, IEnemyAI
     {
         private readonly CancellationTokenSource _cts = new();
-        private BaseAsyncNode _rootNode;
+        private BaseAsyncNode _mainNode;
         private EnemyAnimationHandler _animationHandler;
 
         private void Start()
@@ -27,7 +29,7 @@ namespace Enemy.AI
 
             var sequence = new AsyncSequenceNode();
             sequence.AddNode(attack);
-            _rootNode = sequence;
+            _mainNode = sequence;
 
             RunBehaviourTree(_cts.Token).Forget();
         }
@@ -35,10 +37,17 @@ namespace Enemy.AI
         /// <summary>ビヘイビアツリーを実行する</summary>
         public async UniTask RunBehaviourTree(CancellationToken token)
         {
-            while (!token.IsCancellationRequested)
+            try
             {
-                var result = await _rootNode.ExecuteAsync(token);
-                await UniTask.Yield(PlayerLoopTiming.Update, token);
+                while (!token.IsCancellationRequested)
+                {
+                    await _mainNode.ExecuteAsync(token);
+                    await UniTask.Yield(PlayerLoopTiming.Update, token);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                Debug.Log("Behaviour Tree Canceled");
             }
         }
 
@@ -52,9 +61,21 @@ namespace Enemy.AI
         // 攻撃に関する処理
         //-------------------------------------------------------------------------------
 
-        private void ConstructSkill1Sequence()
+        /// <summary>攻撃シーケンスを構築する</summary>
+        public AsyncSequenceNode ConstructAttackSequence()
         {
-            
+            var attackAction = new AsyncActionNode(async (token) =>
+            {
+                // 攻撃アニメーションのトリガーを設定する
+                _animationHandler.TriggerAttack(Random.Range(1,3));
+                
+                // 攻撃アニメーションの再生終了を待機する
+                await _animationHandler.WaitForAnimationEnd(token);
+
+                // ノードの評価結果を返す
+                return EnemyEnum.NodeStatus.Success;
+            });
         }
+        
     }
 }
