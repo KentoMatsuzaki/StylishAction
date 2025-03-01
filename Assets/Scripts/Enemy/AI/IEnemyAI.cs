@@ -8,7 +8,7 @@ namespace Enemy.AI
     public interface IEnemyAI
     {
         /// <summary>ビヘイビアツリーを実行する</summary>
-        UniTask RunBehaviourTree(CancellationToken token);
+        UniTask ExecuteBehaviourTree(CancellationToken token);
 
         /// <summary>ビヘイビアツリーを構築する</summary>
         AsyncSelectorNode ConstructBehaviourTree();
