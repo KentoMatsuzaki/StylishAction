@@ -1,5 +1,8 @@
+using System;
 using System.Threading;
+using Const;
 using Cysharp.Threading.Tasks;
+using Enum;
 using UnityEngine;
 
 namespace Enemy.Handler
@@ -23,16 +26,18 @@ namespace Enemy.Handler
         {
             _animator.Play(stateName);
         }
-
-        /// <summary>トリガーを有効化し、対応するアニメーションを再生する</summary>
-        public void SetTrigger(string triggerName)
-        {
-            _animator.SetTrigger(triggerName);
-        }
         
         //-------------------------------------------------------------------------------
         // 攻撃アニメーションに関する処理
         //-------------------------------------------------------------------------------
+        
+        /// <summary>攻撃アニメーションのトリガーをセットする</summary>
+        /// <param name="skillNumber">攻撃スキルの番号（1~6）</param>
+        public void TriggerAttack(int skillNumber)
+        {
+            string triggerName = $"Skill{skillNumber}Trigger";
+            _animator.SetTrigger(triggerName);
+        }
         
         /// <summary>アニメーションの再生終了を待つ</summary>
         public async UniTask WaitForAnimationEnd(CancellationToken token)
