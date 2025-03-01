@@ -3,22 +3,37 @@ using System.Threading;
 using Enemy.AsyncNode;
 using Cysharp.Threading.Tasks;
 using Enemy.Handler;
+using Enemy.Phase;
 using Enum;
+using Player;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace Enemy.AI
 {
     /// <summary>敵のAIを制御するクラス</summary>
-    public class Phase1AI : MonoBehaviour, IEnemyAI
+    public class Phase1AI : IEnemyAI
     {
+        /// <summary>メインノード</summary>
         private BaseAsyncNode _mainNode;
-        private EnemyAnimationHandler _animationHandler;
+        /// <summary>アニメーション</summary>
+        private readonly EnemyAnimationHandler _animationHandler;
+        /// <summary>スキル1の攻撃クラス</summary>
+        private EnemyAttackHandler _skill1AttackHandler;
+        /// <summary>スキル2の攻撃クラス</summary>
+        private EnemyAttackHandler _skill2AttackHandler;
+
+        /// <summary>コンストラクタ</summary>
+        public Phase1AI(EnemyAnimationHandler animationHandler,
+            EnemyAttackHandler skill1AttackHandler, EnemyAttackHandler skill2AttackHander)
+        {
+            _animationHandler = animationHandler;
+            _skill1AttackHandler = skill1AttackHandler;
+            _skill2AttackHandler = skill2AttackHander;
+        }
 
         private void Start()
         {
-            _animationHandler = GetComponent<EnemyAnimationHandler>();
-            
             var attack = new AsyncActionNode(async (token) =>
             {
                 await _animationHandler.WaitForAnimationEnd(token);
@@ -72,6 +87,9 @@ namespace Enemy.AI
                 // ノードの評価結果を返す
                 return EnemyEnum.NodeStatus.Success;
             });
+            
+            var attackSequence = new AsyncSequenceNode();
+            return attackSequence;
         }
         
     }
