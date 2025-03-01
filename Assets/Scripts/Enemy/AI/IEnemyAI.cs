@@ -12,5 +12,8 @@ namespace Enemy.AI
 
         /// <summary>ビヘイビアツリーを構築する</summary>
         AsyncSelectorNode ConstructBehaviourTree();
+        
+        /// <summary>攻撃シーケンスを構築する</summary>
+        AsyncSequenceNode ConstructAttackSequence();
     }
 }
