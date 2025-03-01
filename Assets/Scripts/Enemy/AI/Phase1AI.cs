@@ -12,7 +12,6 @@ namespace Enemy.AI
     /// <summary>敵のAIを制御するクラス</summary>
     public class Phase1AI : MonoBehaviour, IEnemyAI
     {
-        private readonly CancellationTokenSource _cts = new();
         private BaseAsyncNode _mainNode;
         private EnemyAnimationHandler _animationHandler;
 
@@ -30,12 +29,10 @@ namespace Enemy.AI
             var sequence = new AsyncSequenceNode();
             sequence.AddNode(attack);
             _mainNode = sequence;
-
-            RunBehaviourTree(_cts.Token).Forget();
         }
 
         /// <summary>ビヘイビアツリーを実行する</summary>
-        public async UniTask RunBehaviourTree(CancellationToken token)
+        public async UniTask ExecuteBehaviourTree(CancellationToken token)
         {
             try
             {
