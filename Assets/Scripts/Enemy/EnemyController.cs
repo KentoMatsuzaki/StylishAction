@@ -1,10 +1,10 @@
 using System.Threading;
+using Const;
 using Cysharp.Threading.Tasks;
 using Enemy.AI;
 using Enemy.Handler;
 using Player;
 using UnityEngine;
-using UnityEngine.Animations;
 
 namespace Enemy
 {
@@ -39,6 +39,7 @@ namespace Enemy
         // パリィに関する処理
         //-------------------------------------------------------------------------------
 
+        /// <summary>プレイヤーに攻撃が命中した時の処理</summary>
         public void OnHitPlayer(PlayerController player)
         {
             // プレイヤーがパリィ状態である場合
@@ -47,21 +48,33 @@ namespace Enemy
             // player.TakeDamage
         }
 
+        /// <summary>プレイヤーにパリィされた時の処理</summary>
         private void OnParried()
         {
+            // ビヘイビアツリーをキャンセルする
             _cts?.Cancel();
+            // スタン処理を呼ぶ
+            Stun();
         }
 
+        /// <summary>敵のスタン時の処理</summary>
         private async void Stun()
         {
             // アニメーションを再生する
-            
-            
+            _animationHandler.PlayAnimation(InGameConst.EnemyStunAnimation);
             // スタンしている間は待機する
-            
-            
+            await UniTask.Delay(2000);
             // ビヘイビアツリーを再開する
             BeginBehaviourTree();
         }
+        
+        //-------------------------------------------------------------------------------
+        // 攻撃コライダーに関する処理
+        //-------------------------------------------------------------------------------
+
+        public void EnableSkill1AttackCollider() => skill1AttackHandler.EnableAttackCollider();
+        public void DisableSkill1AttackCollider() => skill1AttackHandler.DisableAttackCollider();
+        public void EnableSkill2AttackCollider() => skill2AttackHandler.EnableAttackCollider();
+        public void DisableSkill2AttackCollider() => skill2AttackHandler.DisableAttackCollider();
     }
 }
