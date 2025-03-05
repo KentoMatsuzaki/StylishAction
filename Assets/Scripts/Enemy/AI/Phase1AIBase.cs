@@ -86,7 +86,7 @@ namespace Enemy.AI
         //-------------------------------------------------------------------------------
 
         /// <summary>プレイヤーに攻撃が命中した時の処理</summary>
-        public void OnHitPlayer(PlayerController player)
+        public override void OnHitPlayer(PlayerController player)
         {
             // プレイヤーがパリィ状態である場合
             OnParried();
