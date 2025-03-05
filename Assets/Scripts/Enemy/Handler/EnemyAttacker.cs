@@ -26,7 +26,7 @@ namespace Enemy.Handler
             if (other.CompareTag(InGameConst.PlayerTagName))
             {
                 var player = other.GetComponent<PlayerController>();
-                //_controller.OnHitPlayer(player);
+                _controller.Bt.OnHitPlayer(player);
             }
         }
         
