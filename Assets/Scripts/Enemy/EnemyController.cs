@@ -11,7 +11,7 @@ namespace Enemy
         private Phase1AIBase _phase1AIBase;
         
         private CancellationTokenSource _cts;
-        private EnemyAIBase _bt;
+        public EnemyAIBase Bt { get; private set; }
         
         /// <summary></summary>
         private EnemyAnimationHandler _animationHandler;
@@ -23,6 +23,6 @@ namespace Enemy
         }
 
         /// <summary>ビヘイビアツリーを開始する</summary>
-        private void BeginBehaviourTree() => _bt.BeginBehaviourTree();
+        private void BeginBehaviourTree() => Bt.BeginBehaviourTree();
     }
 }
