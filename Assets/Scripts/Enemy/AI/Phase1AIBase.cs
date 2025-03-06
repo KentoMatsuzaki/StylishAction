@@ -3,9 +3,11 @@ using System.Threading;
 using Const;
 using Enemy.AsyncNode;
 using Cysharp.Threading.Tasks;
+using Data.Enemy;
 using Enemy.Handler;
 using Enum;
 using Player;
+using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -20,12 +22,21 @@ namespace Enemy.AI
         private BaseAsyncNode _mainNode;
         /// <summary>アニメーション</summary>
         private readonly EnemyAnimationHandler _animationHandler;
+        
+        /// <summary>利用可能なスキルの番号</summary>
+        private readonly int[] _availableSkillNumbers = {1, 3};
+
+        private int? _nextSkillNumber;
 
         /// <summary>コンストラクタ</summary>
         public Phase1AIBase(EnemyAnimationHandler animationHandler)
         {
             _animationHandler = animationHandler;
         }
+        
+        //-------------------------------------------------------------------------------
+        // ビヘイビアツリーに関する処理
+        //-------------------------------------------------------------------------------
 
         /// <summary>ビヘイビアツリーを開始する</summary>
         public override void BeginBehaviourTree()
@@ -67,8 +78,11 @@ namespace Enemy.AI
         {
             var attackAction = new AsyncActionNode(async (token) =>
             {
-                // 攻撃アニメーションのトリガーを設定する
-                _animationHandler.TriggerAttack(Random.Range(1,3));
+                // 次の攻撃を設定する
+                SetNextSkillNumber();
+                
+                // プレイヤーが射程内にいるか判定する
+                
                 
                 // 攻撃アニメーションの再生終了を待機する
                 await _animationHandler.WaitForAnimationEnd(token);
@@ -80,6 +94,21 @@ namespace Enemy.AI
             var attackSequence = new AsyncSequenceNode();
             return attackSequence;
         }
+
+        /// <summary>次のスキル番号を設定する</summary>
+        private void SetNextSkillNumber()
+        { 
+            // 次の攻撃が設定されている場合は処理を抜ける
+            if (_nextSkillNumber != null) return;
+            // スキルの番号をランダムに選択する
+            _nextSkillNumber = _availableSkillNumbers[Random.Range(0, _availableSkillNumbers.Length)];
+        }
+
+        // private bool IsPlayerInAttackRange()
+        // {
+        //     var attackRange = EnemySkillDatabase.Instance.GetSkillData(_nextSkillNumber);
+        //     
+        // }
         
         //-------------------------------------------------------------------------------
         // パリィに関する処理
