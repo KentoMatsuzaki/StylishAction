@@ -13,7 +13,7 @@ using Random = UnityEngine.Random;
 namespace Enemy.AI
 {
     /// <summary>敵のAIを制御するクラス</summary>
-    public class Phase1AIBase : MonoBehaviour, EnemyAIBase
+    public class Phase1AI : EnemyAIBase
     {
         /// <summary>キャンセルトークン</summary>
         private CancellationTokenSource _cts;
@@ -29,7 +29,7 @@ namespace Enemy.AI
         private int? _nextSkillNumber;
 
         /// <summary>コンストラクタ</summary>
-        public Phase1AIBase(EnemyAnimationHandler animationHandler, PlayerController player)
+        public Phase1AI(EnemyAnimationHandler animationHandler, PlayerController player)
         {
             _animationHandler = animationHandler;
             _player = player;
@@ -82,21 +82,35 @@ namespace Enemy.AI
                 // 次の攻撃を設定する
                 SetNextSkillNumber();
                 
-                // プレイヤーが射程内にいるか判定する
-                
-                
-                // 攻撃アニメーションの再生終了を待機する
-                await _animationHandler.WaitForAnimationEnd(token);
+                // プレイヤーが攻撃範囲内に存在する場合
+                if (IsPlayerInAttackRange())
+                {
+                    // 攻撃アニメーションをトリガーする
+                    _animationHandler.TriggerAttack(_nextSkillNumber);
+                    
+                    // 攻撃アニメーションの再生終了を待機する
+                    await _animationHandler.WaitForAnimationEnd(token);
 
-                // ノードの評価結果を返す
-                return EnemyEnum.NodeStatus.Success;
+                    // ノードの評価結果を返す
+                    return EnemyEnum.NodeStatus.Success;
+                }
+                // プレイヤーが攻撃範囲外に存在する場合
+                else
+                {
+                    // プレイヤーの方向へ接近する
+                    
+                    // ノードの評価結果を返す
+                    return EnemyEnum.NodeStatus.Running;
+                }
+                
+                
             });
             
             var attackSequence = new AsyncSequenceNode();
             return attackSequence;
         }
 
-        /// <summary>次のスキル番号を設定する</summary>
+        /// <summary>次のスキル番号をランダムに設定する</summary>
         private void SetNextSkillNumber()
         { 
             // 次の攻撃が設定されている場合は処理を抜ける
@@ -105,16 +119,19 @@ namespace Enemy.AI
             _nextSkillNumber = _availableSkillNumbers[Random.Range(0, _availableSkillNumbers.Length)];
         }
 
-        // private bool IsPlayerInAttackRange()
-        // {
-        //     var attackRange = EnemySkillDatabase.Instance.GetSkillData(_nextSkillNumber);
-        //     
-        // }
+        /// <summary>プレイヤーがスキルの攻撃範囲内に存在するか</summary>
+        private bool IsPlayerInAttackRange()
+        {
+            var attackRange = EnemySkillDatabase.Instance.GetSkillData(_nextSkillNumber).attackRange;
+            return attackRange >= GetHorizontalDistanceToPlayer();
+        }
 
-        // private float GetHorizontalDistanceToPlayer()
-        // {
-        //     
-        // }
+        /// <summary>高低差を無視してプレイヤーとの距離を求める</summary>
+        private float GetHorizontalDistanceToPlayer()
+        {
+            return Vector3.Distance(new Vector3(_player.transform.position.x, 0, _player.transform.position.z), 
+                new Vector3(transform.position.x, 0, transform.position.z));
+        }
         
         //-------------------------------------------------------------------------------
         // パリィに関する処理
