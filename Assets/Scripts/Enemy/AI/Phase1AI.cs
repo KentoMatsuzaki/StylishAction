@@ -7,14 +7,13 @@ using Data.Enemy;
 using Enemy.Handler;
 using Enum;
 using Player;
-using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace Enemy.AI
 {
     /// <summary>敵のAIを制御するクラス</summary>
-    public class Phase1AIBase : EnemyAIBase
+    public class Phase1AIBase : MonoBehaviour, EnemyAIBase
     {
         /// <summary>キャンセルトークン</summary>
         private CancellationTokenSource _cts;
@@ -22,6 +21,7 @@ namespace Enemy.AI
         private BaseAsyncNode _mainNode;
         /// <summary>アニメーション</summary>
         private readonly EnemyAnimationHandler _animationHandler;
+        private readonly PlayerController _player;
         
         /// <summary>利用可能なスキルの番号</summary>
         private readonly int[] _availableSkillNumbers = {1, 3};
@@ -29,9 +29,10 @@ namespace Enemy.AI
         private int? _nextSkillNumber;
 
         /// <summary>コンストラクタ</summary>
-        public Phase1AIBase(EnemyAnimationHandler animationHandler)
+        public Phase1AIBase(EnemyAnimationHandler animationHandler, PlayerController player)
         {
             _animationHandler = animationHandler;
+            _player = player;
         }
         
         //-------------------------------------------------------------------------------
@@ -107,6 +108,11 @@ namespace Enemy.AI
         // private bool IsPlayerInAttackRange()
         // {
         //     var attackRange = EnemySkillDatabase.Instance.GetSkillData(_nextSkillNumber);
+        //     
+        // }
+
+        // private float GetHorizontalDistanceToPlayer()
+        // {
         //     
         // }
         

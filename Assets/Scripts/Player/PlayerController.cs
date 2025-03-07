@@ -1,6 +1,8 @@
+using UnityEngine;
+
 namespace Player
 {
-    public class PlayerController
+    public class PlayerController : MonoBehaviour
     {
         
     }
