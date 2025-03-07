@@ -31,11 +31,13 @@ namespace Enemy.Handler
         // 攻撃アニメーションに関する処理
         //-------------------------------------------------------------------------------
         
-        /// <summary>攻撃アニメーションのトリガーをセットする</summary>
+        /// <summary>攻撃アニメーションをトリガーする</summary>
         /// <param name="skillNumber">攻撃スキルの番号（1~6）</param>
-        public void TriggerAttack(int skillNumber)
+        public void TriggerAttack(int? skillNumber)
         {
-            string triggerName = $"Skill{skillNumber}Trigger";
+            // スキル番号が未割り当ての場合は処理を抜ける
+            if (!skillNumber.HasValue) return; 
+            string triggerName = $"Skill{skillNumber.Value}Trigger";
             _animator.SetTrigger(triggerName);
         }
         
