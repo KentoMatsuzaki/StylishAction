@@ -15,26 +15,35 @@ namespace Enemy.AI
     /// <summary>敵のAIを制御するクラス</summary>
     public class Phase1AI : EnemyAIBase
     {
+        [Header("敵のステータス"), SerializeField] private EnemyStatusData statusData;
+        
         /// <summary>キャンセルトークン</summary>
         private CancellationTokenSource _cts;
         /// <summary>メインノード</summary>
         private BaseAsyncNode _mainNode;
         /// <summary>アニメーション</summary>
-        private readonly EnemyAnimationHandler _animationHandler;
-        private readonly PlayerController _player;
+        private EnemyAnimationHandler _animationHandler;
+        private PlayerController _player;
         
         /// <summary>利用可能なスキルの番号</summary>
         private readonly int[] _availableSkillNumbers = {1, 3};
 
         private int? _nextSkillNumber;
+        
+        //-------------------------------------------------------------------------------
+        // 初期設定
+        //-------------------------------------------------------------------------------
 
-        /// <summary>コンストラクタ</summary>
-        public Phase1AI(EnemyAnimationHandler animationHandler, PlayerController player)
+        private void Awake()
         {
-            _animationHandler = animationHandler;
+            _animationHandler = GetComponent<EnemyAnimationHandler>();
+        }
+
+        public override void SetPlayer(PlayerController player)
+        {
             _player = player;
         }
-        
+
         //-------------------------------------------------------------------------------
         // ビヘイビアツリーに関する処理
         //-------------------------------------------------------------------------------
@@ -67,11 +76,13 @@ namespace Enemy.AI
         /// <summary>ビヘイビアツリーを構築する</summary>
         protected override AsyncSelectorNode ConstructBehaviourTree()
         {
-            return new AsyncSelectorNode();
+            var mainNode = new AsyncSelectorNode();
+            mainNode.AddNode(ConstructAttackSequence());
+            return mainNode;
         }
 
         //-------------------------------------------------------------------------------
-        // 攻撃に関する処理
+        // 攻撃シーケンスに関する処理
         //-------------------------------------------------------------------------------
 
         /// <summary>攻撃シーケンスを構築する</summary>
@@ -84,29 +95,25 @@ namespace Enemy.AI
                 
                 // プレイヤーが攻撃範囲内に存在する場合
                 if (IsPlayerInAttackRange())
-                {
+                { 
                     // 攻撃アニメーションをトリガーする
                     _animationHandler.TriggerAttack(_nextSkillNumber);
-                    
                     // 攻撃アニメーションの再生終了を待機する
                     await _animationHandler.WaitForAnimationEnd(token);
-
                     // ノードの評価結果を返す
                     return EnemyEnum.NodeStatus.Success;
                 }
-                // プレイヤーが攻撃範囲外に存在する場合
-                else
-                {
-                    // プレイヤーの方向へ接近する
-                    
-                    // ノードの評価結果を返す
-                    return EnemyEnum.NodeStatus.Running;
-                }
                 
-                
+                // プレイヤーの方向へ回転する
+                RotateToPlayer();
+                // プレイヤーの方向へ移動する
+                MoveToPlayer();
+                // ノードの評価結果を返す
+                return EnemyEnum.NodeStatus.Running;
             });
             
             var attackSequence = new AsyncSequenceNode();
+            attackSequence.AddNode(attackAction);
             return attackSequence;
         }
 
@@ -126,11 +133,31 @@ namespace Enemy.AI
             return attackRange >= GetHorizontalDistanceToPlayer();
         }
 
-        /// <summary>高低差を無視してプレイヤーとの距離を求める</summary>
+        /// <summary>高低差を無視してプレイヤーへの距離を求める</summary>
         private float GetHorizontalDistanceToPlayer()
         {
             return Vector3.Distance(new Vector3(_player.transform.position.x, 0, _player.transform.position.z), 
                 new Vector3(transform.position.x, 0, transform.position.z));
+        }
+
+        /// <summary>高低差を無視してプレイヤーへの方向を求める</summary>
+        private Vector3 GetHorizontalDirectionToPlayer()
+        {
+            return Vector3.Normalize(new Vector3(_player.transform.position.x, 0, _player.transform.position.z) - 
+                new Vector3(transform.position.x, 0, transform.position.z));
+        }
+        
+        /// <summary>プレイヤーの方向へ移動する</summary>
+        private void MoveToPlayer()
+        {
+            transform.Translate(GetHorizontalDirectionToPlayer() * Time.deltaTime * statusData.moveSpeed, Space.World);
+        }
+
+        /// <summary>プレイヤーの方向へ回転する</summary>
+        private void RotateToPlayer()
+        {
+            var desiredRotation = Quaternion.LookRotation(GetHorizontalDirectionToPlayer());
+            transform.rotation = Quaternion.Slerp(transform.rotation, desiredRotation, Time.deltaTime * statusData.rotateSpeed);
         }
         
         //-------------------------------------------------------------------------------
