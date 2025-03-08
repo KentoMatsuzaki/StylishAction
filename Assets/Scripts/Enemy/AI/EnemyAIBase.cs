@@ -22,5 +22,8 @@ namespace Enemy.AI
 
         /// <summary>攻撃がプレイヤーに命中した時の処理</summary>
         public abstract void OnHitPlayer(PlayerController player);
+        
+        /// <summary>プレイヤーを設定する</summary>
+        public abstract void SetPlayer(PlayerController player);
     }
 }
