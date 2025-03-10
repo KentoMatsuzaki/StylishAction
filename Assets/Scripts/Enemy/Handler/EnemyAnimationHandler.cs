@@ -37,8 +37,9 @@ namespace Enemy.Handler
         {
             // スキル番号が未割り当ての場合は処理を抜ける
             if (!skillNumber.HasValue) return; 
-            string triggerName = $"Skill{skillNumber.Value}Trigger";
+            string triggerName = $"Skill {skillNumber.Value} Trigger";
             _animator.SetTrigger(triggerName);
+            Debug.Log($"TriggerAttack({skillNumber}) called at frame {Time.frameCount}");
         }
         
         /// <summary>アニメーションの再生終了を待つ</summary>
