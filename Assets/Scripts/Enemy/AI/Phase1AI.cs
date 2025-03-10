@@ -26,7 +26,7 @@ namespace Enemy.AI
         private PlayerController _player;
         
         /// <summary>利用可能なスキルの番号</summary>
-        private readonly int[] _availableSkillNumbers = {1, 3};
+        private readonly int[] _availableSkillNumbers = {1, 2};
 
         private int? _nextSkillNumber;
         
@@ -53,6 +53,7 @@ namespace Enemy.AI
         {
             _cts?.Cancel();
             _cts = new CancellationTokenSource();
+            ConstructBehaviourTree();
             ExecuteBehaviourTree().Forget();
         }
 
@@ -74,11 +75,11 @@ namespace Enemy.AI
         }
 
         /// <summary>ビヘイビアツリーを構築する</summary>
-        protected override AsyncSelectorNode ConstructBehaviourTree()
+        protected override void ConstructBehaviourTree()
         {
             var mainNode = new AsyncSelectorNode();
             mainNode.AddNode(ConstructAttackSequence());
-            return mainNode;
+            _mainNode = mainNode;
         }
 
         //-------------------------------------------------------------------------------
@@ -100,6 +101,10 @@ namespace Enemy.AI
                     _animationHandler.TriggerAttack(_nextSkillNumber);
                     // 攻撃アニメーションの再生終了を待機する
                     await _animationHandler.WaitForAnimationEnd(token);
+                    // 攻撃のクールタイム
+                    await UniTask.Delay(1000);
+                    // スキル番号をリセットする
+                    _nextSkillNumber = null;
                     // ノードの評価結果を返す
                     return EnemyEnum.NodeStatus.Success;
                 }
