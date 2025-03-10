@@ -15,7 +15,7 @@ namespace Enemy.AI
         protected abstract UniTask ExecuteBehaviourTree();
 
         /// <summary>ビヘイビアツリーを構築する</summary>
-        protected abstract AsyncSelectorNode ConstructBehaviourTree();
+        protected abstract void ConstructBehaviourTree();
 
         /// <summary>攻撃シーケンスを構築する</summary>
         protected abstract AsyncSequenceNode ConstructAttackSequence();
