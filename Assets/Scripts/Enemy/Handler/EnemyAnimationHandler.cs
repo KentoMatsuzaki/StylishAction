@@ -1,9 +1,7 @@
-using System;
 using System.Threading;
-using Const;
 using Cysharp.Threading.Tasks;
-using Enum;
 using UnityEngine;
+using System.Diagnostics;
 
 namespace Enemy.Handler
 {
@@ -39,7 +37,7 @@ namespace Enemy.Handler
             if (!skillNumber.HasValue) return; 
             string triggerName = $"Skill {skillNumber.Value} Trigger";
             _animator.SetTrigger(triggerName);
-            Debug.Log($"TriggerAttack({skillNumber}) called at frame {Time.frameCount}");
+            //Debug.Log($"TriggerAttack({skillNumber}) called at frame {Time.frameCount}");
         }
         
         /// <summary>アニメーションの再生終了を待つ</summary>

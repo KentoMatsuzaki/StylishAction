@@ -102,7 +102,7 @@ namespace Enemy.AI
                     // 攻撃アニメーションの再生終了を待機する
                     await _animationHandler.WaitForAnimationEnd(token);
                     // 攻撃のクールタイム
-                    await UniTask.Delay(1000);
+                    //await UniTask.Delay(1000);
                     // スキル番号をリセットする
                     _nextSkillNumber = null;
                     // ノードの評価結果を返す
