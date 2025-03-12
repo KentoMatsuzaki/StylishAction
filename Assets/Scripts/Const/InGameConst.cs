@@ -7,18 +7,26 @@ namespace Const
         // タグ
         //-------------------------------------------------------------------------------
         
-        public const string PlayerTag = "Player"; // プレイヤーのゲームオブジェクトに付けるタグ
+        public const string PlayerTag = "Player"; // プレイヤーのタグ
         
         //-------------------------------------------------------------------------------
         // アニメーションステート
         //-------------------------------------------------------------------------------
         
-        public const string EnemyStunAnimation = "Stun"; // 敵のスタンアニメーションのステート
+        public const string EnemyStunAnimation = "Stun"; // 敵のスタン
         
         //-------------------------------------------------------------------------------
         // アニメーションフラグ
         //-------------------------------------------------------------------------------
 
-        public const string EnemyMoveFlag = "Move Flag"; // 敵の移動フラグ
+        public const string EnemyMoveFlag = "Move Flag"; // 敵の移動
+        public const string PlayerMoveFlag = "Move Flag"; // プレイヤーの移動
+        
+        //-------------------------------------------------------------------------------
+        // アニメーショントリガー
+        //-------------------------------------------------------------------------------
+        
+        public const string PlayerParryTrigger = "Parry Trigger"; // プレイヤーのパリィ
+        public const string PlayerDashTrigger = "Dash Trigger"; // プレイヤーのダッシュ
     }
 }
