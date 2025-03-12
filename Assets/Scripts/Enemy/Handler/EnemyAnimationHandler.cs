@@ -1,4 +1,5 @@
 using System.Threading;
+using Const;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
@@ -22,6 +23,19 @@ namespace Enemy.Handler
         public void PlayAnimation(string stateName)
         {
             _animator.Play(stateName);
+        }
+        
+        //-------------------------------------------------------------------------------
+        // 移動アニメーションに関する処理
+        //-------------------------------------------------------------------------------
+
+        /// <summary>移動フラグを設定する</summary>
+        public void SetMovingFlag(bool value)
+        {
+            if (_animator.GetBool(InGameConst.EnemyMoveFlag) != value)
+            {
+                _animator.SetBool(InGameConst.EnemyMoveFlag, value);
+            }
         }
         
         //-------------------------------------------------------------------------------
