@@ -94,9 +94,11 @@ namespace Enemy.AI
                 // 次の攻撃を設定する
                 SetNextSkillNumber();
                 
-                // プレイヤーが攻撃範囲内に存在する場合
-                if (IsPlayerInAttackRange())
+                // プレイヤーが攻撃範囲・角度内に存在する場合
+                if (IsPlayerInAttackRange() && IsPlayerInAttackAngle())
                 { 
+                    // 移動フラグを設定する
+                    _animationHandler.SetMovingFlag(false);
                     // 攻撃アニメーションをトリガーする
                     _animationHandler.TriggerAttack(_nextSkillNumber);
                     // 攻撃アニメーションの再生終了を待機する
@@ -109,6 +111,8 @@ namespace Enemy.AI
                     return EnemyEnum.NodeStatus.Success;
                 }
                 
+                // 移動フラグを設定する
+                _animationHandler.SetMovingFlag(true);
                 // プレイヤーの方向へ回転する
                 RotateToPlayer();
                 // プレイヤーの方向へ移動する
@@ -136,6 +140,14 @@ namespace Enemy.AI
         {
             var attackRange = EnemySkillDatabase.Instance.GetSkillData(_nextSkillNumber).attackRange;
             return attackRange >= GetHorizontalDistanceToPlayer();
+        }
+
+        /// <summary>プレイヤーがスキルの攻撃角度内に存在するか</summary>
+        private bool IsPlayerInAttackAngle()
+        {
+            var attackAngle = EnemySkillDatabase.Instance.GetSkillData(_nextSkillNumber).attackAngle;
+            var angleToPlayer = Vector3.Angle(transform.forward, GetHorizontalDirectionToPlayer());
+            return attackAngle >= angleToPlayer;
         }
 
         /// <summary>高低差を無視してプレイヤーへの距離を求める</summary>
