@@ -14,5 +14,8 @@ namespace Data.Enemy
 
         /// <summary>スキルの攻撃範囲</summary>
         public float attackRange;
+
+        /// <summary>スキルの攻撃角度</summary>
+        public float attackAngle;
     }
 }
