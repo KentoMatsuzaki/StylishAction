@@ -98,7 +98,7 @@ namespace Enemy.AI
                 if (IsPlayerInAttackRange() && IsPlayerInAttackAngle())
                 { 
                     // 移動フラグを設定する
-                    _animationHandler.SetMovingFlag(false);
+                    _animationHandler.SetMoveFlag(false);
                     // 攻撃アニメーションをトリガーする
                     _animationHandler.TriggerAttack(_nextSkillNumber);
                     // 攻撃アニメーションの再生終了を待機する
@@ -112,7 +112,7 @@ namespace Enemy.AI
                 }
                 
                 // 移動フラグを設定する
-                _animationHandler.SetMovingFlag(true);
+                _animationHandler.SetMoveFlag(true);
                 // プレイヤーの方向へ回転する
                 RotateToPlayer();
                 // プレイヤーの方向へ移動する
