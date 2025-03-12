@@ -23,7 +23,7 @@ namespace Enemy.Handler
 
         private void OnTriggerEnter(Collider other)
         {
-            if (other.CompareTag(InGameConst.PlayerTagName))
+            if (other.CompareTag(InGameConst.PlayerTag))
             {
                 var player = other.GetComponent<PlayerController>();
                 _controller.Bt.OnHitPlayer(player);
