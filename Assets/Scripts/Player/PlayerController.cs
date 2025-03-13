@@ -1,4 +1,5 @@
-using System;
+using Enum;
+using Enum.Player;
 using Player.Handler;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -8,6 +9,8 @@ namespace Player
     /// <summary>プレイヤーを制御するクラス</summary>
     public class PlayerController : MonoBehaviour
     {
+        private PlayerMoveHandler _moveHandler;
+        private PlayerStateHandler _stateHandler;
         private PlayerAnimationHandler _animationHandler;
         
         //-------------------------------------------------------------------------------
@@ -16,7 +19,21 @@ namespace Player
 
         private void Start()
         {
+            _moveHandler = GetComponent<PlayerMoveHandler>();
+            _stateHandler = GetComponent<PlayerStateHandler>();
             _animationHandler = GetComponent<PlayerAnimationHandler>();
+        }
+        
+        //-------------------------------------------------------------------------------
+        // 更新処理
+        //-------------------------------------------------------------------------------
+
+        private void FixedUpdate()
+        {
+            if (_stateHandler.GetState() == PlayerEnum.PlayerState.Move)
+            {
+                _moveHandler.HandleMoveForward(2.5f);
+            }
         }
 
         //-------------------------------------------------------------------------------
@@ -29,14 +46,20 @@ namespace Player
             // ボタンを押した瞬間の処理
             if (context.performed)
             {
-                // 移動の入力値を受け取る
-                var direction = context.ReadValue<Vector2>();
+                // 状態処理
+                _stateHandler.SetState(PlayerEnum.PlayerState.Move);
+                
+                // 移動方向へ回転させる
+                _moveHandler.HandleRotateTowardsMovement(context.ReadValue<Vector2>());
+                
                 // アニメーション処理
                 _animationHandler.SetMoveFlag(true);
             }
             // ボタンを離した瞬間の処理
             else if (context.canceled)
             {
+                // 状態処理
+                _stateHandler.SetState(PlayerEnum.PlayerState.Idle);
                 // アニメーション処理
                 _animationHandler.SetMoveFlag(false);
             }
