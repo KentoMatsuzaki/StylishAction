@@ -1,7 +1,7 @@
-using Enum;
 using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using Enum.Enemy;
 
 namespace Enemy.AsyncNode
 {

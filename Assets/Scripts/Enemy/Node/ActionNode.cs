@@ -1,5 +1,6 @@
 using Enum;
 using System;
+using Enum.Enemy;
 
 namespace Enemy.Nodes
 {

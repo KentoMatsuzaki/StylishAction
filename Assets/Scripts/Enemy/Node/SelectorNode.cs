@@ -1,6 +1,7 @@
 using Enum;
 using System.Collections.Generic;
 using System.Linq;
+using Enum.Enemy;
 
 namespace Enemy.Nodes
 {
