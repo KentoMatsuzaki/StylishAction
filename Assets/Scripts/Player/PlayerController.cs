@@ -32,7 +32,7 @@ namespace Player
         {
             if (_stateHandler.GetState() == PlayerEnum.PlayerState.Move)
             {
-                _moveHandler.HandleMoveForward(2.5f);
+                _moveHandler.MoveForward(2.5f);
             }
         }
 
@@ -49,8 +49,8 @@ namespace Player
                 // 状態処理
                 _stateHandler.SetState(PlayerEnum.PlayerState.Move);
                 
-                // 移動方向へ回転させる
-                _moveHandler.HandleRotateTowardsMovement(context.ReadValue<Vector2>());
+                // 回転処理
+                _moveHandler.RotateTowardsMovement(context.ReadValue<Vector2>());
                 
                 // アニメーション処理
                 _animationHandler.SetMoveFlag(true);
@@ -75,6 +75,8 @@ namespace Player
             // ボタンを押した瞬間の処理
             if (context.performed)
             {
+                // 移動処理
+                _moveHandler.DashForward(5f);
                 // アニメーション処理
                 _animationHandler.TriggerDash();
             }
