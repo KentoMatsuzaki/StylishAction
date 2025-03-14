@@ -1,4 +1,5 @@
 using System;
+using TMPro.EditorUtilities;
 using UnityEngine;
 
 namespace Player.Handler
@@ -15,16 +16,23 @@ namespace Player.Handler
 
         /// <summary>正面方向に移動させる</summary>
         /// <param name="moveSpeed">移動速度</param>
-        public void HandleMoveForward(float moveSpeed)
+        public void MoveForward(float moveSpeed)
         {
             transform.Translate(Time.deltaTime * moveSpeed * transform.forward, Space.World);
         }
 
         /// <summary>移動方向へ回転させる</summary>
         /// <param name="moveDirection">移動方向</param>
-        public void HandleRotateTowardsMovement(Vector2 moveDirection)
+        public void RotateTowardsMovement(Vector2 moveDirection)
         {
             transform.rotation = Quaternion.LookRotation(new Vector3(-moveDirection.x, 0, -moveDirection.y));
+        }
+
+        /// <summary>正面方向にダッシュさせる</summary>
+        /// <param name="dashSpeed">ダッシュ速度</param>
+        public void DashForward(float dashSpeed)
+        {
+            _rb.AddForce(transform.forward * dashSpeed, ForceMode.Impulse);
         }
     }
 }
