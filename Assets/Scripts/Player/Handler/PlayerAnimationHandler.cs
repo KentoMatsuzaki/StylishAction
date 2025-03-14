@@ -33,6 +33,8 @@ namespace Player.Handler
         /// <summary>ダッシュアニメーションをトリガーする</summary>
         public void TriggerDash()
         {
+            // ダッシュアニメーションを再生中は処理を抜ける
+            if (_animator.GetCurrentAnimatorStateInfo(0).IsName("Dash")) return;
             _animator.SetTrigger(InGameConst.PlayerDashTrigger);
         }
         
@@ -54,6 +56,8 @@ namespace Player.Handler
         /// <summary>パリィアニメーションをトリガーする</summary>
         public void TriggerParry()
         {
+            // パリィアニメーションを再生中は処理を抜ける
+            if (_animator.GetCurrentAnimatorStateInfo(0).IsName("Parry")) return; 
             _animator.SetTrigger(InGameConst.PlayerParryTrigger);
         }
     }
