@@ -46,6 +46,8 @@ namespace Player.Handler
         /// <param name="attackNumber">トリガーする攻撃の番号</param>
         public void TriggerAttack(int attackNumber)
         {
+            // 攻撃アニメーションを再生中は処理を抜ける
+            if (_animator.GetCurrentAnimatorStateInfo(0).IsTag("Attack")) return;
             _animator.SetTrigger($"Attack {attackNumber} Trigger");
         }
         
