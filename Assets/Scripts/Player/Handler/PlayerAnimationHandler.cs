@@ -14,14 +14,16 @@ namespace Player.Handler
         }
         
         //-------------------------------------------------------------------------------
-        // 攻撃に関する処理
+        // 移動に関する処理
         //-------------------------------------------------------------------------------
 
-        /// <summary>対応する攻撃アニメーションをトリガーする</summary>
-        /// <param name="attackNumber">トリガーする攻撃の番号</param>
-        public void TriggerAttack(int attackNumber)
+        /// <summary>移動フラグを設定する</summary>
+        public void SetMoveFlag(bool value)
         {
-            _animator.SetTrigger($"Attack {attackNumber} Trigger");
+            if (_animator.GetBool(InGameConst.PlayerMoveFlag) != value)
+            {
+                _animator.SetBool(InGameConst.PlayerMoveFlag, value);
+            }
         }
         
         //-------------------------------------------------------------------------------
@@ -32,6 +34,17 @@ namespace Player.Handler
         public void TriggerDash()
         {
             _animator.SetTrigger(InGameConst.PlayerDashTrigger);
+        }
+        
+        //-------------------------------------------------------------------------------
+        // 攻撃に関する処理
+        //-------------------------------------------------------------------------------
+
+        /// <summary>対応する攻撃アニメーションをトリガーする</summary>
+        /// <param name="attackNumber">トリガーする攻撃の番号</param>
+        public void TriggerAttack(int attackNumber)
+        {
+            _animator.SetTrigger($"Attack {attackNumber} Trigger");
         }
         
         //-------------------------------------------------------------------------------
