@@ -6,6 +6,7 @@ using Cysharp.Threading.Tasks;
 using Data.Enemy;
 using Enemy.Handler;
 using Enum;
+using Enum.Enemy;
 using Player;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -23,11 +24,16 @@ namespace Enemy.AI
         private BaseAsyncNode _mainNode;
         /// <summary>アニメーション</summary>
         private EnemyAnimationHandler _animationHandler;
+        /// <summary>プレイヤー</summary>
         private PlayerController _player;
+        /// <summary>最大体力</summary>
+        private float _currentHp;
+        private Rigidbody _rb;
         
         /// <summary>利用可能なスキルの番号</summary>
         private readonly int[] _availableSkillNumbers = {1, 2};
 
+        /// <summary>次に使用するスキルの番号</summary>
         private int? _nextSkillNumber;
         
         //-------------------------------------------------------------------------------
@@ -37,11 +43,18 @@ namespace Enemy.AI
         private void Awake()
         {
             _animationHandler = GetComponent<EnemyAnimationHandler>();
+            _rb = GetComponent<Rigidbody>();
+            SetStatus();
         }
 
         public override void SetPlayer(PlayerController player)
         {
             _player = player;
+        }
+
+        protected override void SetStatus()
+        {
+            _currentHp = statusData.phase1MaxHp;
         }
 
         //-------------------------------------------------------------------------------
@@ -210,5 +223,59 @@ namespace Enemy.AI
             BeginBehaviourTree();
         }
         
+        //-------------------------------------------------------------------------------
+        // ダメージに関する処理
+        //-------------------------------------------------------------------------------
+
+        /// <summary>プレイヤーの攻撃が命中した時の処理</summary>
+        public void OnHit(float damage, Vector3 hitPosition)
+        {
+            // ダメージ処理
+            TakeDamage(damage);
+            
+            // 死亡している場合は死亡処理を呼ぶ
+            if (IsDied())
+            {
+                OnDie();
+                return;
+            }
+            
+            // ノックバック
+            KnockBack(hitPosition);
+        }
+
+        /// <summary>ダメージ処理</summary>
+        private void TakeDamage(float damage)
+        {
+            if (damage > 0)
+            {
+                _currentHp = Mathf.Max(_currentHp - damage, 0);
+            }
+        }
+
+        /// <summary>ノックバック処理</summary>
+        /// <param name="hitPosition">プレイヤーの攻撃が命中した座標</param>
+        private void KnockBack(Vector3 hitPosition)
+        {
+            // ノックバックさせる方向を求める
+            var knockBackDirection = (transform.position - hitPosition).normalized;
+            // Y座標を無視する
+            knockBackDirection.y = 0;
+            // 速度をリセットする
+            _rb.velocity = Vector3.zero;
+            // ノックバックさせる
+            _rb.AddForce(knockBackDirection * statusData.knockbackSpeed, ForceMode.Impulse);
+        }
+
+        /// <summary>死亡しているかどうか</summary>
+        private bool IsDied()
+        {
+            return _currentHp <= 0;
+        }
+
+        private void OnDie()
+        {
+            
+        }
     }
 }
