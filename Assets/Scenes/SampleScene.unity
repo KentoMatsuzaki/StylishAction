@@ -1040,6 +1040,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7650970797430141623, guid: eeee6b238996c9e48a95511a7fcfbfdf, type: 3}
+      propertyPath: m_TagString
+      value: Enemy
+      objectReference: {fileID: 0}
     - target: {fileID: 8206721080824186262, guid: eeee6b238996c9e48a95511a7fcfbfdf, type: 3}
       propertyPath: m_Controller
       value: 
