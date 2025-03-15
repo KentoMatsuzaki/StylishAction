@@ -48,12 +48,10 @@ namespace Player
             {
                 // 状態処理
                 _stateHandler.SetState(PlayerEnum.PlayerState.Move);
-                
-                // 回転処理
-                _moveHandler.RotateTowardsMovement(context.ReadValue<Vector2>());
-                
                 // アニメーション処理
                 _animationHandler.SetMoveFlag(true);
+                // 回転処理
+                _moveHandler.RotateTowardsMovement(context.ReadValue<Vector2>());
             }
             // ボタンを離した瞬間の処理
             else if (context.canceled)
@@ -75,10 +73,10 @@ namespace Player
             // ボタンを押した瞬間の処理
             if (context.performed)
             {
-                // 移動処理
-                _moveHandler.DashForward(5f);
                 // アニメーション処理
                 _animationHandler.TriggerDash();
+                // 移動処理
+                _moveHandler.DashForward(5f);
             }
         }
         
@@ -92,19 +90,14 @@ namespace Player
             // ボタンを押した瞬間の処理
             if (context.performed)
             {
-                var actionName = context.action.name;
-                
-                switch (actionName)
+                // 状態処理
+                _stateHandler.SetState(PlayerEnum.PlayerState.Attack);
+                // アニメーション処理
+                switch (context.action.name)
                 {
-                    case "Attack 1":
-                        _animationHandler.TriggerAttack(1); // アニメーション処理
-                        break;
-                    case "Attack 2":
-                        _animationHandler.TriggerAttack(2); // アニメーション処理
-                        break;
-                    case "Attack 3":
-                        _animationHandler.TriggerAttack(3); // アニメーション処理
-                        break;
+                    case "Attack 1": _animationHandler.TriggerAttack(1); break;
+                    case "Attack 2": _animationHandler.TriggerAttack(2); break;
+                    case "Attack 3": _animationHandler.TriggerAttack(3); break;
                 }
             }
         }
@@ -119,6 +112,8 @@ namespace Player
             // ボタンを押した瞬間の処理
             if (context.performed)
             {
+                // 状態処理
+                _stateHandler.SetState(PlayerEnum.PlayerState.Parry);
                 // アニメーション処理
                 _animationHandler.TriggerParry();
             }
