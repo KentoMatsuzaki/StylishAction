@@ -7,6 +7,8 @@ namespace Player.Handler
     /// <summary>プレイヤーの攻撃クラス</summary>
     public class PlayerAttacker : MonoBehaviour
     {
+        [Header("ダメージ量"), SerializeField] private float damageAmount;
+        
         /// <summary>攻撃コライダー</summary>
         private Collider _attackCollider;
 
@@ -22,7 +24,9 @@ namespace Player.Handler
             if (other.CompareTag(InGameConst.EnemyTag))
             {
                 var enemy = other.GetComponent<EnemyController>();
-                
+                var hitPosition = other.ClosestPoint(transform.position);
+                // 敵の被ダメージ処理を呼ぶ
+                enemy.Bt.OnHit(damageAmount, hitPosition);
             }
         }
         
