@@ -14,6 +14,7 @@ namespace Enemy
         {
             Bt = GetComponent<Phase1AI>();
             Bt.SetPlayer(player);
+            Bt.Initialize();
             Bt.BeginBehaviourTree();
         }
     }
