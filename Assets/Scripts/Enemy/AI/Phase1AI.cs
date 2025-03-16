@@ -26,8 +26,10 @@ namespace Enemy.AI
         private EnemyAnimationHandler _animationHandler;
         /// <summary>プレイヤー</summary>
         private PlayerController _player;
-        /// <summary>最大体力</summary>
+        /// <summary>現在の体力</summary>
         private float _currentHp;
+        /// <summary>現在のヒットカウント</summary>
+        private int _currentHitCount;
         private Rigidbody _rb;
         
         /// <summary>利用可能なスキルの番号</summary>
@@ -44,7 +46,12 @@ namespace Enemy.AI
         {
             _animationHandler = GetComponent<EnemyAnimationHandler>();
             _rb = GetComponent<Rigidbody>();
+        }
+
+        public override void Initialize()
+        {
             SetStatus();
+            ConstructBehaviourTree();
         }
 
         public override void SetPlayer(PlayerController player)
@@ -66,7 +73,6 @@ namespace Enemy.AI
         {
             _cts?.Cancel();
             _cts = new CancellationTokenSource();
-            ConstructBehaviourTree();
             ExecuteBehaviourTree().Forget();
         }
 
@@ -201,6 +207,7 @@ namespace Enemy.AI
             OnParried();
             // プレイヤーがパリィ状態でない場合
             // player.TakeDamage
+            //EnemySkillDatabase.Instance.GetSkillData(_nextSkillNumber).damageAmount;
         }
 
         /// <summary>プレイヤーにパリィされた時の処理</summary>
@@ -227,17 +234,22 @@ namespace Enemy.AI
         // ダメージに関する処理
         //-------------------------------------------------------------------------------
 
-        /// <summary>プレイヤーの攻撃が命中した時の処理</summary>
-        public void OnHit(float damage, Vector3 hitPosition)
+        /// <summary>被ダメージ時の処理</summary>
+        public override void OnHit(float damage, Vector3 hitPosition)
         {
             // ダメージ処理
             TakeDamage(damage);
             
-            // 死亡している場合は死亡処理を呼ぶ
+            // 死亡処理
             if (IsDied())
             {
-                OnDie();
-                return;
+                OnDie(); return;
+            }
+            
+            // 怯み処理
+            if (IsFlinched())
+            {
+                OnFlinch();
             }
             
             // ノックバック
@@ -249,7 +261,10 @@ namespace Enemy.AI
         {
             if (damage > 0)
             {
+                // ダメージを適用する
                 _currentHp = Mathf.Max(_currentHp - damage, 0);
+                // ヒットカウントを増加させる
+                _currentHitCount++;
             }
         }
 
@@ -264,15 +279,36 @@ namespace Enemy.AI
             // 速度をリセットする
             _rb.velocity = Vector3.zero;
             // ノックバックさせる
-            _rb.AddForce(knockBackDirection * statusData.knockbackSpeed, ForceMode.Impulse);
+            _rb.AddForce(knockBackDirection * statusData.knockBackSpeed, ForceMode.Impulse);
         }
 
-        /// <summary>死亡しているかどうか</summary>
+        /// <summary>怯み判定</summary>
+        private bool IsFlinched()
+        {
+            if (_currentHitCount >= statusData.maxHitCount)
+            {
+                // 現在のヒットカウントをリセットする
+                _currentHitCount = 0; return true;
+            }
+            return false;
+        }
+
+        /// <summary>怯み時の処理</summary>
+        private void OnFlinch()
+        {
+            // ビヘイビアツリーをキャンセルする
+            _cts?.Cancel();
+            // 怯みアニメーションを再生する
+            _animationHandler.PlayAnimation(InGameConst.EnemyHitAnimation);
+        }
+
+        /// <summary>死亡判定</summary>
         private bool IsDied()
         {
             return _currentHp <= 0;
         }
 
+        /// <summary>死亡時の処理</summary>
         private void OnDie()
         {
             
