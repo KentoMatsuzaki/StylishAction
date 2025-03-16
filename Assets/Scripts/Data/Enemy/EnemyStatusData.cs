@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Data.Enemy
 {
     /// <summary>敵のステータス情報を保持するスクリプタブルオブジェクト</summary>
-    [CreateAssetMenu(fileName = "EnemyStatusData", menuName = "ScriptableObjects/CreateEnemyStatusAsset")]
+    [CreateAssetMenu(fileName = "EnemyStatus", menuName = "ScriptableObjects/CreateEnemyStatusAsset")]
     public class EnemyStatusData : ScriptableObject
     {
         /// <summary>フェーズ1の最大体力</summary>
@@ -22,6 +22,9 @@ namespace Data.Enemy
         public float rotateSpeed;
 
         /// <summary>ノックバック速度</summary>
-        public float knockbackSpeed;
+        public float knockBackSpeed;
+
+        /// <summary>最大ヒット数</summary>
+        public int maxHitCount;
     }
 }
