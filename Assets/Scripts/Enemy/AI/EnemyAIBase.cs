@@ -22,6 +22,9 @@ namespace Enemy.AI
 
         /// <summary>プレイヤーに攻撃が命中した時の処理</summary>
         public abstract void OnHitPlayer(PlayerController player);
+
+        /// <summary>プレイヤーの攻撃が命中した時の処理</summary>
+        public abstract void OnHit(float damage, Vector3 hitPosition);
         
         /// <summary>初期化する</summary>
         public abstract void Initialize();
