@@ -36,10 +36,9 @@ namespace Camera
         private void UpdateCameraRotation()
         {
             var targetPosition = new Vector3(enemy.position.x, enemy.position.y + 1f, enemy.position.z);
-            //var targetDirection = (targetPosition - transform.position).normalized;
-            //var lookRotation = Quaternion.LookRotation(targetDirection);
-            //transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, rotateSpeed * Time.deltaTime);
-            transform.LookAt(targetPosition);
+            var targetDirection = (targetPosition - transform.position).normalized;
+            var lookRotation = Quaternion.LookRotation(targetDirection);
+            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, rotateSpeed * Time.deltaTime);
         }
 
         /// <summary>カメラの位置を調整する</summary>
