@@ -10,5 +10,11 @@ namespace Enum.Enemy
             Failure, // 失敗
             Running  // 実行中
         }
+
+        public enum EnemySkillType
+        {
+            Scythe, // スキル1
+            
+        }
     }
 }
