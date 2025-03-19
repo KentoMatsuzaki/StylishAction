@@ -16,6 +16,7 @@ namespace Const
         
         public const string EnemyStunAnimation = "Stun"; // 敵のスタン
         public const string EnemyHitAnimation = "Hit"; // 敵の被ダメージ
+        public const string EnemyDieAnimation = "Die"; // 敵の死亡
         
         //-------------------------------------------------------------------------------
         // アニメーションフラグ
