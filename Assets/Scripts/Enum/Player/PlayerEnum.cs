@@ -14,5 +14,13 @@ namespace Enum.Player
             Stun,   // スタン
             Dead    // 死亡
         }
+
+        /// <summary>攻撃の種類</summary>
+        public enum PlayerAttackType
+        {
+            Attack1,
+            Attack2,
+            Attack3
+        }
     }
 }
