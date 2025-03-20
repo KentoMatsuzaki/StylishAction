@@ -1,4 +1,6 @@
+using Enum.Enemy;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Data.Enemy
 {
@@ -6,16 +8,19 @@ namespace Data.Enemy
     [CreateAssetMenu(fileName = "EnemySkillData", menuName = "ScriptableObjects/CreateEnemySkillAsset")]
     public class EnemySkillData : ScriptableObject
     {
-        /// <summary>スキルの固有番号</summary>
-        public int skillNumber;
+        /// <summary>スキルの種類</summary>
+        public EnemyEnum.EnemySkillType type;
 
         /// <summary>スキルが与えるダメージ量</summary>
         public float damageAmount;
 
-        /// <summary>スキルの攻撃範囲</summary>
-        public float attackRange;
+        /// <summary>スキルの最小射程</summary>
+        public float minAttackRange;
 
-        /// <summary>スキルの攻撃角度</summary>
-        public float attackAngle;
+        /// <summary>スキルの最大射程</summary>
+        public float maxAttackRange;
+
+        /// <summary>スキルの最大角度</summary>
+        public float maxAttackAngle;
     }
 }
