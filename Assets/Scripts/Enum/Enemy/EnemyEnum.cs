@@ -13,8 +13,9 @@ namespace Enum.Enemy
 
         public enum EnemySkillType
         {
-            Scythe, // スキル1
-            
+            Scythe, // 鎌
+            Meteor, // 隕石
+            Rebirth, // 形態変化
         }
     }
 }
