@@ -1,4 +1,9 @@
 using System.Collections.Generic;
+using System.Linq;
+using Effect.Enemy;
+using Effect.Player;
+using Enum.Enemy;
+using Enum.Player;
 using UnityEngine;
 
 namespace Effect
@@ -9,10 +14,10 @@ namespace Effect
         public static EffectManager Instance;
 
         [Header("プレイヤーの攻撃エフェクト"), SerializeField]
-        private List<ParticleSystem> playerAttackEffects;
+        private List<PlayerParticleController> playerAttackEffectList;
 
         [Header("敵の攻撃エフェクト"), SerializeField] 
-        private List<ParticleSystem> enemyAttackEffects;
+        private List<EnemyParticleController> enemyAttackEffectList;
 
         private void Awake()
         {
@@ -20,32 +25,18 @@ namespace Effect
             else Destroy(this);
         }
 
-        /// <summary>エフェクトを生成する汎用メソッド</summary>
-        private void InstantiateEffectPrefab(ParticleSystem particle, Vector3 position, Quaternion rotation)
+        /// <summary>プレイヤーの攻撃エフェクトを有効化する</summary>
+        /// <param name="type">攻撃の種類</param>
+        public void PlayPlayerAttackEffect(PlayerEnum.PlayerAttackType type)
         {
-            Instantiate(particle, position, rotation);
+            playerAttackEffectList.FirstOrDefault(effect => effect.type == type)?.gameObject.SetActive(true);
         }
 
-        /// <summary>プレイヤーの攻撃エフェクトを生成する</summary>
-        /// <param name="attackNumber">攻撃の番号(1~)</param>
-        /// <param name="position">生成する座標</param>
-        /// <param name="rotation">プレハブの回転</param>
-        public void InstantiatePlayerAttackEffect(int attackNumber, Vector3 position, Quaternion rotation)
+        /// <summary>敵の攻撃エフェクトを有効化する</summary>
+        /// <param name="type">スキルの種類</param>
+        public void PlayEnemyAttackEffect(EnemyEnum.EnemySkillType type)
         {
-            if (attackNumber < 1 || attackNumber > playerAttackEffects.Count) return;
-            InstantiateEffectPrefab(playerAttackEffects[attackNumber - 1], position, rotation);
-        }
-
-        /// <summary>敵の攻撃エフェクトを生成する</summary>
-        /// <param name="skillNumber">スキルの番号(2~)</param>
-        /// <param name="position">生成する座標</param>
-        /// <param name="rotation">プレハブの回転</param>
-        public void InstantiateEnemyAttackEffect(int skillNumber, Vector3 position, Quaternion rotation)
-        {
-            if (skillNumber < 2 || skillNumber > enemyAttackEffects.Count + 1) return;
-            InstantiateEffectPrefab(enemyAttackEffects[skillNumber - 2], position, rotation);
-            
-            Debug.Log("a");
+            enemyAttackEffectList.FirstOrDefault(effect => effect.type == type)?.gameObject.SetActive(true);
         }
     }
 
