@@ -1,6 +1,7 @@
 using System.Threading;
 using Const;
 using Cysharp.Threading.Tasks;
+using Enum.Enemy;
 using UnityEngine;
 
 namespace Enemy.Handler
@@ -43,12 +44,10 @@ namespace Enemy.Handler
         //-------------------------------------------------------------------------------
         
         /// <summary>攻撃アニメーションをトリガーする</summary>
-        /// <param name="skillNumber">攻撃スキルの番号（1~6）</param>
-        public void TriggerAttack(int? skillNumber)
+        /// <param name="type">スキルの種類</param>
+        public void TriggerAttack(EnemyEnum.EnemySkillType type)
         {
-            // スキル番号が未割り当ての場合は処理を抜ける
-            if (!skillNumber.HasValue) return; 
-            _animator.SetTrigger($"Skill {skillNumber.Value} Trigger");
+            _animator.SetTrigger(type.ToString());
         }
         
         /// <summary>アニメーションの再生終了を待つ</summary>
