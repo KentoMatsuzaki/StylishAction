@@ -1,11 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using Const;
 using Enemy.AsyncNode;
 using Cysharp.Threading.Tasks;
 using Data.Enemy;
 using Enemy.Handler;
-using Enum;
 using Enum.Enemy;
 using Player;
 using UnityEngine;
@@ -17,6 +17,7 @@ namespace Enemy.AI
     public class Phase1AI : EnemyAIBase
     {
         [Header("敵のステータス"), SerializeField] private EnemyStatusData statusData;
+        [Header("スキルのリスト"), SerializeField] private List<EnemySkillData> skillDataList;
         
         /// <summary>キャンセルトークン</summary>
         private CancellationTokenSource _cts;
@@ -31,12 +32,9 @@ namespace Enemy.AI
         /// <summary>現在のヒットカウント</summary>
         private int _currentHitCount;
         private Rigidbody _rb;
-        
-        /// <summary>利用可能なスキルの番号</summary>
-        private readonly int[] _availableSkillNumbers = {1, 2};
 
-        /// <summary>次に使用するスキルの番号</summary>
-        private int? _nextSkillNumber;
+        /// <summary>次に使用するスキルのデータ</summary>
+        private EnemySkillData _nextSkillData;
         
         //-------------------------------------------------------------------------------
         // 初期設定
@@ -111,31 +109,46 @@ namespace Enemy.AI
             var attackAction = new AsyncActionNode(async (token) =>
             {
                 // 次の攻撃を設定する
-                SetNextSkillNumber();
+                SetNextSkillData();
                 
-                // プレイヤーが攻撃範囲・角度内に存在する場合
+                // プレイヤーが有効射程・角度内に存在する場合
                 if (IsPlayerInAttackRange() && IsPlayerInAttackAngle())
                 { 
                     // 移動フラグを設定する
                     _animationHandler.SetMoveFlag(false);
                     // 攻撃アニメーションをトリガーする
-                    _animationHandler.TriggerAttack(_nextSkillNumber);
+                    _animationHandler.TriggerAttack(_nextSkillData.type);
                     // 攻撃アニメーションの再生終了を待機する
                     await _animationHandler.WaitForAnimationEnd(token);
                     // 攻撃のクールタイム
                     await UniTask.Delay(1000);
-                    // スキル番号をリセットする
-                    _nextSkillNumber = null;
+                    // スキルのデータをリセットする
+                    _nextSkillData = null;
                     // ノードの評価結果を返す
                     return EnemyEnum.NodeStatus.Success;
                 }
+
+                // プレイヤーがスキルの最小射程の内側にいる場合
+                if (!IsPlayerBeyondMinAttackRange())
+                {
+                    // 移動フラグを設定する
+                    _animationHandler.SetMoveFlag(true);
+                    
+                    // プレイヤーの逆方向へ移動する
+                    MoveAwayFromPlayer();
+                }
                 
-                // 移動フラグを設定する
-                _animationHandler.SetMoveFlag(true);
-                // プレイヤーの方向へ回転する
-                RotateToPlayer();
-                // プレイヤーの方向へ移動する
-                MoveToPlayer();
+                // プレイヤーがスキルの最大射程の外側にいる場合
+                else
+                {
+                    // 移動フラグを設定する
+                    _animationHandler.SetMoveFlag(true);
+                    // プレイヤーの方向へ回転する
+                    RotateToPlayer();
+                    // プレイヤーの方向へ移動する
+                    MoveToPlayer();
+                }
+                
                 // ノードの評価結果を返す
                 return EnemyEnum.NodeStatus.Running;
             });
@@ -145,28 +158,40 @@ namespace Enemy.AI
             return attackSequence;
         }
 
-        /// <summary>次のスキル番号をランダムに設定する</summary>
-        private void SetNextSkillNumber()
-        { 
-            // 次の攻撃が設定されている場合は処理を抜ける
-            if (_nextSkillNumber != null) return;
-            // スキルの番号をランダムに選択する
-            _nextSkillNumber = _availableSkillNumbers[Random.Range(0, _availableSkillNumbers.Length)];
+        /// <summary>次のスキルのデータをランダムに設定する</summary>
+        private void SetNextSkillData()
+        {
+            // スキルのデータが既に設定されている場合は処理を抜ける
+            if (_nextSkillData != null) return;
+            // スキルのデータをランダムに取得する
+            _nextSkillData = skillDataList[Random.Range(0, skillDataList.Count)];
         }
 
-        /// <summary>プレイヤーがスキルの攻撃範囲内に存在するか</summary>
+        /// <summary>プレイヤーがスキルの有効射程内に存在するか</summary>
         private bool IsPlayerInAttackRange()
         {
-            var attackRange = EnemySkillDatabase.Instance.GetSkillData(_nextSkillNumber).attackRange;
-            return attackRange >= GetHorizontalDistanceToPlayer();
+            return IsPlayerBeyondMinAttackRange() && IsPlayerInMaxAttackRange();
+        }
+
+        /// <summary>プレイヤーとの距離がスキルの最小射程よりも大きいかどうか</summary>
+        private bool IsPlayerBeyondMinAttackRange()
+        {
+            var distance = GetHorizontalDistanceToPlayer();
+            return _nextSkillData.minAttackRange <= distance;
+        }
+
+        /// <summary>プレイヤーとの距離がスキルの最大射程よりも小さいかどうか</summary>
+        private bool IsPlayerInMaxAttackRange()
+        {
+            var distance = GetHorizontalDistanceToPlayer();
+            return distance <= _nextSkillData.maxAttackRange;
         }
 
         /// <summary>プレイヤーがスキルの攻撃角度内に存在するか</summary>
         private bool IsPlayerInAttackAngle()
         {
-            var attackAngle = EnemySkillDatabase.Instance.GetSkillData(_nextSkillNumber).attackAngle;
             var angleToPlayer = Vector3.Angle(transform.forward, GetHorizontalDirectionToPlayer());
-            return attackAngle >= angleToPlayer;
+            return _nextSkillData.maxAttackAngle >= angleToPlayer;
         }
 
         /// <summary>高低差を無視してプレイヤーへの距離を求める</summary>
@@ -194,6 +219,12 @@ namespace Enemy.AI
         {
             var desiredRotation = Quaternion.LookRotation(GetHorizontalDirectionToPlayer());
             transform.rotation = Quaternion.Slerp(transform.rotation, desiredRotation, Time.deltaTime * statusData.rotateSpeed);
+        }
+
+        /// <summary>プレイヤーの逆方向へ移動する</summary>
+        private void MoveAwayFromPlayer()
+        {
+            transform.Translate(-GetHorizontalDirectionToPlayer() * Time.deltaTime * statusData.moveSpeed * 3, Space.World);
         }
         
         //-------------------------------------------------------------------------------
@@ -311,7 +342,8 @@ namespace Enemy.AI
         /// <summary>死亡時の処理</summary>
         private void OnDie()
         {
-            
+            _cts?.Cancel();
+            _animationHandler.PlayAnimation(InGameConst.EnemyDieAnimation);
         }
     }
 }
