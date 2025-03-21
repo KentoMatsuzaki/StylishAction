@@ -8,15 +8,16 @@ namespace Enemy.Handler
     public class EnemyEffectHandler : MonoBehaviour
     {
         /// <summary>攻撃エフェクトを有効化する</summary>
-        public void PlayAttackEffect(string skillName)
+        /// <param name="attackName">攻撃の名前</param>
+        public void ActivateAttackEffect(string attackName)
         {
-            if (System.Enum.TryParse(skillName, out EnemyEnum.EnemySkillType type))
+            if (System.Enum.TryParse<EnemyEnum.EnemyAttackType>(attackName, out var type))
             {
-                EffectManager.Instance.PlayEnemyAttackEffect(type);
+                EffectManager.Instance.ActivateEnemyAttackEffect(type);
             }
             else
             {
-                Debug.LogWarning($"Invalid Skill Name : {skillName}");
+                Debug.LogWarning($"Invalid Attack Name : {attackName}");
             }
         }
     }
