@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Effect
 {
-    /// <summary>敵のパーティクルを制御する基底クラス</summary>
+    /// <summary>パーティクルを制御する基底クラス</summary>
     public abstract class ParticleControllerBase : MonoBehaviour
     {
         /// <summary>全ての子のパーティクル</summary>
@@ -28,6 +28,16 @@ namespace Effect
             
             // 全ての子のパーティクルが再生完了していたら、オブジェクトを非アクティブにする
             if (allStopped) gameObject.SetActive(false);
+        }
+
+        /// <summary>全てのパーティクルをクリアして再スタートさせる</summary>
+        public void RestartParticles()
+        {
+            foreach (var particle in _particles)
+            {
+                particle.Clear();
+                particle.Play();
+            }
         }
     }
 }
