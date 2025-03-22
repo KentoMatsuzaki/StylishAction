@@ -1,5 +1,6 @@
 using UnityEngine;
 using Const;
+using Enum.Enemy;
 using Player;
 
 namespace Enemy.Handler
@@ -26,7 +27,7 @@ namespace Enemy.Handler
             if (other.CompareTag(InGameConst.PlayerTag))
             {
                 var player = other.GetComponent<PlayerController>();
-                _controller.Bt.OnHitPlayer(player);
+                _controller.CurrentBehaviourTree.OnHitPlayer(player);
             }
         }
         
