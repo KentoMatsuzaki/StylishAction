@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 1
   damageAmount: 1
-  minAttackRange: 10
-  maxAttackRange: 14
-  maxAttackAngle: 30
+  minAttackRange: 7.5
+  maxAttackRange: 10
+  maxAttackAngle: 7.5
