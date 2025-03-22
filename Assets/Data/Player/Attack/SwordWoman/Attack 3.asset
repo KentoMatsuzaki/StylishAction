@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Attack 3
   m_EditorClassIdentifier: 
   type: 2
-  damageAmount: 0
+  damageAmount: 3
