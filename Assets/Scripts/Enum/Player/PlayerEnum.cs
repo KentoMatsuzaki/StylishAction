@@ -8,10 +8,9 @@ namespace Enum.Player
         {
             Idle,   // 静止
             Move,   // 移動
-            Dash,   // ダッシュ
             Attack, // 攻撃
             Parry,  // パリィ
-            Stun,   // スタン
+            Damage, // 被ダメージ
             Dead    // 死亡
         }
 
