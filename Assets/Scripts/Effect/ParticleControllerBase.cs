@@ -11,7 +11,6 @@ namespace Effect
         private void Awake()
         {
             _particles = GetComponentsInChildren<ParticleSystem>();
-            gameObject.SetActive(false);
         }
 
         private void Update()
