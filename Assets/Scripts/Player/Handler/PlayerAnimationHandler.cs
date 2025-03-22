@@ -62,5 +62,25 @@ namespace Player.Handler
             if (_animator.GetCurrentAnimatorStateInfo(0).IsName("Parry")) return; 
             _animator.SetTrigger(InGameConst.PlayerParryTrigger);
         }
+        
+        //-------------------------------------------------------------------------------
+        // 被ダメージに関する処理
+        //-------------------------------------------------------------------------------
+
+        /// <summary>被ダメージアニメーションを再生する</summary>
+        public void PlayHitAnimation()
+        {
+            _animator.Play(InGameConst.PlayerHitAnimation);
+        }
+        
+        //-------------------------------------------------------------------------------
+        // 死亡に関する処理
+        //-------------------------------------------------------------------------------
+
+        /// <summary>死亡アニメーションを再生する</summary>
+        public void PlayDieAnimation()
+        {
+            _animator.Play(InGameConst.PlayerDieAnimation);
+        }
     }
 }
