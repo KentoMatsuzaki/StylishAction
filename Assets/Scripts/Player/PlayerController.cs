@@ -1,4 +1,5 @@
-using Enum;
+using Data.Player;
+using Enemy.AI;
 using Enum.Player;
 using Player.Handler;
 using UnityEngine;
@@ -13,6 +14,11 @@ namespace Player
         private PlayerStateHandler _stateHandler;
         private PlayerAnimationHandler _animationHandler;
         
+        /// <summary>プレイヤーのステータス</summary>
+        [SerializeField] private PlayerStatusData statusData;
+
+        private float _currentHp;
+        
         //-------------------------------------------------------------------------------
         // 初期設定
         //-------------------------------------------------------------------------------
@@ -22,6 +28,12 @@ namespace Player
             _moveHandler = GetComponent<PlayerMoveHandler>();
             _stateHandler = GetComponent<PlayerStateHandler>();
             _animationHandler = GetComponent<PlayerAnimationHandler>();
+            Initialize();
+        }
+
+        private void Initialize()
+        {
+            _currentHp = statusData.maxHp;
         }
         
         //-------------------------------------------------------------------------------
@@ -30,24 +42,28 @@ namespace Player
 
         private void FixedUpdate()
         {
-            if (_stateHandler.GetState() == PlayerEnum.PlayerState.Move)
+            // 移動状態なら移動処理を呼ぶ
+            if (_stateHandler.GetCurrentState() is PlayerEnum.PlayerState.Move)
             {
-                _moveHandler.MoveForward(2.5f);
+                _moveHandler.MoveForward(statusData.moveSpeed);
             }
         }
 
         //-------------------------------------------------------------------------------
-        // ダッシュのコールバック
+        // 移動のコールバック
         //-------------------------------------------------------------------------------
 
         /// <summary>PlayerInputから呼ばれる</summary>
         public void OnMove(InputAction.CallbackContext context)
         {
+            // 移動が不可能なら処理を抜ける
+            if (!_stateHandler.CanMove()) return;
+            
             // ボタンを押した瞬間の処理
             if (context.performed)
             {
                 // 状態処理
-                _stateHandler.SetState(PlayerEnum.PlayerState.Move);
+                _stateHandler.SetCurrentState(PlayerEnum.PlayerState.Move);
                 // アニメーション処理
                 _animationHandler.SetMoveFlag(true);
                 // 回転処理
@@ -57,7 +73,7 @@ namespace Player
             else if (context.canceled)
             {
                 // 状態処理
-                _stateHandler.SetState(PlayerEnum.PlayerState.Idle);
+                _stateHandler.SetCurrentState(PlayerEnum.PlayerState.Idle);
                 // アニメーション処理
                 _animationHandler.SetMoveFlag(false);
             }
@@ -70,13 +86,18 @@ namespace Player
         /// <summary>PlayerInputから呼ばれる</summary>
         public void OnDash(InputAction.CallbackContext context)
         {
+            // 移動が不可能なら処理を抜ける
+            if (!_stateHandler.CanMove()) return;
+            
             // ボタンを押した瞬間の処理
             if (context.performed)
             {
+                // 状態処理
+                _stateHandler.SetCurrentState(PlayerEnum.PlayerState.Move);
                 // アニメーション処理
                 _animationHandler.TriggerDash();
                 // 移動処理
-                _moveHandler.DashForward(5f);
+                _moveHandler.DashForward(statusData.dashSpeed);
             }
         }
         
@@ -87,11 +108,14 @@ namespace Player
         /// <summary>PlayerInputから呼ばれる</summary>
         public void OnAttack(InputAction.CallbackContext context)
         {
+            // 攻撃が不可能なら処理を抜ける
+            if (!_stateHandler.CanAttack()) return;
+            
             // ボタンを押した瞬間の処理
             if (context.performed)
             {
                 // 状態処理
-                _stateHandler.SetState(PlayerEnum.PlayerState.Attack);
+                _stateHandler.SetCurrentState(PlayerEnum.PlayerState.Attack);
                 // アニメーション処理
                 switch (context.action.name)
                 {
@@ -113,11 +137,62 @@ namespace Player
             if (context.performed)
             {
                 // 状態処理
-                _stateHandler.SetState(PlayerEnum.PlayerState.Parry);
+                _stateHandler.SetCurrentState(PlayerEnum.PlayerState.Parry);
                 // アニメーション処理
                 _animationHandler.TriggerParry();
             }
         }
         
+        //-------------------------------------------------------------------------------
+        // 被ダメージ処理
+        //-------------------------------------------------------------------------------
+
+        /// <summary>敵の攻撃が命中した時の処理</summary>
+        public void OnHitByEnemy(float damage, EnemyAIBase ai)
+        {
+            // パリィした場合は処理を抜ける
+            if (_stateHandler.GetCurrentState() is PlayerEnum.PlayerState.Parry)
+            {
+                ai.OnParried();
+                return;
+            }
+            
+            // ダメージ処理
+            TakeDamage(damage);
+            
+            // 死亡処理
+            if (IsDied())
+            {
+                OnDie();
+            }
+            
+            // 状態処理
+            _stateHandler.SetCurrentState(PlayerEnum.PlayerState.Damage);
+            // アニメーション処理
+            _animationHandler.PlayHitAnimation();
+        }
+
+        /// <summary>ダメージ処理</summary>
+        /// <param name="damage"></param>
+        private void TakeDamage(float damage)
+        {
+            if (damage > 0)
+            {
+                // ダメージを適用する
+                _currentHp = Mathf.Max(_currentHp - damage, 0);
+            }
+        }
+        
+        /// <summary>死亡判定</summary>
+        private bool IsDied() => _currentHp == 0;
+
+        /// <summary>死亡時の処理</summary>
+        private void OnDie()
+        {
+            // 状態処理
+            _stateHandler.SetCurrentState(PlayerEnum.PlayerState.Dead);
+            // アニメーション処理
+            _animationHandler.PlayDieAnimation();
+        }
     }
 }
