@@ -4,10 +4,9 @@ using System.Threading;
 using Const;
 using Enemy.AsyncNode;
 using Cysharp.Threading.Tasks;
-using Data.Enemy;
-using Enemy.Handler;
 using Enum.Enemy;
 using Player;
+using SO.Enemy;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -16,73 +15,36 @@ namespace Enemy.AI
     /// <summary>敵のAIを制御するクラス</summary>
     public class Phase1AI : EnemyAIBase
     {
-        [Header("敵のステータス"), SerializeField] private EnemyStatusData statusData;
         [Header("スキルのリスト"), SerializeField] private List<EnemySkillData> skillDataList;
-        
-        /// <summary>キャンセルトークン</summary>
-        private CancellationTokenSource _cts;
-        /// <summary>メインノード</summary>
-        private BaseAsyncNode _mainNode;
-        /// <summary>アニメーション</summary>
-        private EnemyAnimationHandler _animationHandler;
-        /// <summary>プレイヤー</summary>
-        private PlayerController _player;
-        /// <summary>現在の体力</summary>
-        private float _currentHp;
-        /// <summary>現在のヒットカウント</summary>
-        private int _currentHitCount;
-        private Rigidbody _rb;
 
         /// <summary>次に使用するスキルのデータ</summary>
         private EnemySkillData _nextSkillData;
         
         //-------------------------------------------------------------------------------
-        // 初期設定
+        // フェーズ切り替え時の処理
         //-------------------------------------------------------------------------------
 
-        private void Awake()
-        {
-            _animationHandler = GetComponent<EnemyAnimationHandler>();
-            _rb = GetComponent<Rigidbody>();
-        }
-
-        public override void Initialize()
-        {
-            SetStatus();
-            ConstructBehaviourTree();
-        }
-
-        public override void SetPlayer(PlayerController player)
-        {
-            _player = player;
-        }
-
-        protected override void SetStatus()
-        {
-            _currentHp = statusData.phase1MaxHp;
-        }
-
         //-------------------------------------------------------------------------------
-        // ビヘイビアツリーに関する処理
+        // ビヘイビアツリーの構築・実行・開始
         //-------------------------------------------------------------------------------
 
-        /// <summary>ビヘイビアツリーを開始する</summary>
-        public override void BeginBehaviourTree()
+        /// <summary>ビヘイビアツリーを構築する</summary>
+        public override void ConstructBehaviourTree()
         {
-            _cts?.Cancel();
-            _cts = new CancellationTokenSource();
-            ExecuteBehaviourTree().Forget();
+            var mainNode = new AsyncSelectorNode();
+            mainNode.AddNode(ConstructAttackSequence());
+            MainNode = mainNode;
         }
-
+        
         /// <summary>ビヘイビアツリーを実行する</summary>
         protected override async UniTask ExecuteBehaviourTree()
         {
             try
             {
-                while (!_cts.Token.IsCancellationRequested)
+                while (!Cts.Token.IsCancellationRequested)
                 {
-                    await _mainNode.ExecuteAsync(_cts.Token);
-                    await UniTask.Yield(PlayerLoopTiming.Update, _cts.Token);
+                    await MainNode.ExecuteAsync(Cts.Token);
+                    await UniTask.Yield(PlayerLoopTiming.Update, Cts.Token);
                 }
             }
             catch (OperationCanceledException)
@@ -90,21 +52,21 @@ namespace Enemy.AI
                 Debug.Log("Behaviour Tree Canceled");
             }
         }
-
-        /// <summary>ビヘイビアツリーを構築する</summary>
-        protected override void ConstructBehaviourTree()
+        
+        /// <summary>ビヘイビアツリーを開始する</summary>
+        public override void BeginBehaviourTree()
         {
-            var mainNode = new AsyncSelectorNode();
-            mainNode.AddNode(ConstructAttackSequence());
-            _mainNode = mainNode;
+            Cts?.Cancel();
+            Cts = new CancellationTokenSource();
+            ExecuteBehaviourTree().Forget();
         }
-
+        
         //-------------------------------------------------------------------------------
         // 攻撃シーケンスに関する処理
         //-------------------------------------------------------------------------------
 
         /// <summary>攻撃シーケンスを構築する</summary>
-        protected override AsyncSequenceNode ConstructAttackSequence()
+        private AsyncSequenceNode ConstructAttackSequence()
         {
             var attackAction = new AsyncActionNode(async (token) =>
             {
@@ -115,11 +77,11 @@ namespace Enemy.AI
                 if (IsPlayerInAttackRange() && IsPlayerInAttackAngle())
                 { 
                     // 移動フラグを設定する
-                    _animationHandler.SetMoveFlag(false);
+                    AnimationHandler.SetMoveFlag(false);
                     // 攻撃アニメーションをトリガーする
-                    _animationHandler.TriggerAttack(_nextSkillData.type);
+                    AnimationHandler.TriggerAttack(_nextSkillData.type);
                     // 攻撃アニメーションの再生終了を待機する
-                    await _animationHandler.WaitForAnimationEnd(token);
+                    await AnimationHandler.WaitForAnimationEnd(token);
                     // 攻撃のクールタイム
                     await UniTask.Delay(1000);
                     // スキルのデータをリセットする
@@ -132,8 +94,7 @@ namespace Enemy.AI
                 if (!IsPlayerBeyondMinAttackRange())
                 {
                     // 移動フラグを設定する
-                    _animationHandler.SetMoveFlag(true);
-                    
+                    AnimationHandler.SetMoveFlag(true);
                     // プレイヤーの逆方向へ移動する
                     MoveAwayFromPlayer();
                 }
@@ -142,7 +103,7 @@ namespace Enemy.AI
                 else
                 {
                     // 移動フラグを設定する
-                    _animationHandler.SetMoveFlag(true);
+                    AnimationHandler.SetMoveFlag(true);
                     // プレイヤーの方向へ回転する
                     RotateToPlayer();
                     // プレイヤーの方向へ移動する
@@ -158,7 +119,7 @@ namespace Enemy.AI
             return attackSequence;
         }
 
-        /// <summary>次のスキルのデータをランダムに設定する</summary>
+        /// <summary>次に使用するスキルのデータをランダムに設定する</summary>
         private void SetNextSkillData()
         {
             // スキルのデータが既に設定されている場合は処理を抜ける
@@ -187,7 +148,7 @@ namespace Enemy.AI
             return distance <= _nextSkillData.maxAttackRange;
         }
 
-        /// <summary>プレイヤーがスキルの攻撃角度内に存在するか</summary>
+        /// <summary>プレイヤーがスキルの有効角度内に存在するか</summary>
         private bool IsPlayerInAttackAngle()
         {
             var angleToPlayer = Vector3.Angle(transform.forward, GetHorizontalDirectionToPlayer());
@@ -197,34 +158,34 @@ namespace Enemy.AI
         /// <summary>高低差を無視してプレイヤーへの距離を求める</summary>
         private float GetHorizontalDistanceToPlayer()
         {
-            return Vector3.Distance(new Vector3(_player.transform.position.x, 0, _player.transform.position.z), 
+            return Vector3.Distance(new Vector3(Player.transform.position.x, 0, Player.transform.position.z), 
                 new Vector3(transform.position.x, 0, transform.position.z));
         }
 
         /// <summary>高低差を無視してプレイヤーへの方向を求める</summary>
         private Vector3 GetHorizontalDirectionToPlayer()
         {
-            return Vector3.Normalize(new Vector3(_player.transform.position.x, 0, _player.transform.position.z) - 
+            return Vector3.Normalize(new Vector3(Player.transform.position.x, 0, Player.transform.position.z) - 
                 new Vector3(transform.position.x, 0, transform.position.z));
         }
         
         /// <summary>プレイヤーの方向へ移動する</summary>
         private void MoveToPlayer()
         {
-            transform.Translate(GetHorizontalDirectionToPlayer() * Time.deltaTime * statusData.moveSpeed, Space.World);
+            transform.Translate(GetHorizontalDirectionToPlayer() * Time.deltaTime * StatusData.moveSpeed, Space.World);
         }
 
         /// <summary>プレイヤーの方向へ回転する</summary>
         private void RotateToPlayer()
         {
             var desiredRotation = Quaternion.LookRotation(GetHorizontalDirectionToPlayer());
-            transform.rotation = Quaternion.Slerp(transform.rotation, desiredRotation, Time.deltaTime * statusData.rotateSpeed);
+            transform.rotation = Quaternion.Slerp(transform.rotation, desiredRotation, Time.deltaTime * StatusData.rotateSpeed);
         }
 
         /// <summary>プレイヤーの逆方向へ移動する</summary>
         private void MoveAwayFromPlayer()
         {
-            transform.Translate(-GetHorizontalDirectionToPlayer() * Time.deltaTime * statusData.moveSpeed * 3, Space.World);
+            transform.Translate(-GetHorizontalDirectionToPlayer() * Time.deltaTime * StatusData.moveSpeed * 3, Space.World);
         }
         
         //-------------------------------------------------------------------------------
@@ -245,7 +206,7 @@ namespace Enemy.AI
         private void OnParried()
         {
             // ビヘイビアツリーをキャンセルする
-            _cts?.Cancel();
+            Cts?.Cancel();
             // スタン処理を呼ぶ
             Stun();
         }
@@ -254,7 +215,7 @@ namespace Enemy.AI
         private async void Stun()
         {
             // アニメーションを再生する
-            _animationHandler.PlayAnimation(InGameConst.EnemyStunAnimation);
+            AnimationHandler.PlayAnimation(InGameConst.EnemyStunAnimation);
             // スタンしている間は待機する
             await UniTask.Delay(2000);
             // ビヘイビアツリーを再開する
@@ -266,7 +227,7 @@ namespace Enemy.AI
         //-------------------------------------------------------------------------------
 
         /// <summary>被ダメージ時の処理</summary>
-        public override void OnHit(float damage, Vector3 hitPosition)
+        public override void OnHitByPlayer(float damage, Vector3 hitPosition)
         {
             // ダメージ処理
             TakeDamage(damage);
@@ -293,9 +254,9 @@ namespace Enemy.AI
             if (damage > 0)
             {
                 // ダメージを適用する
-                _currentHp = Mathf.Max(_currentHp - damage, 0);
+                CurrentHp = Mathf.Max(CurrentHp - damage, 0);
                 // ヒットカウントを増加させる
-                _currentHitCount++;
+                CurrentHitCount++;
             }
         }
 
@@ -308,18 +269,18 @@ namespace Enemy.AI
             // Y座標を無視する
             knockBackDirection.y = 0;
             // 速度をリセットする
-            _rb.velocity = Vector3.zero;
+            Rigidbody.velocity = Vector3.zero;
             // ノックバックさせる
-            _rb.AddForce(knockBackDirection * statusData.knockBackSpeed, ForceMode.Impulse);
+            Rigidbody.AddForce(knockBackDirection * StatusData.knockBackSpeed, ForceMode.Impulse);
         }
 
         /// <summary>怯み判定</summary>
         private bool IsFlinched()
         {
-            if (_currentHitCount >= statusData.maxHitCount)
+            if (CurrentHitCount >= StatusData.maxHitCount)
             {
                 // 現在のヒットカウントをリセットする
-                _currentHitCount = 0; return true;
+                CurrentHitCount = 0; return true;
             }
             return false;
         }
@@ -328,22 +289,22 @@ namespace Enemy.AI
         private void OnFlinch()
         {
             // ビヘイビアツリーをキャンセルする
-            _cts?.Cancel();
+            Cts?.Cancel();
             // 怯みアニメーションを再生する
-            _animationHandler.PlayAnimation(InGameConst.EnemyHitAnimation);
+            AnimationHandler.PlayAnimation(InGameConst.EnemyHitAnimation);
         }
 
         /// <summary>死亡判定</summary>
         private bool IsDied()
         {
-            return _currentHp <= 0;
+            return CurrentHp <= 0;
         }
 
         /// <summary>死亡時の処理</summary>
         private void OnDie()
         {
-            _cts?.Cancel();
-            _animationHandler.PlayAnimation(InGameConst.EnemyDieAnimation);
+            Cts?.Cancel();
+            AnimationHandler.PlayAnimation(InGameConst.EnemyDieAnimation);
         }
     }
 }
