@@ -19,7 +19,7 @@ namespace Common.Attacker
                 // 攻撃の命中座標を取得する
                 var attackHitPosition = other.ClosestPoint(transform.position);
                 // 敵の被ダメージ処理を呼ぶ
-                enemyController.Bt.OnHit(data.damageAmount, attackHitPosition);
+                enemyController.CurrentBehaviourTree.OnHitByPlayer(data.damageAmount, attackHitPosition);
             }
         }
     }

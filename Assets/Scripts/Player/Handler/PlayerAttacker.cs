@@ -26,7 +26,7 @@ namespace Player.Handler
                 var enemy = other.GetComponent<EnemyController>();
                 var hitPosition = other.ClosestPoint(transform.position);
                 // 敵の被ダメージ処理を呼ぶ
-                enemy.Bt.OnHit(damageAmount, hitPosition);
+                enemy.CurrentBehaviourTree.OnHitByPlayer(damageAmount, hitPosition);
             }
         }
         

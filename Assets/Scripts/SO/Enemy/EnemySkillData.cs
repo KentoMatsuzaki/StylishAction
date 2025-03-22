@@ -1,15 +1,14 @@
 using Enum.Enemy;
 using UnityEngine;
-using UnityEngine.Serialization;
 
-namespace Data.Enemy
+namespace SO.Enemy
 {
     /// <summary>敵のスキル情報を保持するスクリプタブルオブジェクト</summary>
     [CreateAssetMenu(fileName = "EnemySkillData", menuName = "ScriptableObjects/CreateEnemySkillAsset")]
     public class EnemySkillData : ScriptableObject
     {
         /// <summary>スキルの種類</summary>
-        public EnemyEnum.EnemySkillType type;
+        public EnemyEnum.EnemyAttackType type;
 
         /// <summary>スキルが与えるダメージ量</summary>
         public float damageAmount;

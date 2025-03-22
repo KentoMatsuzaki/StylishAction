@@ -45,7 +45,7 @@ namespace Enemy.Handler
         
         /// <summary>攻撃アニメーションをトリガーする</summary>
         /// <param name="type">スキルの種類</param>
-        public void TriggerAttack(EnemyEnum.EnemySkillType type)
+        public void TriggerAttack(EnemyEnum.EnemyAttackType type)
         {
             _animator.SetTrigger(type.ToString());
         }
