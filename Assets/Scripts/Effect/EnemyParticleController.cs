@@ -1,3 +1,4 @@
+using Enemy;
 using Enum.Enemy;
 
 namespace Effect
@@ -6,5 +7,15 @@ namespace Effect
     public class EnemyParticleController : ParticleControllerBase
     {
         public EnemyEnum.EnemyAttackType type;
+
+        private void Start()
+        {
+            switch (type)
+            {
+                case EnemyEnum.EnemyAttackType.Meteor :
+                    transform.position = GetComponentInParent<EnemyController>().player.transform.position; break;
+                default: break;
+            }
+        }
     }
 }
