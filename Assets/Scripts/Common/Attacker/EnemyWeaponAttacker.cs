@@ -23,7 +23,7 @@ namespace Common.Attacker
                 // プレイヤーの制御クラスを取得する
                 var playerController = other.GetComponent<PlayerController>();
                 // 制御クラスの攻撃命中処理を呼ぶ
-                _controller.Bt.OnHitPlayer(playerController);
+                _controller.CurrentBehaviourTree.OnHitPlayer(playerController);
             }
         }
     }
