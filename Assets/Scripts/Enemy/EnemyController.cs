@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using Enemy.AI;
 using Player;
+using SO.Enemy;
 using UnityEngine;
 
 namespace Enemy
@@ -7,15 +9,17 @@ namespace Enemy
     /// <summary>敵を制御するクラス</summary>
     public class EnemyController : MonoBehaviour
     {
-        [Header("プレイヤー"), SerializeField] private PlayerController player;
-        public EnemyAIBase Bt { get; private set; }
+        [Header("ステータス情報のリスト"), SerializeField] private List<EnemyStatusData> statusDataList;
+        public PlayerController player;
+        public EnemyAIBase CurrentBehaviourTree { get; private set; }
         
         private void Start()
         {
-            Bt = GetComponent<Phase1AI>();
-            Bt.SetPlayer(player);
-            Bt.Initialize();
-            Bt.BeginBehaviourTree();
+            CurrentBehaviourTree = GetComponent<Phase1AI>();
+            CurrentBehaviourTree.Initialize(player, statusDataList[0]);
+            CurrentBehaviourTree.ConstructBehaviourTree();
+            CurrentBehaviourTree.BeginBehaviourTree();
+            Cursor.visible = false;
         }
     }
 }
