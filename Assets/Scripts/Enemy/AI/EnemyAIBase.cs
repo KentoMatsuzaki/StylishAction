@@ -43,6 +43,9 @@ namespace Enemy.AI
         /// <summary>ビヘイビアツリーを構築する</summary>
         public abstract void ConstructBehaviourTree();
 
+        /// <summary>プレイヤーにパリィされた時の処理</summary>
+        public abstract void OnParried();
+
         /// <summary>攻撃がプレイヤーに命中した際の処理</summary>
         public abstract void OnHitPlayer(PlayerController player);
 
