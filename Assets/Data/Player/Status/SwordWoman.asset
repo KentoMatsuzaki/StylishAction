@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6124341199765c04fa31f1a68184a0ce, type: 3}
   m_Name: SwordWoman
   m_EditorClassIdentifier: 
-  maxHp: 0
-  moveSpeed: 0
-  dashSpeed: 0
+  maxHp: 100
+  moveSpeed: 7.5
+  dashSpeed: 15
