@@ -195,15 +195,12 @@ namespace Enemy.AI
         /// <summary>プレイヤーに攻撃が命中した時の処理</summary>
         public override void OnHitPlayer(PlayerController player)
         {
-            // プレイヤーがパリィ状態である場合
-            OnParried();
-            // プレイヤーがパリィ状態でない場合
-            // player.TakeDamage
-            //EnemySkillDatabase.Instance.GetSkillData(_nextSkillNumber).damageAmount;
+            // プレイヤーの被ダメージ処理を呼ぶ
+            player.OnHitByEnemy(_nextSkillData.damageAmount, this);
         }
 
         /// <summary>プレイヤーにパリィされた時の処理</summary>
-        private void OnParried()
+        public override void OnParried()
         {
             // ビヘイビアツリーをキャンセルする
             Cts?.Cancel();
@@ -217,7 +214,7 @@ namespace Enemy.AI
             // アニメーションを再生する
             AnimationHandler.PlayAnimation(InGameConst.EnemyStunAnimation);
             // スタンしている間は待機する
-            await UniTask.Delay(2000);
+            await UniTask.Delay(1000);
             // ビヘイビアツリーを再開する
             BeginBehaviourTree();
         }
@@ -257,6 +254,8 @@ namespace Enemy.AI
                 CurrentHp = Mathf.Max(CurrentHp - damage, 0);
                 // ヒットカウントを増加させる
                 CurrentHitCount++;
+                
+                Debug.Log("a");
             }
         }
 
@@ -297,7 +296,7 @@ namespace Enemy.AI
         /// <summary>死亡判定</summary>
         private bool IsDied()
         {
-            return CurrentHp <= 0;
+            return CurrentHp == 0;
         }
 
         /// <summary>死亡時の処理</summary>
