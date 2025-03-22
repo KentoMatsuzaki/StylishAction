@@ -11,11 +11,12 @@ namespace Enum.Enemy
             Running  // 実行中
         }
 
-        public enum EnemySkillType
+        /// <summary>敵の攻撃の種類</summary>
+        public enum EnemyAttackType
         {
             Scythe, // 鎌
             Meteor, // 隕石
-            Rebirth, // 形態変化
+            Feather, // 羽
         }
     }
 }
