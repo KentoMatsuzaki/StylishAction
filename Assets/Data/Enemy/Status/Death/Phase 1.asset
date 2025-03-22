@@ -12,9 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07c479ab78a598542bdfff743a2a5beb, type: 3}
   m_Name: Phase 1
   m_EditorClassIdentifier: 
-  phase1MaxHp: 10
-  phase2MaxHp: 100
-  phase3MaxHp: 100
+  maxHp: 100
   moveSpeed: 5
   rotateSpeed: 3
   knockBackSpeed: 1
