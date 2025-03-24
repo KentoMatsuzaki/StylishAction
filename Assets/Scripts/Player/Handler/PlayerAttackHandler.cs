@@ -40,5 +40,10 @@ namespace Player.Handler
             }
             return true;
         }
+
+        public void RotateTowardsEnemy(Vector3 enemyPosition)
+        {
+            transform.LookAt(enemyPosition);
+        }
     }
 }
