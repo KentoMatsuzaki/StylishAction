@@ -1,4 +1,5 @@
 using Data.Player;
+using Enemy;
 using Enemy.AI;
 using Enum.Player;
 using Player.Handler;
@@ -14,8 +15,8 @@ namespace Player
         private PlayerStateHandler _stateHandler;
         private PlayerAnimationHandler _animationHandler;
         
-        /// <summary>プレイヤーのステータス</summary>
-        [SerializeField] private PlayerStatusData statusData;
+        [Header("ステータス情報"), SerializeField] private PlayerStatusData statusData;
+        [Header("敵の制御クラス"), SerializeField] private EnemyController enemy;
 
         private float _currentHp;
         
@@ -117,6 +118,8 @@ namespace Player
                 // 状態処理
                 _stateHandler.SetCurrentState(PlayerEnum.PlayerState.Attack);
                 // アニメーション処理
+                _animationHandler.SetMoveFlag(false);
+                
                 switch (context.action.name)
                 {
                     case "Attack 1": _animationHandler.TriggerAttack(1); break;
