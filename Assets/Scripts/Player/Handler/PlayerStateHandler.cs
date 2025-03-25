@@ -37,7 +37,7 @@ namespace Player.Handler
         /// <summary>攻撃可能かどうか</summary>
         public bool CanAttack()
         {
-            return _currentState is PlayerEnum.PlayerState.Idle or PlayerEnum.PlayerState.Move;
+            return _currentState is PlayerEnum.PlayerState.Idle;
         }
         
         //-------------------------------------------------------------------------------
