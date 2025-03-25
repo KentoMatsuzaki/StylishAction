@@ -2385,6 +2385,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   statusData: {fileID: 11400000, guid: c2f0e72fca76ed949846e291113cfb52, type: 2}
+  enemy: {fileID: 5490843951817836471}
 --- !u!114 &8810358684342505417
 MonoBehaviour:
   m_ObjectHideFlags: 0
