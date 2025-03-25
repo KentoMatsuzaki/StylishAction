@@ -254,8 +254,6 @@ namespace Enemy.AI
                 CurrentHp = Mathf.Max(CurrentHp - damage, 0);
                 // ヒットカウントを増加させる
                 CurrentHitCount++;
-                
-                Debug.Log("a");
             }
         }
 
