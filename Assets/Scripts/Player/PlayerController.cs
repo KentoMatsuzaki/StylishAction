@@ -177,6 +177,7 @@ namespace Player
             // 状態処理
             _stateHandler.SetCurrentState(PlayerEnum.PlayerState.Damage);
             // アニメーション処理
+            _animationHandler.SetMoveFlag(false);
             _animationHandler.PlayHitAnimation();
         }
 
