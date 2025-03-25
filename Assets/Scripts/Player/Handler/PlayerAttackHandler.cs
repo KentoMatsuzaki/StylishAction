@@ -40,7 +40,9 @@ namespace Player.Handler
             }
             return true;
         }
-
+        
+        /// <summary>敵の方向へ回転させる</summary>
+        /// <param name="enemyPosition">敵の座標</param>
         public void RotateTowardsEnemy(Vector3 enemyPosition)
         {
             transform.LookAt(enemyPosition);
