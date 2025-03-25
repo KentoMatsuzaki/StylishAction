@@ -13,6 +13,7 @@ namespace Player
     {
         private PlayerMoveHandler _moveHandler;
         private PlayerStateHandler _stateHandler;
+        private PlayerAttackHandler _attackHandler;
         private PlayerAnimationHandler _animationHandler;
         
         [Header("ステータス情報"), SerializeField] private PlayerStatusData statusData;
@@ -28,6 +29,7 @@ namespace Player
         {
             _moveHandler = GetComponent<PlayerMoveHandler>();
             _stateHandler = GetComponent<PlayerStateHandler>();
+            _attackHandler = GetComponent<PlayerAttackHandler>();
             _animationHandler = GetComponent<PlayerAnimationHandler>();
             Initialize();
         }
@@ -126,6 +128,9 @@ namespace Player
                     case "Attack 2": _animationHandler.TriggerAttack(2); break;
                     case "Attack 3": _animationHandler.TriggerAttack(3); break;
                 }
+                
+                // 回転処理
+                _attackHandler.RotateTowardsEnemy(enemy.transform.position);
             }
         }
         
