@@ -55,5 +55,11 @@ namespace Player.Handler
         {
             _currentState = PlayerEnum.PlayerState.Parry;
         }
+        
+        /// <summary>Parryアニメーションから呼ばれる</summary>
+        public void SetStatePostParry()
+        {
+            _currentState = PlayerEnum.PlayerState.PostParry;
+        }
     }
 }
