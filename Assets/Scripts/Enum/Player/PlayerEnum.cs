@@ -10,6 +10,7 @@ namespace Enum.Player
             Move,   // 移動
             Attack, // 攻撃
             Parry,  // パリィ
+            PostParry, // パリィ後の硬直
             Damage, // 被ダメージ
             Dead    // 死亡
         }
