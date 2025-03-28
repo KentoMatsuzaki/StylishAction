@@ -10,16 +10,16 @@ namespace Effect
     public class EffectManager : MonoBehaviour
     {
         [Header("プレイヤーの攻撃エフェクトのリスト"), SerializeField]
-        private List<PlayerParticleController> playerAttackEffectList;
+        private List<PlayerAttackParticleController> playerAttackEffectList;
 
         [Header("敵の攻撃エフェクトのリスト"), SerializeField] 
-        private List<EnemyParticleController> enemyAttackEffectList;
+        private List<EnemyAttackParticleController> enemyAttackEffectList;
 
         /// <summary>プレイヤーの攻撃エフェクトの辞書</summary>
-        private Dictionary<PlayerEnum.PlayerAttackType, PlayerParticleController> _playerAttackEffectDic;
+        private Dictionary<PlayerEnum.PlayerAttackType, PlayerAttackParticleController> _playerAttackEffectDic;
 
         /// <summary>敵の攻撃エフェクトの辞書</summary>
-        private Dictionary<EnemyEnum.EnemyAttackType, EnemyParticleController> _enemyAttackEffectDic;
+        private Dictionary<EnemyEnum.EnemyAttackType, EnemyAttackParticleController> _enemyAttackEffectDic;
         
         public static EffectManager Instance;
 
