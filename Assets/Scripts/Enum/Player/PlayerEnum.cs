@@ -15,12 +15,13 @@ namespace Enum.Player
             Dead    // 死亡
         }
 
-        /// <summary>攻撃の種類</summary>
-        public enum PlayerAttackType
+        /// <summary>パーティクルの種類</summary>
+        public enum PlayerParticleType
         {
             Attack1,
             Attack2,
-            Attack3
+            Attack3,
+            Parry
         }
     }
 }
