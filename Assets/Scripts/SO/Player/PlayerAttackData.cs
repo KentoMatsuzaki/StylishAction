@@ -8,7 +8,7 @@ namespace SO.Player
     public class PlayerAttackData : ScriptableObject
     {
         /// <summary>攻撃の種類</summary>
-        public PlayerEnum.PlayerAttackType type;
+        public PlayerEnum.PlayerParticleType type;
 
         /// <summary>与えるダメージ量</summary>
         public float damageAmount;

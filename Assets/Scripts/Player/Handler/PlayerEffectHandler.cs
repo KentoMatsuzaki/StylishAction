@@ -11,7 +11,7 @@ namespace Player.Handler
         /// <param name="attackName">攻撃の名前</param>
         public void ActivateAttackEffect(string attackName)
         {
-            if (System.Enum.TryParse<PlayerEnum.PlayerAttackType>(attackName, out var type))
+            if (System.Enum.TryParse<PlayerEnum.PlayerParticleType>(attackName, out var type))
             {
                 EffectManager.Instance.ActivatePlayerAttackEffect(type);
             }

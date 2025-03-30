@@ -10,16 +10,19 @@ namespace Effect
     public class EffectManager : MonoBehaviour
     {
         [Header("プレイヤーの攻撃エフェクトのリスト"), SerializeField]
-        private List<PlayerAttackParticleController> playerAttackEffectList;
+        private List<PlayerParticleController> playerAttackEffectList;
 
         [Header("敵の攻撃エフェクトのリスト"), SerializeField] 
-        private List<EnemyAttackParticleController> enemyAttackEffectList;
+        private List<EnemyParticleController> enemyAttackEffectList;
+        
+        [Header("プレイヤーのパリィエフェクト"), SerializeField]
+        private PlayerParticleController parryEffect;
 
         /// <summary>プレイヤーの攻撃エフェクトの辞書</summary>
-        private Dictionary<PlayerEnum.PlayerAttackType, PlayerAttackParticleController> _playerAttackEffectDic;
+        private Dictionary<PlayerEnum.PlayerParticleType, PlayerParticleController> _playerAttackEffectDic;
 
         /// <summary>敵の攻撃エフェクトの辞書</summary>
-        private Dictionary<EnemyEnum.EnemyAttackType, EnemyAttackParticleController> _enemyAttackEffectDic;
+        private Dictionary<EnemyEnum.EnemyAttackType, EnemyParticleController> _enemyAttackEffectDic;
         
         public static EffectManager Instance;
 
@@ -34,10 +37,11 @@ namespace Effect
 
         /// <summary>プレイヤーの攻撃エフェクトを有効化する</summary>
         /// <param name="type">攻撃の種類</param>
-        public void ActivatePlayerAttackEffect(PlayerEnum.PlayerAttackType type)
+        public void ActivatePlayerAttackEffect(PlayerEnum.PlayerParticleType type)
         {
             if (_playerAttackEffectDic.TryGetValue(type, out var effect))
             {
+                // 既にパーティクルが有効化されている場合は
                 if (effect.gameObject.activeSelf)
                 {
                     effect.RestartParticles();
