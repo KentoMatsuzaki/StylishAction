@@ -3,7 +3,7 @@ using Enum.Enemy;
 
 namespace Effect
 {
-    /// <summary>敵の攻撃パーティクルを制御するクラス</summary>
+    /// <summary>敵のパーティクルを制御するクラス</summary>
     public class EnemyParticleController : ParticleControllerBase
     {
         public EnemyEnum.EnemyAttackType type;
