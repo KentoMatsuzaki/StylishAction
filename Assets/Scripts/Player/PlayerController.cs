@@ -14,6 +14,7 @@ namespace Player
         private PlayerMoveHandler _moveHandler;
         private PlayerStateHandler _stateHandler;
         private PlayerAttackHandler _attackHandler;
+        private PlayerEffectHandler _effectHandler;
         private PlayerAnimationHandler _animationHandler;
         
         [Header("ステータス情報"), SerializeField] private PlayerStatusData statusData;
@@ -30,6 +31,7 @@ namespace Player
             _moveHandler = GetComponent<PlayerMoveHandler>();
             _stateHandler = GetComponent<PlayerStateHandler>();
             _attackHandler = GetComponent<PlayerAttackHandler>();
+            _effectHandler = GetComponent<PlayerEffectHandler>();
             _animationHandler = GetComponent<PlayerAnimationHandler>();
             Initialize();
         }
@@ -161,6 +163,7 @@ namespace Player
             // パリィした場合は処理を抜ける
             if (_stateHandler.GetCurrentState() is PlayerEnum.PlayerState.Parry)
             {
+                _effectHandler.ActivateParryEffect();
                 ai.OnParried();
                 return;
             }
