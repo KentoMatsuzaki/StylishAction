@@ -3,6 +3,7 @@ using System.Linq;
 using Enum.Enemy;
 using Enum.Player;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Effect
 {
@@ -16,7 +17,7 @@ namespace Effect
         private List<EnemyParticleController> enemyAttackEffectList;
         
         [Header("プレイヤーのパリィエフェクト"), SerializeField]
-        private PlayerParticleController parryEffect;
+        private PlayerParticleController playerParryEffect;
 
         /// <summary>プレイヤーの攻撃エフェクトの辞書</summary>
         private Dictionary<PlayerEnum.PlayerParticleType, PlayerParticleController> _playerAttackEffectDic;
@@ -77,5 +78,19 @@ namespace Effect
                 Debug.LogWarning($"Attack Effect Not Found : {type}");
             }
         }
+
+        /// <summary>プレイヤーのパリィエフェクトを有効化する</summary>
+        public void ActivatePlayerParryEffect()
+        {
+            if (playerParryEffect.gameObject.activeSelf)
+            {
+                playerParryEffect.RestartParticles();
+            }
+            else
+            {
+                playerParryEffect.gameObject.SetActive(true);
+            }
+        }
+        
     }
 }
