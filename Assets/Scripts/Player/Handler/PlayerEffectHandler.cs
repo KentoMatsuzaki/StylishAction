@@ -20,5 +20,11 @@ namespace Player.Handler
                 Debug.LogWarning($"Invalid Attack Name : {attackName}");
             }
         }
+
+        /// <summary>パリィエフェクトを有効化する</summary>
+        public void ActivateParryEffect()
+        {
+            EffectManager.Instance.ActivatePlayerParryEffect();
+        }
     }
 }
