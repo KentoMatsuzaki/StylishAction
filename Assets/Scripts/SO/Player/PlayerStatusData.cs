@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Data.Player
+namespace SO.Player
 {
     /// <summary>プレイヤーのステータス情報を保持するスクリプタブルオブジェクト</summary>
     [CreateAssetMenu(fileName = "PlayerStatus", menuName = "ScriptableObjects/CreatePlayerStatusAsset")]
@@ -14,5 +14,8 @@ namespace Data.Player
         
         /// <summary>ダッシュ速度</summary>
         public float dashSpeed;
+        
+        /// <summary>視点操作感度</summary>
+        public float lookSpeed;
     }
 }
