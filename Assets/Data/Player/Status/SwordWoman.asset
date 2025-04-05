@@ -15,3 +15,4 @@ MonoBehaviour:
   maxHp: 100
   moveSpeed: 7.5
   dashSpeed: 15
+  lookSpeed: 1
