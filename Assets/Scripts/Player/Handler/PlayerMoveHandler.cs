@@ -1,5 +1,3 @@
-using System;
-using TMPro.EditorUtilities;
 using UnityEngine;
 
 namespace Player.Handler
@@ -25,7 +23,9 @@ namespace Player.Handler
         /// <param name="moveDirection">移動方向</param>
         public void RotateTowardsMovement(Vector2 moveDirection)
         {
-            transform.rotation = Quaternion.LookRotation(new Vector3(-moveDirection.x, 0, -moveDirection.y));
+            Vector3 localDirection = new Vector3(moveDirection.x, 0f, moveDirection.y);
+            Vector3 worldDirection = transform.TransformDirection(localDirection);
+            transform.rotation = Quaternion.LookRotation(worldDirection);
         }
 
         /// <summary>正面方向にダッシュさせる</summary>
