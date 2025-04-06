@@ -21,7 +21,6 @@ namespace Player
         [Header("敵の制御クラス"), SerializeField] private EnemyController enemy;
 
         private float _currentHp;
-        private Vector2 _mouseDelta;
         
         //-------------------------------------------------------------------------------
         // 初期設定
@@ -45,11 +44,6 @@ namespace Player
         //-------------------------------------------------------------------------------
         // 更新処理
         //-------------------------------------------------------------------------------
-
-        private void Update()
-        {
-            transform.Rotate(Vector3.up * -_mouseDelta * statusData.lookSpeed);
-        }
 
         private void FixedUpdate()
         {
@@ -157,17 +151,6 @@ namespace Player
                 // アニメーション処理
                 _animationHandler.TriggerParry();
             }
-        }
-        
-        //-------------------------------------------------------------------------------
-        // 視点移動のコールバック
-        //-------------------------------------------------------------------------------
-
-        /// <summary>PlayerInputから呼ばれる</summary>
-        public void OnLook(InputAction.CallbackContext context)
-        {
-            _mouseDelta = context.ReadValue<Vector2>();
-            Debug.Log("A");
         }
         
         //-------------------------------------------------------------------------------
