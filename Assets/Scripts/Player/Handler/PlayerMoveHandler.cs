@@ -19,13 +19,20 @@ namespace Player.Handler
             transform.Translate(Time.deltaTime * moveSpeed * transform.forward, Space.World);
         }
 
-        /// <summary>移動方向へ回転させる</summary>
-        /// <param name="moveDirection">移動方向</param>
-        public void RotateTowardsMovement(Vector2 moveDirection)
+        /// <summary>カメラの向きを基準に、入力方向へ回転させる</summary>
+        /// <param name="moveInput">入力方向</param>
+        /// <param name="cameraTransform">カメラの位置</param>
+        public void RotateToInputRelativeToCamera(Vector2 moveInput, Transform cameraTransform)
         {
-            Vector3 localDirection = new Vector3(moveDirection.x, 0f, moveDirection.y);
-            Vector3 worldDirection = transform.TransformDirection(localDirection);
-            transform.rotation = Quaternion.LookRotation(worldDirection);
+            // カメラの正面方向を取得する
+            var cameraForward = cameraTransform.forward.normalized;
+            cameraForward.y = 0;
+            // カメラの右方向を取得する
+            var cameraRight = cameraTransform.right.normalized;
+            cameraRight.y = 0;
+            // 回転方向を計算する
+            var moveDirection = cameraForward * moveInput.y + cameraRight * moveInput.x;
+            transform.rotation = Quaternion.LookRotation(moveDirection);
         }
 
         /// <summary>正面方向にダッシュさせる</summary>
