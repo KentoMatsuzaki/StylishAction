@@ -4,35 +4,40 @@ using UnityEngine.InputSystem;
 namespace Camera
 {
     /// <summary>三人称視点カメラ</summary>
-    public class ThirdPersonCamera : MonoBehaviour
+    public class OrbitCamera : MonoBehaviour
     {
-        [Header("ターゲット設定")] 
-        public Transform player;  // プレイヤー
-        public Transform enemy;   // 敵
-        
-        [Header("カメラ設定")]
-        public Vector3 offset;　　 // オフセット
-        public float moveSpeed;   // 移動速度
-        public float rotateSpeed; // 回転速度
-        public float maxDistance; // 障害物を判定する最長距離
+        [Header("ターゲット")] 
+        [SerializeField] private Transform player;
 
-        private Vector2 _mouseDelta;
+        [Header("カメラ設定")] 
+        [SerializeField] private float height;
+        [SerializeField] private float offsetY;
+        [SerializeField] private float offsetZ;
+        [SerializeField] private float sensitivityX;
+        [SerializeField] private float sensitivityY;
+        [SerializeField] private float minPitch;
+        [SerializeField] private float maxPitch;
+
+        private float _yaw;
+        private float _pitch;
+        private Vector2 _lookInput;
         
         //-------------------------------------------------------------------------------
         // 更新処理
         //-------------------------------------------------------------------------------
 
-        private void FixedUpdate()
+        private void LateUpdate()
         {
-            // 位置を更新
-            //UpdateCameraPosition();
-            // 回転を更新
-            //UpdateCameraRotation();
-        }
+            _yaw += _lookInput.x * sensitivityX;
+            _pitch -= _lookInput.y * sensitivityY;
+            _pitch = Mathf.Clamp(_pitch, minPitch, maxPitch);
 
-        private void Update()
-        {
-            transform.Rotate(Vector3.up, _mouseDelta.x * rotateSpeed, Space.World);
+            var targetPosition = player.position + Vector3.up * height;
+            var rot = Quaternion.Euler(_pitch, _yaw, 0f);
+            var offset = rot * new Vector3(0f, offsetY, offsetZ);
+            
+            transform.position = targetPosition + offset;
+            transform.LookAt(targetPosition);
         }
         
         //-------------------------------------------------------------------------------
@@ -42,7 +47,7 @@ namespace Camera
         /// <summary>PlayerInputから呼ばれる</summary>
         public void OnLook(InputAction.CallbackContext context)
         {
-            _mouseDelta = context.ReadValue<Vector2>();
+            _lookInput = context.ReadValue<Vector2>();
         }
         
         //-------------------------------------------------------------------------------
@@ -58,17 +63,17 @@ namespace Camera
         /// <summary>カメラの回転を更新する</summary>
         private void UpdateCameraRotation()
         {
-            transform.rotation = Quaternion.Slerp(transform.rotation, player.rotation, Time.deltaTime * rotateSpeed);
+            
         }
 
         /// <summary>カメラの位置を調整する</summary>
         private void AdjustCameraPosition()
         {
-            var directionToCamera = (transform.position - player.position).normalized;
-            if (Physics.Raycast(player.position, directionToCamera, out var hit, maxDistance))
-            {
-                transform.position = hit.point;
-            }
+            // var directionToCamera = (transform.position - player.position).normalized;
+            // if (Physics.Raycast(player.position, directionToCamera, out var hit, maxDistance))
+            // {
+            //     transform.position = hit.point;
+            // }
         }
     }
 }
