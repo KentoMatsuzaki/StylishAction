@@ -17,8 +17,9 @@ namespace Player
         private PlayerEffectHandler _effectHandler;
         private PlayerAnimationHandler _animationHandler;
         
-        [Header("ステータス情報"), SerializeField] private PlayerStatusData statusData;
-        [Header("敵の制御クラス"), SerializeField] private EnemyController enemy;
+        [Header("プレイヤーデータ"), SerializeField] private PlayerStatusData statusData;
+        [Header("カメラの位置"), SerializeField] private Transform cameraTransform;
+        [Header("敵"), SerializeField] private EnemyController enemy;
 
         private float _currentHp;
         
@@ -72,7 +73,7 @@ namespace Player
                 // アニメーション処理
                 _animationHandler.SetMoveFlag(true);
                 // 回転処理
-                _moveHandler.RotateTowardsMovement(context.ReadValue<Vector2>());
+                _moveHandler.RotateToInputRelativeToCamera(context.ReadValue<Vector2>(), cameraTransform);
             }
             // ボタンを離した瞬間の処理
             else if (context.canceled)
