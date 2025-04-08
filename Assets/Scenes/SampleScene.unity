@@ -1303,8 +1303,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 5250796855923241358}
-  height: 1.5
-  offsetY: 2
+  height: 1.75
+  offsetY: 1.5
   offsetZ: -5
   sensitivityX: 0.1
   sensitivityY: 0.1
@@ -1641,7 +1641,7 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 1371482446454007129, guid: 93354fd939249af4bb9bd7de3714b2e4, type: 3}
   m_PrefabInstance: {fileID: 1371482445641091335}
   m_PrefabAsset: {fileID: 0}
---- !u!64 &2111577093
+--- !u!64 &2111577097
 MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2241,12 +2241,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skillDataList:
-  - {fileID: 11400000, guid: 52421c70cadd7714795a256157c8c6a4, type: 2}
-  - {fileID: 11400000, guid: 52421c70cadd7714795a256157c8c6a4, type: 2}
-  - {fileID: 11400000, guid: 52421c70cadd7714795a256157c8c6a4, type: 2}
   - {fileID: 11400000, guid: 6c4e03aafaa5cb347881a088797dc251, type: 2}
-  - {fileID: 11400000, guid: 6c4e03aafaa5cb347881a088797dc251, type: 2}
-  - {fileID: 11400000, guid: a091ec18233c11b4099264db8eddd0c7, type: 2}
 --- !u!114 &5490843951817836473
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2571,7 +2566,7 @@ Rigidbody:
   serializedVersion: 2
   m_Mass: 1
   m_Drag: 5
-  m_AngularDrag: 0.05
+  m_AngularDrag: 1
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
