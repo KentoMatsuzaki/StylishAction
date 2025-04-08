@@ -1,3 +1,4 @@
+using Camera;
 using SO.Player;
 using Enemy;
 using Enemy.AI;
@@ -151,6 +152,26 @@ namespace Player
                 _stateHandler.SetCurrentState(PlayerEnum.PlayerState.Parry);
                 // アニメーション処理
                 _animationHandler.TriggerParry();
+            }
+        }
+        
+        //-------------------------------------------------------------------------------
+        // ロックオン処理
+        //-------------------------------------------------------------------------------
+
+        /// <summary>PlayerInputから呼ばれる</summary>
+        public void OnLockOn(InputAction.CallbackContext context)
+        {
+            // ボタンを押した瞬間の処理
+            if (context.performed)
+            {
+                // 非ロックオン時
+                if (!OrbitCamera.Instance.IsLockingOnEnemy)
+                {
+                    // 敵の方を向く
+                }
+                
+                OrbitCamera.Instance.SwitchLockOnTarget();
             }
         }
         
