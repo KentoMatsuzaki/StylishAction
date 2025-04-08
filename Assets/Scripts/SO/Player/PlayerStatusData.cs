@@ -14,8 +14,5 @@ namespace SO.Player
         
         /// <summary>ダッシュ速度</summary>
         public float dashSpeed;
-        
-        /// <summary>視点操作感度</summary>
-        public float lookSpeed;
     }
 }
