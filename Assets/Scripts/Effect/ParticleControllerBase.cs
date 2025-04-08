@@ -6,15 +6,11 @@ namespace Effect
     /// <summary>パーティクルを制御する基底クラス</summary>
     public abstract class ParticleControllerBase : MonoBehaviour
     {
-        /// <summary>敵の制御クラス</summary>
-        protected EnemyController EnemyController;
-        
         /// <summary>全ての子のパーティクル</summary>
         private ParticleSystem[] _particles;
 
-        private void Awake()
+        protected virtual void Awake()
         {
-            EnemyController = GetComponentInParent<EnemyController>();
             _particles = GetComponentsInChildren<ParticleSystem>();
         }
 
