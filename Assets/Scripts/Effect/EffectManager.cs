@@ -70,7 +70,7 @@ namespace Effect
                 }
                 else
                 {
-                    effect.gameObject.SetActive(true);
+                    effect.OnReactivated();
                 }
             }
             else

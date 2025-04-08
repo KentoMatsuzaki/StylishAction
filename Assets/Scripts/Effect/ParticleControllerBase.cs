@@ -1,3 +1,4 @@
+using Enemy;
 using UnityEngine;
 
 namespace Effect
@@ -5,11 +6,15 @@ namespace Effect
     /// <summary>パーティクルを制御する基底クラス</summary>
     public abstract class ParticleControllerBase : MonoBehaviour
     {
+        /// <summary>敵の制御クラス</summary>
+        protected EnemyController EnemyController;
+        
         /// <summary>全ての子のパーティクル</summary>
         private ParticleSystem[] _particles;
 
         private void Awake()
         {
+            EnemyController = GetComponentInParent<EnemyController>();
             _particles = GetComponentsInChildren<ParticleSystem>();
         }
 
@@ -37,6 +42,12 @@ namespace Effect
                 particle.Clear();
                 particle.Play();
             }
+        }
+
+        /// <summary>パーティクルがアクティブ化された時の処理</summary>
+        public virtual void OnReactivated()
+        {
+            gameObject.SetActive(true);
         }
     }
 }

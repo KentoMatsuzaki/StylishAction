@@ -1,4 +1,3 @@
-using Enemy;
 using Enum.Enemy;
 
 namespace Effect
@@ -8,13 +7,14 @@ namespace Effect
     {
         public EnemyEnum.EnemyAttackType type;
 
-        private void Start()
+        public override void OnReactivated()
         {
+            base.OnReactivated();
+            
             switch (type)
             {
                 case EnemyEnum.EnemyAttackType.Meteor :
-                    transform.position = GetComponentInParent<EnemyController>().player.transform.position; break;
-                default: break;
+                    transform.position = EnemyController.player.transform.position; break;
             }
         }
     }
