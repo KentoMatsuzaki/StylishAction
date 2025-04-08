@@ -1,5 +1,7 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 namespace Camera
 {
@@ -8,9 +10,11 @@ namespace Camera
     {
         [Header("ターゲット")] 
         [SerializeField] private Transform player;
-
+        [SerializeField] private Transform enemy;
+        
         [Header("カメラ設定")] 
-        [SerializeField] private float height;
+        [SerializeField] private float playerFocusHeight;
+        [SerializeField] private float enemyFocusHeight;
         [SerializeField] private float offsetY;
         [SerializeField] private float offsetZ;
         [SerializeField] private float sensitivityX;
@@ -21,23 +25,43 @@ namespace Camera
         private float _yaw = 180f;
         private float _pitch = -17.5f;
         private Vector2 _lookInput;
+        private Transform _lockOnTarget;
         
+        public static OrbitCamera Instance { get; private set; }
+        public bool IsLockingOnEnemy => _lockOnTarget == enemy;
+        
+        //-------------------------------------------------------------------------------
+        // 初期設定
+        //-------------------------------------------------------------------------------
+
+        private void Awake()
+        {
+            if (Instance != null)
+            {
+                Destroy(gameObject);
+            }
+            else
+            {
+                Instance = this;
+            }
+
+            _lockOnTarget = player;
+        }
+
         //-------------------------------------------------------------------------------
         // 更新処理
         //-------------------------------------------------------------------------------
 
         private void LateUpdate()
         {
-            _yaw += _lookInput.x * sensitivityX;
-            _pitch -= _lookInput.y * sensitivityY;
-            _pitch = Mathf.Clamp(_pitch, minPitch, maxPitch);
-
-            var targetPosition = player.position + Vector3.up * height;
-            var rot = Quaternion.Euler(_pitch, _yaw, 0f);
-            var offset = rot * new Vector3(0f, offsetY, offsetZ);
+            if (_lockOnTarget != player && !enemy.gameObject.activeInHierarchy)
+            {
+                SwitchLockOnTarget();
+            }
             
-            transform.position = targetPosition + offset;
-            transform.LookAt(targetPosition);
+            UpdateCameraAngles();
+            UpdateCameraPosition();
+            UpdateCameraRotation();
         }
         
         //-------------------------------------------------------------------------------
@@ -54,16 +78,33 @@ namespace Camera
         // カメラに関する処理
         //-------------------------------------------------------------------------------
 
+        /// <summary>カメラの焦点を取得する</summary>
+        private Vector3 GetLockOnPosition()
+        {
+            return _lockOnTarget == player ? 
+                player.position + Vector3.up * playerFocusHeight : enemy.position + Vector3.up * enemyFocusHeight;
+        }
+
+        /// <summary>カメラの角度を更新する</summary>
+        private void UpdateCameraAngles()
+        {
+            _yaw += _lookInput.x * sensitivityX;
+            _pitch -= _lookInput.y * sensitivityY;
+            _pitch = Mathf.Clamp(_pitch, minPitch, maxPitch);
+        }
+        
         /// <summary>カメラの位置を更新する</summary>
         private void UpdateCameraPosition()
         {
-            
+            var rot = Quaternion.Euler(_pitch, _yaw, 0f);
+            var offset = rot * new Vector3(0f, offsetY, offsetZ);
+            transform.position = player.position + offset;
         }
-
+        
         /// <summary>カメラの回転を更新する</summary>
         private void UpdateCameraRotation()
         {
-            
+            transform.LookAt(GetLockOnPosition());
         }
 
         /// <summary>カメラの位置を調整する</summary>
@@ -74,6 +115,15 @@ namespace Camera
             // {
             //     transform.position = hit.point;
             // }
+        }
+        
+        //-------------------------------------------------------------------------------
+        // ロックオンに関する処理
+        //-------------------------------------------------------------------------------
+        
+        public void SwitchLockOnTarget()
+        {
+            _lockOnTarget = _lockOnTarget == player ? enemy : player;
         }
     }
 }
