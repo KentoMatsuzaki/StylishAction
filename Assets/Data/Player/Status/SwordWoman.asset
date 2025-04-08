@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHp: 100
   moveSpeed: 7.5
-  dashSpeed: 15
+  dashSpeed: 20
   lookSpeed: 1
