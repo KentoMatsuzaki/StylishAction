@@ -41,9 +41,16 @@ namespace Player.Handler
             return true;
         }
         
-        /// <summary>敵の方向へ回転させる</summary>
-        /// <param name="enemyPosition">敵の座標</param>
-        public void RotateTowardsEnemy(Vector3 enemyPosition)
+        /// <summary>敵の方向へ滑らかに回転させる</summary>
+        public void RotateSmoothlyTowardsEnemy(Vector3 enemyPosition, float attackAimAssistSpeed)
+        {
+            var dir = enemyPosition - transform.position;
+            var rot = Quaternion.LookRotation(dir);
+            transform.rotation = Quaternion.Lerp(transform.rotation, rot, attackAimAssistSpeed);
+        }
+
+        /// <summary>敵の方向へ即座に回転させる</summary>
+        public void RotateInstantlyTowardsEnemy(Vector3 enemyPosition)
         {
             transform.LookAt(enemyPosition);
         }
