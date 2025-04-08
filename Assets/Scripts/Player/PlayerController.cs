@@ -134,7 +134,7 @@ namespace Player
                 }
                 
                 // 回転処理
-                _attackHandler.RotateTowardsEnemy(enemy.transform.position);
+                _attackHandler.RotateSmoothlyTowardsEnemy(enemy.transform.position, statusData.attackAimAssistSpeed);
             }
         }
         
@@ -169,6 +169,7 @@ namespace Player
                 if (!OrbitCamera.Instance.IsLockingOnEnemy)
                 {
                     // 敵の方を向く
+                    _attackHandler.RotateInstantlyTowardsEnemy(enemy.transform.position);
                 }
                 
                 OrbitCamera.Instance.SwitchLockOnTarget();
