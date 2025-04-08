@@ -1303,7 +1303,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 5250796855923241358}
-  height: 1.75
+  enemy: {fileID: 5490843951817836469}
+  playerFocusHeight: 1.75
+  enemyFocusHeight: 2.5
   offsetY: 1.5
   offsetZ: -5
   sensitivityX: 0.1
@@ -2499,6 +2501,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 93ba0f5f-3a33-435c-a9fb-1de46f28f096
     m_ActionName: Player/Look[/Mouse/delta]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 8810358684342505416}
+        m_TargetAssemblyTypeName: Player.PlayerController, Assembly-CSharp
+        m_MethodName: OnLockOn
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 0c6eb363-9791-4018-818a-b897624ad56a
+    m_ActionName: Player/LockOn[/Keyboard/r]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: Key Board + Mouse
   m_DefaultActionMap: Player
