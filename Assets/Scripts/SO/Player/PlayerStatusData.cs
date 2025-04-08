@@ -14,5 +14,8 @@ namespace SO.Player
         
         /// <summary>ダッシュ速度</summary>
         public float dashSpeed;
+
+        /// <summary>攻撃時のエイム補正速度</summary>
+        public float attackAimAssistSpeed;
     }
 }

@@ -15,4 +15,4 @@ MonoBehaviour:
   maxHp: 100
   moveSpeed: 7.5
   dashSpeed: 20
-  lookSpeed: 1
+  attackAimAssistSpeed: 0.5
