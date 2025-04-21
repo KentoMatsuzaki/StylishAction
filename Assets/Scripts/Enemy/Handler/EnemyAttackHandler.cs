@@ -30,12 +30,12 @@ namespace Enemy.Handler
         //-------------------------------------------------------------------------------
         
         /// <summary>Meteorのアニメーションイベントから呼ばれる</summary>
-        public void EnableMeteorAndDisableMeteorColliderWithDelay()
+        public void HandleMeteorCollision()
         {
-            StartCoroutine(EnableAndDisableMeteorColliderRoutine());
+            StartCoroutine(MeteorCollisionRoutine());
         }
         
-        private IEnumerator EnableAndDisableMeteorColliderRoutine()
+        private IEnumerator MeteorCollisionRoutine()
         {
             yield return new WaitForSeconds(0.5f);
             EnableCollider("Meteor");
