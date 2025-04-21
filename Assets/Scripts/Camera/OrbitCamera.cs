@@ -1,7 +1,5 @@
-using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Serialization;
 
 namespace Camera
 {
@@ -23,7 +21,7 @@ namespace Camera
         [SerializeField] private float maxPitch;
 
         private float _yaw = 180f;
-        private float _pitch = -17.5f;
+        private float _pitch;
         private Vector2 _lookInput;
         private Transform _lockOnTarget;
         
