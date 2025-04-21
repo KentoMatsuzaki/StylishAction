@@ -1,4 +1,5 @@
 using Const;
+using Enum;
 using UnityEngine;
 
 namespace Player.Handler
@@ -43,12 +44,11 @@ namespace Player.Handler
         //-------------------------------------------------------------------------------
 
         /// <summary>対応する攻撃アニメーションをトリガーする</summary>
-        /// <param name="attackNumber">トリガーする攻撃の番号</param>
-        public void TriggerAttack(int attackNumber)
+        public void TriggerAttack(InGameEnum.PlayerAttackType type)
         {
             // 攻撃アニメーションを再生中は処理を抜ける
             if (_animator.GetCurrentAnimatorStateInfo(0).IsTag("Attack")) return;
-            _animator.SetTrigger($"Attack {attackNumber} Trigger");
+            _animator.SetTrigger($"{type.ToString()} Trigger");
         }
         
         //-------------------------------------------------------------------------------

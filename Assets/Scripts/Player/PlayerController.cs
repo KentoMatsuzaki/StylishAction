@@ -2,6 +2,7 @@ using Camera;
 using SO.Player;
 using Enemy;
 using Enemy.AI;
+using Enum;
 using Enum.Player;
 using Player.Handler;
 using UnityEngine;
@@ -15,7 +16,7 @@ namespace Player
         private PlayerMoveHandler _moveHandler;
         private PlayerStateHandler _stateHandler;
         private PlayerAttackHandler _attackHandler;
-        private PlayerEffectHandler _effectHandler;
+        private PlayerParticleHandler _particleHandler;
         private PlayerAnimationHandler _animationHandler;
         
         [Header("プレイヤーデータ"), SerializeField] private PlayerStatusData statusData;
@@ -33,7 +34,7 @@ namespace Player
             _moveHandler = GetComponent<PlayerMoveHandler>();
             _stateHandler = GetComponent<PlayerStateHandler>();
             _attackHandler = GetComponent<PlayerAttackHandler>();
-            _effectHandler = GetComponent<PlayerEffectHandler>();
+            _particleHandler = GetComponent<PlayerParticleHandler>();
             _animationHandler = GetComponent<PlayerAnimationHandler>();
             Initialize();
         }
@@ -128,9 +129,9 @@ namespace Player
                 
                 switch (context.action.name)
                 {
-                    case "Attack 1": _animationHandler.TriggerAttack(1); break;
-                    case "Attack 2": _animationHandler.TriggerAttack(2); break;
-                    case "Attack 3": _animationHandler.TriggerAttack(3); break;
+                    case "Attack 1": _animationHandler.TriggerAttack(InGameEnum.PlayerAttackType.Iai); break;
+                    case "Attack 2": _animationHandler.TriggerAttack(InGameEnum.PlayerAttackType.Hien); break;
+                    case "Attack 3": _animationHandler.TriggerAttack(InGameEnum.PlayerAttackType.Shiden); break;
                 }
                 
                 // 回転処理
@@ -186,7 +187,7 @@ namespace Player
             // パリィした場合は処理を抜ける
             if (_stateHandler.GetCurrentState() is PlayerEnum.PlayerState.Parry)
             {
-                _effectHandler.ActivateParryEffect();
+                _particleHandler.ActivateParticle(InGameEnum.PlayerParticleType.Parry.ToString());
                 ai.OnParried();
                 return;
             }
