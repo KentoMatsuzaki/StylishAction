@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using Enum.Enemy;
+using Enum;
 
 namespace Enemy.AsyncNode
 {
@@ -9,17 +9,17 @@ namespace Enemy.AsyncNode
     public class AsyncActionNode : BaseAsyncNode
     {
         /// <summary>非同期アクション</summary>
-        private readonly Func<CancellationToken, UniTask<EnemyEnum.NodeStatus>> _action;
+        private readonly Func<CancellationToken, UniTask<InGameEnum.EnemyNodeStatus>> _action;
 
         /// <summary>コンストラクター</summary>
-        public AsyncActionNode(Func<CancellationToken, UniTask<EnemyEnum.NodeStatus>> action)
+        public AsyncActionNode(Func<CancellationToken, UniTask<InGameEnum.EnemyNodeStatus>> action)
         {
             _action = action;
         }
 
         /// <summary>ノードの評価結果を返す</summary>
         /// <returns>Success = 成功, Failure = 失敗, Running = 実行中</returns>
-        public override UniTask<EnemyEnum.NodeStatus> ExecuteAsync(CancellationToken token)
+        public override UniTask<InGameEnum.EnemyNodeStatus> ExecuteAsync(CancellationToken token)
         {
             return _action(token);
         }

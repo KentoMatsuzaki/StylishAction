@@ -1,7 +1,7 @@
 using System.Threading;
 using Const;
 using Cysharp.Threading.Tasks;
-using Enum.Enemy;
+using Enum;
 using UnityEngine;
 
 namespace Enemy.Handler
@@ -45,7 +45,7 @@ namespace Enemy.Handler
         
         /// <summary>攻撃アニメーションをトリガーする</summary>
         /// <param name="type">スキルの種類</param>
-        public void TriggerAttack(EnemyEnum.EnemyAttackType type)
+        public void TriggerAttack(InGameEnum.EnemyAttackType type)
         {
             _animator.SetTrigger(type.ToString());
         }

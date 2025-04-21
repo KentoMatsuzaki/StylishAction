@@ -1,8 +1,7 @@
-using Enum;
 using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using Enum.Enemy;
+using Enum;
 
 namespace Enemy.AsyncNode
 {
@@ -20,9 +19,10 @@ namespace Enemy.AsyncNode
 
         /// <summary>ノードの評価結果を返す</summary>
         /// <returns>Success = 成功, Failure = 失敗</returns>
-        public override UniTask<EnemyEnum.NodeStatus> ExecuteAsync(CancellationToken token)
+        public override UniTask<InGameEnum.EnemyNodeStatus> ExecuteAsync(CancellationToken token)
         {
-            return UniTask.FromResult(_condition() ? EnemyEnum.NodeStatus.Success : EnemyEnum.NodeStatus.Failure);
+            return UniTask.FromResult(_condition() ? 
+                InGameEnum.EnemyNodeStatus.Success : InGameEnum.EnemyNodeStatus.Failure);
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Threading;
 using Const;
 using Enemy.AsyncNode;
 using Cysharp.Threading.Tasks;
-using Enum.Enemy;
+using Enum;
 using Player;
 using SO.Enemy;
 using UnityEngine;
@@ -87,7 +87,7 @@ namespace Enemy.AI
                     // スキルのデータをリセットする
                     _nextSkillData = null;
                     // ノードの評価結果を返す
-                    return EnemyEnum.NodeStatus.Success;
+                    return InGameEnum.EnemyNodeStatus.Success;
                 }
 
                 // プレイヤーがスキルの最小射程の内側にいる場合
@@ -111,7 +111,7 @@ namespace Enemy.AI
                 }
                 
                 // ノードの評価結果を返す
-                return EnemyEnum.NodeStatus.Running;
+                return InGameEnum.EnemyNodeStatus.Running;
             });
             
             var attackSequence = new AsyncSequenceNode();
