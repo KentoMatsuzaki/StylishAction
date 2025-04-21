@@ -1,4 +1,4 @@
-using Enum.Enemy;
+using Enum;
 using UnityEngine;
 
 namespace SO.Enemy
@@ -8,7 +8,7 @@ namespace SO.Enemy
     public class EnemySkillData : ScriptableObject
     {
         /// <summary>スキルの種類</summary>
-        public EnemyEnum.EnemyAttackType type;
+        public InGameEnum.EnemyAttackType type;
 
         /// <summary>スキルが与えるダメージ量</summary>
         public float damageAmount;
