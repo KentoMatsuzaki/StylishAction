@@ -21,9 +21,9 @@ namespace Player.Handler
         /// <summary>移動フラグを設定する</summary>
         public void SetMoveFlag(bool value)
         {
-            if (_animator.GetBool(InGameConst.PlayerMoveFlag) != value)
+            if (_animator.GetBool(PlayerConst.IsMoving) != value)
             {
-                _animator.SetBool(InGameConst.PlayerMoveFlag, value);
+                _animator.SetBool(PlayerConst.IsMoving, value);
             }
         }
         
@@ -36,7 +36,7 @@ namespace Player.Handler
         {
             // ダッシュアニメーションを再生中は処理を抜ける
             if (_animator.GetCurrentAnimatorStateInfo(0).IsName("Dash")) return;
-            _animator.SetTrigger(InGameConst.PlayerDashTrigger);
+            //_animator.SetTrigger(PlayerConst.PlayerDashTrigger);
         }
         
         //-------------------------------------------------------------------------------
@@ -60,7 +60,7 @@ namespace Player.Handler
         {
             // パリィアニメーションを再生中は処理を抜ける
             if (_animator.GetCurrentAnimatorStateInfo(0).IsName("Parry")) return; 
-            _animator.SetTrigger(InGameConst.PlayerParryTrigger);
+            _animator.SetTrigger(PlayerConst.ParryTrigger);
         }
         
         //-------------------------------------------------------------------------------
@@ -70,7 +70,7 @@ namespace Player.Handler
         /// <summary>被ダメージアニメーションを再生する</summary>
         public void PlayHitAnimation()
         {
-            _animator.Play(InGameConst.PlayerHitAnimation);
+            _animator.Play(PlayerConst.HeavyHitState);
         }
         
         //-------------------------------------------------------------------------------
@@ -80,7 +80,7 @@ namespace Player.Handler
         /// <summary>死亡アニメーションを再生する</summary>
         public void PlayDieAnimation()
         {
-            _animator.Play(InGameConst.PlayerDieAnimation);
+            _animator.Play(PlayerConst.DieState);
         }
     }
 }

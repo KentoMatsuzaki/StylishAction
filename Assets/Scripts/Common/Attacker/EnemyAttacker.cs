@@ -21,7 +21,7 @@ namespace Common.Attacker
         }
         protected override void OnTriggerEnter(Collider other)
         {
-            if (other.CompareTag(InGameConst.PlayerTag))
+            if (other.CompareTag(PlayerConst.TagName))
             {
                 // プレイヤーの制御クラスを取得する
                 var playerController = other.GetComponent<PlayerController>();

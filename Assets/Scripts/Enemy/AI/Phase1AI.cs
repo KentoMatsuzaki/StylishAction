@@ -212,7 +212,7 @@ namespace Enemy.AI
         private async void Stun()
         {
             // アニメーションを再生する
-            AnimationHandler.PlayAnimation(InGameConst.EnemyStunAnimation);
+            AnimationHandler.PlayAnimation(EnemyConst.DownState);
             // スタンしている間は待機する
             await UniTask.Delay(1000);
             // ビヘイビアツリーを再開する
@@ -288,7 +288,7 @@ namespace Enemy.AI
             // ビヘイビアツリーをキャンセルする
             Cts?.Cancel();
             // 怯みアニメーションを再生する
-            AnimationHandler.PlayAnimation(InGameConst.EnemyHitAnimation);
+            AnimationHandler.PlayAnimation(EnemyConst.HitState);
         }
 
         /// <summary>死亡判定</summary>
@@ -301,7 +301,7 @@ namespace Enemy.AI
         private void OnDie()
         {
             Cts?.Cancel();
-            AnimationHandler.PlayAnimation(InGameConst.EnemyDieAnimation);
+            AnimationHandler.PlayAnimation(EnemyConst.DieState);
         }
     }
 }

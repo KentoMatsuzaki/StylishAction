@@ -33,9 +33,9 @@ namespace Enemy.Handler
         /// <summary>移動フラグを設定する</summary>
         public void SetMoveFlag(bool value)
         {
-            if (_animator.GetBool(InGameConst.EnemyMoveFlag) != value)
+            if (_animator.GetBool(EnemyConst.IsMoving) != value)
             {
-                _animator.SetBool(InGameConst.EnemyMoveFlag, value);
+                _animator.SetBool(EnemyConst.IsMoving, value);
             }
         }
         

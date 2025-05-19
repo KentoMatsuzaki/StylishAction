@@ -12,7 +12,7 @@ namespace Common.Attacker
         [SerializeField] private PlayerAttackData data;
         protected override void OnTriggerEnter(Collider other)
         {
-            if (other.CompareTag(InGameConst.EnemyTag))
+            if (other.CompareTag(EnemyConst.TagName))
             {
                 // 敵の制御クラスを取得する
                 var enemyController = other.GetComponent<EnemyController>();
