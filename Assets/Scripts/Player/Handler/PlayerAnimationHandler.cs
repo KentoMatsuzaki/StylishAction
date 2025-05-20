@@ -8,10 +8,14 @@ namespace Player.Handler
     public class PlayerAnimationHandler : MonoBehaviour
     {
         private Animator _animator;
+        
+        //-------------------------------------------------------------------------------
+        // 初期設定
+        //-------------------------------------------------------------------------------
 
         private void Awake()
         {
-            _animator = GetComponent<Animator>();
+            _animator = GetComponentInChildren<Animator>();
         }
         
         //-------------------------------------------------------------------------------
@@ -25,6 +29,14 @@ namespace Player.Handler
             {
                 _animator.SetBool(PlayerConst.IsMoving, value);
             }
+        }
+
+        /// <summary>移動のパラメーターを設定する</summary>
+        /// <param name="moveInput">移動の入力値</param>
+        public void SetMoveParameter(Vector2 moveInput)
+        {
+            _animator.SetFloat(PlayerConst.MoveInputX, moveInput.x);
+            _animator.SetFloat(PlayerConst.MoveInputY, moveInput.y);
         }
         
         //-------------------------------------------------------------------------------
