@@ -22,6 +22,8 @@ namespace Player
         [Header("プレイヤーデータ"), SerializeField] private PlayerStatusData statusData;
         [Header("カメラの位置"), SerializeField] private Transform cameraTransform;
         [Header("敵"), SerializeField] private EnemyController enemy;
+        
+        private Coroutine _debounceCoroutine;
 
         private float _currentHp;
         
@@ -48,13 +50,50 @@ namespace Player
         /// <summary>全ての状態のアクションを登録する</summary>
         private void SetUpAllStatesActions()
         {
-            // 移動状態
+            // 移動状態の開始時に呼ばれる処理
+            _stateHandler.MoveState.OnEnter = () =>
+            {
+                // 移動のフラグを切り替える
+                _animationHandler.ToggleMove();
+            };
+            
+            // 移動状態の更新処理
             _stateHandler.MoveState.OnUpdate = () =>
             {
                 // プレイヤーを回転させる
-                _locomotionHandler.RotateTowardsCameraForward(cameraTransform);
+                _locomotionHandler.RotateTowardsCameraRelativeDirection(cameraTransform);
                 // プレイヤーを移動させる
-                _locomotionHandler.HandleMovement(statusData.moveSpeed);
+                _locomotionHandler.MoveForward(statusData.moveSpeed);
+            };
+            
+            // 移動状態の終了時に呼ばれる処理
+            _stateHandler.MoveState.OnExit = () =>
+            {
+                // 移動のフラグを切り替える
+                _animationHandler.ToggleMove();
+            };
+            
+            // スプリント状態の開始時に呼ばれる処理
+            _stateHandler.SprintState.OnEnter = () =>
+            {
+                // スプリントのフラグを切り替える
+                _animationHandler.ToggleSprint();
+            };
+            
+            // スプリント状態の更新処理
+            _stateHandler.SprintState.OnUpdate = () =>
+            {
+                // プレイヤーを回転させる
+                _locomotionHandler.RotateTowardsCameraRelativeDirection(cameraTransform);
+                // プレイヤーを移動させる
+                _locomotionHandler.MoveForward(statusData.moveSpeed);
+            };
+            
+            // スプリント状態の終了時に呼ばれる処理
+            _stateHandler.SprintState.OnExit = () =>
+            {
+                // スプリントのフラグを切り替える
+                _animationHandler.ToggleSprint();
             };
         }
         
@@ -80,6 +119,12 @@ namespace Player
             // 入力が実行された時の処理
             if (context.performed)
             {
+                // スプリント状態でない場合
+                if (_stateHandler.CurrentState != _stateHandler.SprintState)
+                {
+                    // 移動状態に切り替える
+                    _stateHandler.SwitchState(_stateHandler.MoveState);
+                }
                 // 移動方向を設定する
                 _locomotionHandler.SetMoveDirection(moveInput);
                 // アニメーターの移動パラメーターを設定する
@@ -89,6 +134,8 @@ namespace Player
             // 入力が終了された時の処理
             else if (context.canceled)
             {
+                // 静止状態に切り替える
+                _stateHandler.SwitchState(_stateHandler.IdleState);
                 // 移動方向を初期化する
                 _locomotionHandler.SetMoveDirection(Vector2.zero);
                 // アニメーターの移動パラメーターを初期化する
@@ -106,13 +153,29 @@ namespace Player
             // 入力が実行された時の処理
             if (context.performed)
             {
-                
+                // 移動入力がある場合
+                if (_locomotionHandler.MoveDirection.magnitude > 0.1f)
+                {
+                    // スプリント状態に切り替える
+                    _stateHandler.SwitchState(_stateHandler.SprintState);
+                }
             }
             
             // 入力が終了された時の処理
             if (context.canceled)
             {
-                
+                // 移動入力がある場合
+                if (_locomotionHandler.MoveDirection.magnitude > 0.1f)
+                {
+                    // 移動状態に切り替える
+                    _stateHandler.SwitchState(_stateHandler.MoveState);
+                }
+                // 移動入力がない場合
+                else
+                {
+                    // 静止状態に切り替える
+                    _stateHandler.SwitchState(_stateHandler.IdleState);
+                }
             }
         }
         
@@ -128,7 +191,6 @@ namespace Player
             if (context.performed)
             {
                 // アニメーション処理
-                _animationHandler.SetMoveFlag(false);
                 
                 switch (context.action.name)
                 {
@@ -199,7 +261,6 @@ namespace Player
             }
             
             // アニメーション処理
-            _animationHandler.SetMoveFlag(false);
             _animationHandler.PlayHitAnimation();
         }
 
