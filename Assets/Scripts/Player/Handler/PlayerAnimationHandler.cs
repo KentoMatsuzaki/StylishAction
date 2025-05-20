@@ -22,13 +22,10 @@ namespace Player.Handler
         // 移動に関する処理
         //-------------------------------------------------------------------------------
 
-        /// <summary>移動フラグを設定する</summary>
-        public void SetMoveFlag(bool value)
+        /// <summary>移動のフラグを切り替える</summary>
+        public void ToggleMove()
         {
-            if (_animator.GetBool(PlayerConst.IsMoving) != value)
-            {
-                _animator.SetBool(PlayerConst.IsMoving, value);
-            }
+            _animator.SetBool(PlayerConst.IsMoving, !_animator.GetBool(PlayerConst.IsMoving));
         }
 
         /// <summary>移動のパラメーターを設定する</summary>
@@ -40,15 +37,13 @@ namespace Player.Handler
         }
         
         //-------------------------------------------------------------------------------
-        // ダッシュに関する処理
+        // スプリントに関する処理
         //-------------------------------------------------------------------------------
         
-        /// <summary>ダッシュアニメーションをトリガーする</summary>
-        public void TriggerDash()
+        /// <summary>スプリントのフラグを切り替える</summary>
+        public void ToggleSprint()
         {
-            // ダッシュアニメーションを再生中は処理を抜ける
-            if (_animator.GetCurrentAnimatorStateInfo(0).IsName("Dash")) return;
-            //_animator.SetTrigger(PlayerConst.PlayerDashTrigger);
+            _animator.SetBool(PlayerConst.IsSprinting, !_animator.GetBool(PlayerConst.IsSprinting));
         }
         
         //-------------------------------------------------------------------------------
