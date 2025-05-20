@@ -13,7 +13,7 @@ namespace Player
     /// <summary>プレイヤーを制御するクラス</summary>
     public class PlayerController : MonoBehaviour
     {
-        private PlayerMoveHandler _moveHandler;
+        private PlayerLocomotionHandler _locomotionHandler;
         private PlayerStateHandler _stateHandler;
         private PlayerAttackHandler _attackHandler;
         private PlayerParticleHandler _particleHandler;
@@ -31,7 +31,7 @@ namespace Player
 
         private void Start()
         {
-            _moveHandler = GetComponent<PlayerMoveHandler>();
+            _locomotionHandler = GetComponent<PlayerLocomotionHandler>();
             _stateHandler = GetComponent<PlayerStateHandler>();
             _attackHandler = GetComponent<PlayerAttackHandler>();
             _particleHandler = GetComponent<PlayerParticleHandler>();
@@ -48,42 +48,40 @@ namespace Player
         // 更新処理
         //-------------------------------------------------------------------------------
 
-        private void FixedUpdate()
+        private void Update()
         {
-            // 移動状態なら移動処理を呼ぶ
-            if (_stateHandler.GetCurrentState() is PlayerEnum.PlayerState.Move)
-            {
-                _moveHandler.MoveForward(statusData.moveSpeed);
-            }
+            // プレイヤーを回転させる
+            _locomotionHandler.RotateTowardsCameraForward(cameraTransform);
+            // プレイヤーを移動させる
+            _locomotionHandler.HandleMovement(statusData.moveSpeed);
         }
 
         //-------------------------------------------------------------------------------
         // 移動のコールバック
         //-------------------------------------------------------------------------------
 
-        /// <summary>PlayerInputから呼ばれる</summary>
+        /// <summary>PlayerInputコンポーネントから呼ばれる</summary>
         public void OnMove(InputAction.CallbackContext context)
         {
-            // 移動が不可能なら処理を抜ける
-            if (!_stateHandler.CanMove()) return;
+            // 移動の入力値を取得する
+            var moveInput = context.ReadValue<Vector2>();
             
-            // ボタンを押した瞬間の処理
+            // 入力が実行された時の処理
             if (context.performed)
             {
-                // 状態処理
-                _stateHandler.SetCurrentState(PlayerEnum.PlayerState.Move);
-                // アニメーション処理
-                _animationHandler.SetMoveFlag(true);
-                // 回転処理
-                _moveHandler.RotateToInputRelativeToCamera(context.ReadValue<Vector2>(), cameraTransform);
+                // 移動方向を設定する
+                _locomotionHandler.SetMoveDirection(moveInput);
+                // アニメーターの移動パラメーターを設定する
+                _animationHandler.SetMoveParameter(moveInput);
             }
-            // ボタンを離した瞬間の処理
+            
+            // 入力が終了された時の処理
             else if (context.canceled)
             {
-                // 状態処理
-                _stateHandler.SetCurrentState(PlayerEnum.PlayerState.Idle);
-                // アニメーション処理
-                _animationHandler.SetMoveFlag(false);
+                // 移動方向を初期化する
+                _locomotionHandler.SetMoveDirection(Vector2.zero);
+                // アニメーターの移動パラメーターを初期化する
+                _animationHandler.SetMoveParameter(Vector2.zero);
             }
         }
         
@@ -105,7 +103,7 @@ namespace Player
                 // アニメーション処理
                 _animationHandler.TriggerDash();
                 // 移動処理
-                _moveHandler.DashForward(statusData.dashSpeed);
+                _locomotionHandler.DashForward(statusData.dashSpeed);
             }
         }
         
