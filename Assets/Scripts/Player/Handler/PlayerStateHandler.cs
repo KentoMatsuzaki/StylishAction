@@ -1,4 +1,3 @@
-using Enum.Player;
 using UnityEngine;
 
 namespace Player.Handler
@@ -6,60 +5,70 @@ namespace Player.Handler
     /// <summary>プレイヤーの状態を制御するクラス</summary>
     public class PlayerStateHandler : MonoBehaviour
     {
-        [Header("デバッグモード"), SerializeField] private bool isDebug;
+        /// <summary>現在のプレイヤーの状態</summary>
+        private PlayerState _currentState;
+
+        /// <summary>移動状態</summary>
+        public PlayerState MoveState { get; private set; }
+
+        /// <summary>スプリント状態</summary>
+        public PlayerState SprintState { get; private set; }
         
-        /// <summary>現在の状態</summary>
-        private PlayerEnum.PlayerState _currentState;
+        //-------------------------------------------------------------------------------
+        // 初期設定
+        //-------------------------------------------------------------------------------
 
-        private void Update()
+        private void Awake()
         {
-            if (isDebug) Debug.Log($"Current State : {_currentState}");
+            CreateAllStates();
+            Initialize();
         }
 
-        /// <summary>現在の状態を設定する</summary>
-        public void SetCurrentState(PlayerEnum.PlayerState state)
+        /// <summary>全ての状態を作成する</summary>
+        private void CreateAllStates()
         {
-            _currentState = state;
+            MoveState = new PlayerState();
+            SprintState = new PlayerState();
         }
 
-        /// <summary>現在の状態を取得する</summary>
-        public PlayerEnum.PlayerState GetCurrentState()
+        /// <summary>状態の初期化を行う</summary>
+        private void Initialize()
         {
-            return _currentState;
-        }
-        
-        /// <summary>移動可能かどうか</summary>
-        public bool CanMove()
-        {
-            return _currentState is PlayerEnum.PlayerState.Idle or PlayerEnum.PlayerState.Move;
-        }
-
-        /// <summary>攻撃可能かどうか</summary>
-        public bool CanAttack()
-        {
-            return _currentState is PlayerEnum.PlayerState.Idle;
+            _currentState = MoveState;
+            _currentState.Enter();
         }
         
         //-------------------------------------------------------------------------------
-        // アニメーションイベント
+        // 更新処理
         //-------------------------------------------------------------------------------
-
-        /// <summary>Idleアニメーションから呼ばれる</summary>
-        public void SetStateIdle()
+        
+        /// <summary>現在の状態の更新処理を呼び出す</summary>
+        public void ManualUpdate()
         {
-            _currentState = PlayerEnum.PlayerState.Idle;
-        }
-
-        /// <summary>Parryアニメーションから呼ばれる</summary>
-        public void SetStateParry()
-        {
-            _currentState = PlayerEnum.PlayerState.Parry;
+            _currentState.Update();
         }
         
-        /// <summary>Parryアニメーションから呼ばれる</summary>
-        public void SetStatePostParry()
+        //-------------------------------------------------------------------------------
+        // 状態処理
+        //-------------------------------------------------------------------------------
+
+        /// <summary>状態を切り替える</summary>
+        /// <param name="nextState">次の状態</param>
+        public void SwitchState(PlayerState nextState)
         {
-            _currentState = PlayerEnum.PlayerState.PostParry;
+            if (_currentState != null)
+            {
+                _currentState.Exit();
+            }
+            
+            if (nextState== null)
+            {
+                Debug.LogWarning("New state not found");
+                return;
+            }
+            
+            _currentState = nextState;
+            _currentState.Enter();
         }
     }
 }
