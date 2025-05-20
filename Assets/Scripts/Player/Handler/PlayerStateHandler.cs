@@ -6,7 +6,10 @@ namespace Player.Handler
     public class PlayerStateHandler : MonoBehaviour
     {
         /// <summary>現在のプレイヤーの状態</summary>
-        private PlayerState _currentState;
+        public PlayerState CurrentState { get; set; }
+
+        /// <summary>静止状態</summary>
+        public PlayerState IdleState { get; private set; }
 
         /// <summary>移動状態</summary>
         public PlayerState MoveState { get; private set; }
@@ -27,6 +30,7 @@ namespace Player.Handler
         /// <summary>全ての状態を作成する</summary>
         private void CreateAllStates()
         {
+            IdleState = new PlayerState();
             MoveState = new PlayerState();
             SprintState = new PlayerState();
         }
@@ -34,8 +38,8 @@ namespace Player.Handler
         /// <summary>状態の初期化を行う</summary>
         private void Initialize()
         {
-            _currentState = MoveState;
-            _currentState.Enter();
+            CurrentState = IdleState;
+            CurrentState.Enter();
         }
         
         //-------------------------------------------------------------------------------
@@ -45,7 +49,7 @@ namespace Player.Handler
         /// <summary>現在の状態の更新処理を呼び出す</summary>
         public void ManualUpdate()
         {
-            _currentState.Update();
+            CurrentState.Update();
         }
         
         //-------------------------------------------------------------------------------
@@ -56,9 +60,9 @@ namespace Player.Handler
         /// <param name="nextState">次の状態</param>
         public void SwitchState(PlayerState nextState)
         {
-            if (_currentState != null)
+            if (CurrentState != null)
             {
-                _currentState.Exit();
+                CurrentState.Exit();
             }
             
             if (nextState== null)
@@ -67,8 +71,8 @@ namespace Player.Handler
                 return;
             }
             
-            _currentState = nextState;
-            _currentState.Enter();
+            CurrentState = nextState;
+            CurrentState.Enter();
         }
     }
 }
