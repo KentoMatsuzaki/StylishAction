@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 
 namespace Camera
 {
-    /// <summary>三人称視点カメラ</summary>
+    /// <summary>ターゲットの周囲を軌道上に回転しながら追従するカメラ挙動を制御するクラス</summary>
     public class OrbitCamera : MonoBehaviour
     {
         [Header("ターゲット")] 
