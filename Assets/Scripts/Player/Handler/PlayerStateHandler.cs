@@ -17,6 +17,9 @@ namespace Player.Handler
         /// <summary>スプリント状態</summary>
         public PlayerState SprintState { get; private set; }
         
+        /// <summary>回避状態</summary>
+        public PlayerState DodgeState { get; private set; }
+        
         //-------------------------------------------------------------------------------
         // 初期設定
         //-------------------------------------------------------------------------------
@@ -33,6 +36,7 @@ namespace Player.Handler
             IdleState = new PlayerState();
             MoveState = new PlayerState();
             SprintState = new PlayerState();
+            DodgeState = new PlayerState();
         }
 
         /// <summary>状態の初期化を行う</summary>
@@ -40,16 +44,6 @@ namespace Player.Handler
         {
             CurrentState = IdleState;
             CurrentState.Enter();
-        }
-        
-        //-------------------------------------------------------------------------------
-        // 更新処理
-        //-------------------------------------------------------------------------------
-        
-        /// <summary>現在の状態の更新処理を呼び出す</summary>
-        public void ManualUpdate()
-        {
-            CurrentState.Update();
         }
         
         //-------------------------------------------------------------------------------
