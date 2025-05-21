@@ -32,34 +32,33 @@ namespace Player.Handler
             MoveDirection = new Vector3(moveInput.x, 0, moveInput.y);
         }
 
-        /// <summary>入力に基づいて計算された移動方向に、指定された速度で移動させる</summary>
-        /// <param name="moveSpeed">移動速度</param>
-        public void MoveInputDirection(float moveSpeed)
-        {
-            transform.Translate(Time.deltaTime * moveSpeed * MoveDirection, Space.Self);
-        }
-
         /// <summary>正面方向に、指定された速度で移動させる</summary>
         public void MoveForward(float moveSpeed)
         {
             transform.Translate(Time.deltaTime * moveSpeed * transform.forward, Space.World);
         }
+
+        /// <summary>
+        /// RootMotionによって移動したモデルの位置にプレイヤー本体を同期させ、
+        /// モデルのローカル位置をリセットして位置のズレを解消する
+        /// </summary>
+        public void SyncWithModelPosition(Transform modelTransform)
+        {
+            // プレイヤー本体の位置をモデルの位置に同期させる
+            transform.position = modelTransform.position;
+            // モデルのローカル位置を初期化する
+            modelTransform.localPosition = Vector3.zero;
+        }
+
+        /// <summary>回避アニメーションに合わせて、前方に力を加える</summary>
+        public void ApplyDodgeForce(float dodgePower)
+        {
+            _rb.AddForce(transform.forward * dodgePower, ForceMode.Impulse);
+        }
         
         //-------------------------------------------------------------------------------
         // 回転処理
         //-------------------------------------------------------------------------------
-
-        /// <summary>カメラの正面方向へ回転させる</summary>
-        /// <param name="cameraTransform">カメラの位置</param>
-        public void RotateTowardsCameraForward(Transform cameraTransform)
-        {
-            // カメラの正面方向を取得する
-            var cameraForward = cameraTransform.forward.normalized;
-            // 高さを無視する
-            cameraForward.y = 0;
-            // カメラの正面方向に回転させる
-            transform.rotation = Quaternion.LookRotation(cameraForward);
-        }
 
         /// <summary>カメラを基準とした入力方向へ回転させる</summary>
         /// <param name="cameraTransform">カメラの位置</param>
@@ -77,6 +76,18 @@ namespace Player.Handler
             var rotation = cameraForward * MoveDirection.z + cameraRight * MoveDirection.x;
             // 回転させる
             transform.rotation = Quaternion.LookRotation(rotation);
+        }
+
+        /// <summary>Y軸の回転を固定する</summary>
+        public void FreezeRotationY()
+        {
+            _rb.constraints |= RigidbodyConstraints.FreezeRotationY;
+        }
+
+        /// <summary>Y軸の回転の固定を解除する</summary>
+        public void UnfreezeRotationY()
+        {
+            _rb.constraints &= ~RigidbodyConstraints.FreezeRotationY;
         }
     }
 }
