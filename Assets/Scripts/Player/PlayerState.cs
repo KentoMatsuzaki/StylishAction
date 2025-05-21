@@ -1,4 +1,5 @@
 using System;
+using Enum.Player;
 
 namespace Player
 {
@@ -14,6 +15,14 @@ namespace Player
         
         /// <summary>状態終了時に呼ばれる処理</summary>
         public Action OnExit;
+
+        /// <summary>状態を表す列挙型</summary>
+        public PlayerEnum.EPlayerState State;
+        
+        public PlayerState(PlayerEnum.EPlayerState state)
+        {
+            State = state;
+        }
         
         public void Enter() => OnEnter?.Invoke();
         public void Update() => OnUpdate?.Invoke();
