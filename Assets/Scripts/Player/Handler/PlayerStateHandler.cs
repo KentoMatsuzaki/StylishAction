@@ -1,3 +1,4 @@
+using Enum.Player;
 using UnityEngine;
 
 namespace Player.Handler
@@ -33,10 +34,10 @@ namespace Player.Handler
         /// <summary>全ての状態を作成する</summary>
         private void CreateAllStates()
         {
-            IdleState = new PlayerState();
-            MoveState = new PlayerState();
-            SprintState = new PlayerState();
-            DodgeState = new PlayerState();
+            IdleState = new PlayerState(PlayerEnum.EPlayerState.Idle);
+            MoveState = new PlayerState(PlayerEnum.EPlayerState.Move);
+            SprintState = new PlayerState(PlayerEnum.EPlayerState.Sprint);
+            DodgeState = new PlayerState(PlayerEnum.EPlayerState.Dodge);
         }
 
         /// <summary>状態の初期化を行う</summary>
@@ -64,9 +65,13 @@ namespace Player.Handler
                 Debug.LogWarning("New state not found");
                 return;
             }
+
+            
             
             CurrentState = nextState;
             CurrentState.Enter();
+            
+            Debug.Log($"{CurrentState.State} {Time.time}");
         }
     }
 }
