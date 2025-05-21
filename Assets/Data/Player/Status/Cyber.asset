@@ -10,9 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6124341199765c04fa31f1a68184a0ce, type: 3}
-  m_Name: SwordWoman
+  m_Name: Cyber
   m_EditorClassIdentifier: 
   maxHp: 100
   moveSpeed: 7.5
-  dashSpeed: 20
+  sprintSpeed: 12.5
+  dodgePower: 10
   attackAimAssistSpeed: 0.5
