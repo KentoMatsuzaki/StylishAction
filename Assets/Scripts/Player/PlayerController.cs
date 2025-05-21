@@ -7,6 +7,7 @@ using Enum.Player;
 using Player.Handler;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 namespace Player
 {
@@ -19,11 +20,11 @@ namespace Player
         private PlayerParticleHandler _particleHandler;
         private PlayerAnimationHandler _animationHandler;
         
-        [Header("プレイヤーデータ"), SerializeField] private PlayerStatusData statusData;
+        [Header("ステータス情報"), SerializeField] private PlayerStats stats;
         [Header("カメラの位置"), SerializeField] private Transform cameraTransform;
         [Header("敵"), SerializeField] private EnemyController enemy;
-        
-        private Coroutine _debounceCoroutine;
+
+        public Transform modelTransform;
 
         private float _currentHp;
         
@@ -44,7 +45,7 @@ namespace Player
 
         private void Initialize()
         {
-            _currentHp = statusData.maxHp;
+            _currentHp = stats.maxHp;
         }
 
         /// <summary>全ての状態のアクションを登録する</summary>
@@ -63,7 +64,7 @@ namespace Player
                 // プレイヤーを回転させる
                 _locomotionHandler.RotateTowardsCameraRelativeDirection(cameraTransform);
                 // プレイヤーを移動させる
-                _locomotionHandler.MoveForward(statusData.moveSpeed);
+                _locomotionHandler.MoveForward(stats.moveSpeed);
             };
             
             // 移動状態の終了時に呼ばれる処理
@@ -86,7 +87,7 @@ namespace Player
                 // プレイヤーを回転させる
                 _locomotionHandler.RotateTowardsCameraRelativeDirection(cameraTransform);
                 // プレイヤーを移動させる
-                _locomotionHandler.MoveForward(statusData.moveSpeed);
+                _locomotionHandler.MoveForward(stats.sprintSpeed);
             };
             
             // スプリント状態の終了時に呼ばれる処理
@@ -94,6 +95,30 @@ namespace Player
             {
                 // スプリントのフラグを切り替える
                 _animationHandler.ToggleSprint();
+            };
+            
+            // 回避状態の開始時に呼ばれる処理
+            _stateHandler.DodgeState.OnEnter = () =>
+            {
+                // Y軸の回転を固定する
+                _locomotionHandler.FreezeRotationY();
+                // RootMotionを有効化する
+                _animationHandler.EnableRootMotion();
+                // 回避のアニメーションを再生する
+                _animationHandler.PlayDodgeAnimation();
+                // 回避アニメーションに合わせて、前方に力を加える
+                _locomotionHandler.ApplyDodgeForce(stats.dodgePower);
+            };
+            
+            // 回避状態の終了時に呼ばれる処理
+            _stateHandler.DodgeState.OnExit = () =>
+            {
+                // Y軸の回転の固定を解除する
+                _locomotionHandler.UnfreezeRotationY();
+                // RootMotionを無効化する
+                _animationHandler.DisableRootMotion();
+                // モデルと本体の位置を同期させる
+                _locomotionHandler.SyncWithModelPosition(modelTransform);
             };
         }
         
@@ -103,7 +128,7 @@ namespace Player
 
         private void Update()
         {
-            _stateHandler.ManualUpdate();
+            _stateHandler.CurrentState.Update();
         }
 
         //-------------------------------------------------------------------------------
@@ -180,6 +205,20 @@ namespace Player
         }
         
         //-------------------------------------------------------------------------------
+        // 回避のコールバック
+        //-------------------------------------------------------------------------------
+
+        /// <summary>PlayerInputコンポーネントから呼ばれる</summary>
+        public void OnDodge(InputAction.CallbackContext context)
+        {
+            // 入力が開始された時の処理
+            if (context.started)
+            {
+                _stateHandler.SwitchState(_stateHandler.DodgeState);
+            }
+        }
+        
+        //-------------------------------------------------------------------------------
         // 攻撃のコールバック
         //-------------------------------------------------------------------------------
 
@@ -200,7 +239,7 @@ namespace Player
                 }
                 
                 // 回転処理
-                _attackHandler.RotateSmoothlyTowardsEnemy(enemy.transform.position, statusData.attackAimAssistSpeed);
+                _attackHandler.RotateSmoothlyTowardsEnemy(enemy.transform.position, stats.attackAimAssistSpeed);
             }
         }
         
