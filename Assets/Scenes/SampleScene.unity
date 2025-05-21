@@ -373,7 +373,7 @@ GameObject:
   - component: {fileID: 1155375802}
   m_Layer: 0
   m_Name: Cyber
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -436,7 +436,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: deb6ce7e0a8b4b8bbb28a2d51771ec07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  statusData: {fileID: 11400000, guid: c2f0e72fca76ed949846e291113cfb52, type: 2}
+  stats: {fileID: 11400000, guid: c2f0e72fca76ed949846e291113cfb52, type: 2}
   cameraTransform: {fileID: 1687258585}
   enemy: {fileID: 5490843951817836471}
   modelTransform: {fileID: 329954885}
@@ -467,9 +467,9 @@ MonoBehaviour:
   m_ActionEvents:
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1155375800}
         m_TargetAssemblyTypeName: Player.PlayerController, Assembly-CSharp
-        m_MethodName: OnAttack
+        m_MethodName: OnAttackNormal
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -630,7 +630,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20e4490a2d136384c9a9f340e04b8956, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  model: {fileID: 384777472}
 --- !u!114 &1155375805
 MonoBehaviour:
   m_ObjectHideFlags: 0
