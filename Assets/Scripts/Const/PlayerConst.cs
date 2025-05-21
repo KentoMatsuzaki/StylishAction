@@ -13,6 +13,7 @@ namespace Const
         // アニメーションステート
         //-------------------------------------------------------------------------------
 
+        public const string DodgeState = "Dodge"; // 回避
         public const string LightHitState = "Light Hit"; // 被ダメージ（軽）
         public const string HeavyHitState = "Heavy Hit"; // 被ダメージ（重）
         public const string DieState = "Die"; // 死亡
@@ -29,7 +30,6 @@ namespace Const
         //-------------------------------------------------------------------------------
         
         public const string ParryTrigger = "Parry"; // パリィ
-        public const string DodgeTrigger = "Dodge"; // 回避
         
         //-------------------------------------------------------------------------------
         // アニメーションパラメーター
