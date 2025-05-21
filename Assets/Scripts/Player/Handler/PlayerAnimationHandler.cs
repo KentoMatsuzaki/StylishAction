@@ -1,5 +1,4 @@
 using Const;
-using Enum;
 using UnityEngine;
 
 namespace Player.Handler
@@ -22,12 +21,6 @@ namespace Player.Handler
         // 移動に関する処理
         //-------------------------------------------------------------------------------
 
-        /// <summary>移動のフラグを切り替える</summary>
-        public void ToggleMove()
-        {
-            _animator.SetBool(PlayerConst.IsMoving, !_animator.GetBool(PlayerConst.IsMoving));
-        }
-
         /// <summary>移動のパラメーターを設定する</summary>
         /// <param name="moveInput">移動の入力値</param>
         public void SetMoveParameter(Vector2 moveInput)
@@ -35,15 +28,33 @@ namespace Player.Handler
             _animator.SetFloat(PlayerConst.MoveInputX, moveInput.x);
             _animator.SetFloat(PlayerConst.MoveInputY, moveInput.y);
         }
+
+        /// <summary>移動のフラグを有効化する</summary>
+        public void EnableMove()
+        {
+            _animator.SetBool(PlayerConst.IsMoving, true);
+        }
+
+        /// <summary>移動のフラグを無効化する</summary>
+        public void DisableMove()
+        {
+            _animator.SetBool(PlayerConst.IsMoving, false);
+        }
         
         //-------------------------------------------------------------------------------
         // スプリントに関する処理
         //-------------------------------------------------------------------------------
-        
-        /// <summary>スプリントのフラグを切り替える</summary>
-        public void ToggleSprint()
+
+        /// <summary>スプリントのフラグを有効化する</summary>
+        public void EnableSprint()
         {
-            _animator.SetBool(PlayerConst.IsSprinting, !_animator.GetBool(PlayerConst.IsSprinting));
+            _animator.SetBool(PlayerConst.IsSprinting, true);
+        }
+
+        /// <summary>スプリントのフラグを無効化する</summary>
+        public void DisableSprint()
+        {
+            _animator.SetBool(PlayerConst.IsSprinting, false);
         }
         
         //-------------------------------------------------------------------------------
@@ -57,15 +68,47 @@ namespace Player.Handler
         }
         
         //-------------------------------------------------------------------------------
-        // 攻撃に関する処理
+        // 通常攻撃に関する処理
         //-------------------------------------------------------------------------------
 
-        /// <summary>対応する攻撃アニメーションをトリガーする</summary>
-        public void TriggerAttack(InGameEnum.PlayerAttackType type)
+        /// <summary>通常攻撃のトリガーを有効化する</summary>
+        public void TriggerNormalAttack()
         {
-            // 攻撃アニメーションを再生中は処理を抜ける
-            if (_animator.GetCurrentAnimatorStateInfo(0).IsTag("Attack")) return;
-            _animator.SetTrigger($"{type.ToString()} Trigger");
+            // 通常攻撃アニメーションをトリガーする
+            _animator.SetTrigger(PlayerConst.AttackNormalTrigger);
+        }
+        
+        //-------------------------------------------------------------------------------
+        // 特殊攻撃に関する処理
+        //-------------------------------------------------------------------------------
+
+        /// <summary>特殊攻撃のトリガーを有効化する</summary>
+        public void TriggerSpecialAttack()
+        {
+            // 特殊攻撃アニメーションをトリガーする
+            _animator.SetTrigger(PlayerConst.AttackSpecialTrigger);
+        }
+        
+        //-------------------------------------------------------------------------------
+        // 空中攻撃に関する処理
+        //-------------------------------------------------------------------------------
+
+        /// <summary>空中攻撃のトリガーを有効化する</summary>
+        public void TriggerAerialAttack()
+        {
+            // 空中攻撃アニメーションをトリガーする
+            _animator.SetTrigger(PlayerConst.AttackAerialTrigger);
+        }
+        
+        //-------------------------------------------------------------------------------
+        // 必殺攻撃に関する処理
+        //-------------------------------------------------------------------------------
+
+        /// <summary>必殺攻撃のトリガーを有効化する</summary>
+        public void TriggerExtraAttack()
+        {
+            // 必殺攻撃アニメーションをトリガーする
+            _animator.SetTrigger(PlayerConst.AttackExtraTrigger);
         }
         
         //-------------------------------------------------------------------------------
