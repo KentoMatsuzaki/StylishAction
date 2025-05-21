@@ -439,6 +439,7 @@ MonoBehaviour:
   statusData: {fileID: 11400000, guid: c2f0e72fca76ed949846e291113cfb52, type: 2}
   cameraTransform: {fileID: 1687258585}
   enemy: {fileID: 5490843951817836471}
+  modelTransform: {fileID: 329954885}
 --- !u!114 &1155375801
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -490,9 +491,9 @@ MonoBehaviour:
     m_ActionName: Player/Attack 3[/Mouse/middleButton]
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1155375800}
         m_TargetAssemblyTypeName: Player.PlayerController, Assembly-CSharp
-        m_MethodName: OnDash
+        m_MethodName: OnDodge
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -629,6 +630,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20e4490a2d136384c9a9f340e04b8956, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  model: {fileID: 384777472}
 --- !u!114 &1155375805
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1000,7 +1002,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ae805acb8c64810aa4a32ef99ef7256, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 1155375799}
+  player: {fileID: 329954885}
   enemy: {fileID: 5490843951817836469}
   playerFocusHeight: 1.75
   enemyFocusHeight: 2.5
@@ -1883,6 +1885,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1155375799}
     m_Modifications:
+    - target: {fileID: 6480434412638562818, guid: cbe480313bfd6b34bb142adb88e68359, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6480434412638562819, guid: cbe480313bfd6b34bb142adb88e68359, type: 3}
       propertyPath: m_Name
       value: Cyber_Model
