@@ -54,8 +54,8 @@ namespace Player
             // 移動状態の開始時に呼ばれる処理
             _stateHandler.MoveState.OnEnter = () =>
             {
-                // 移動のフラグを切り替える
-                _animationHandler.ToggleMove();
+                // 移動のフラグを有効化する
+                _animationHandler.EnableMove();
             };
             
             // 移動状態の更新処理
@@ -70,15 +70,15 @@ namespace Player
             // 移動状態の終了時に呼ばれる処理
             _stateHandler.MoveState.OnExit = () =>
             {
-                // 移動のフラグを切り替える
-                _animationHandler.ToggleMove();
+                // 移動のフラグを無効化する
+                _animationHandler.DisableMove();
             };
             
             // スプリント状態の開始時に呼ばれる処理
             _stateHandler.SprintState.OnEnter = () =>
             {
-                // スプリントのフラグを切り替える
-                _animationHandler.ToggleSprint();
+                // スプリントのフラグを有効化する
+                _animationHandler.EnableSprint();
             };
             
             // スプリント状態の更新処理
@@ -93,8 +93,8 @@ namespace Player
             // スプリント状態の終了時に呼ばれる処理
             _stateHandler.SprintState.OnExit = () =>
             {
-                // スプリントのフラグを切り替える
-                _animationHandler.ToggleSprint();
+                // スプリントのフラグを無効化する
+                _animationHandler.DisableSprint();
             };
             
             // 回避状態の開始時に呼ばれる処理
@@ -119,6 +119,7 @@ namespace Player
                 _animationHandler.DisableRootMotion();
                 // モデルと本体の位置を同期させる
                 _locomotionHandler.SyncWithModelPosition(modelTransform);
+                // 
             };
         }
         
