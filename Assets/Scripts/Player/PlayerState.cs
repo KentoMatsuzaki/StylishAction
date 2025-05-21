@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Enum.Player;
 
 namespace Player
@@ -16,12 +17,15 @@ namespace Player
         /// <summary>状態終了時に呼ばれる処理</summary>
         public Action OnExit;
 
-        /// <summary>状態を表す列挙型</summary>
-        public PlayerEnum.EPlayerState State;
+        /// <summary>状態の種類</summary>
+        public readonly PlayerEnum.EPlayerState StateType;
         
-        public PlayerState(PlayerEnum.EPlayerState state)
+        /// <summary>この状態から遷移できない状態の一覧</summary>
+        public readonly List<PlayerEnum.EPlayerState> InvalidTransitions = new List<PlayerEnum.EPlayerState>();
+        
+        public PlayerState(PlayerEnum.EPlayerState stateType)
         {
-            State = state;
+            StateType = stateType;
         }
         
         public void Enter() => OnEnter?.Invoke();
