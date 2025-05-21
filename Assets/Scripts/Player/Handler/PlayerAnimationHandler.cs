@@ -47,6 +47,16 @@ namespace Player.Handler
         }
         
         //-------------------------------------------------------------------------------
+        // 回避に関する処理
+        //-------------------------------------------------------------------------------
+        
+        /// <summary>回避のアニメーションを再生する</summary>
+        public void PlayDodgeAnimation()
+        {
+            _animator.Play(PlayerConst.DodgeState);
+        }
+        
+        //-------------------------------------------------------------------------------
         // 攻撃に関する処理
         //-------------------------------------------------------------------------------
 
@@ -88,6 +98,22 @@ namespace Player.Handler
         public void PlayDieAnimation()
         {
             _animator.Play(PlayerConst.DieState);
+        }
+        
+        //-------------------------------------------------------------------------------
+        // 汎用処理
+        //-------------------------------------------------------------------------------
+
+        /// <summary>AnimatorのRootMotionを有効化する</summary>
+        public void EnableRootMotion()
+        {
+            _animator.applyRootMotion = true;
+        }
+
+        /// <summary>AnimatorのRootMotionを無効化する</summary>
+        public void DisableRootMotion()
+        {
+            _animator.applyRootMotion = false;
         }
     }
 }
