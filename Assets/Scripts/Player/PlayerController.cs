@@ -3,11 +3,9 @@ using SO.Player;
 using Enemy;
 using Enemy.AI;
 using Enum;
-using Enum.Player;
 using Player.Handler;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Serialization;
 
 namespace Player
 {
@@ -19,6 +17,7 @@ namespace Player
         private PlayerAttackHandler _attackHandler;
         private PlayerParticleHandler _particleHandler;
         private PlayerAnimationHandler _animationHandler;
+        private PlayerInput _playerInput;
         
         [Header("ステータス情報"), SerializeField] private PlayerStats stats;
         [Header("カメラの位置"), SerializeField] private Transform cameraTransform;
@@ -119,7 +118,78 @@ namespace Player
                 _animationHandler.DisableRootMotion();
                 // モデルと本体の位置を同期させる
                 _locomotionHandler.SyncWithModelPosition(modelTransform);
-                // 
+            };
+            
+            // 通常攻撃状態の開始時に呼ばれる処理
+            _stateHandler.AttackNormalState.OnEnter = () =>
+            {
+                // RootMotionを有効化する
+                _animationHandler.EnableRootMotion();
+                // 通常攻撃のトリガーを有効化する
+                _animationHandler.TriggerNormalAttack();
+            };
+            
+            // 通常攻撃状態の終了時に呼ばれる処理
+            _stateHandler.AttackNormalState.OnExit = () =>
+            {
+                // RootMotionを無効化する
+                _animationHandler.DisableRootMotion();
+                // モデルと本体の位置を同期させる
+                _locomotionHandler.SyncWithModelPosition(modelTransform);
+            };
+            
+            // 特殊攻撃状態の開始時に呼ばれる処理
+            _stateHandler.AttackSpecialState.OnEnter = () =>
+            {
+                // RootMotionを有効化する
+                _animationHandler.EnableRootMotion();
+                // 特殊攻撃のトリガーを有効化する
+                _animationHandler.TriggerSpecialAttack();
+            };
+            
+            // 特殊攻撃状態の終了時に呼ばれる処理
+            _stateHandler.AttackSpecialState.OnExit = () =>
+            {
+                // RootMotionを無効化する
+                _animationHandler.DisableRootMotion();
+                // モデルと本体の位置を同期させる
+                _locomotionHandler.SyncWithModelPosition(modelTransform);
+            };
+            
+            // 空中攻撃状態の開始時に呼ばれる処理
+            _stateHandler.AttackAerialState.OnEnter = () =>
+            {
+                // RootMotionを有効化する
+                _animationHandler.EnableRootMotion();
+                // 空中攻撃のトリガーを有効化する
+                _animationHandler.TriggerAerialAttack();
+            };
+            
+            // 空中攻撃状態の終了時に呼ばれる処理
+            _stateHandler.AttackAerialState.OnExit = () =>
+            {
+                // RootMotionを無効化する
+                _animationHandler.DisableRootMotion();
+                // モデルと本体の位置を同期させる
+                _locomotionHandler.SyncWithModelPosition(modelTransform);
+            };
+            
+            // 必殺攻撃状態の開始時に呼ばれる処理
+            _stateHandler.AttackExtraState.OnEnter = () =>
+            {
+                // RootMotionを有効化する
+                _animationHandler.EnableRootMotion();
+                // 必殺攻撃のトリガーを有効化する
+                _animationHandler.TriggerExtraAttack();
+            };
+            
+            // 必殺攻撃状態の終了時に呼ばれる処理
+            _stateHandler.AttackExtraState.OnExit = () =>
+            {
+                // RootMotionを無効化する
+                _animationHandler.DisableRootMotion();
+                // モデルと本体の位置を同期させる
+                _locomotionHandler.SyncWithModelPosition(modelTransform);
             };
         }
         
@@ -139,6 +209,9 @@ namespace Player
         /// <summary>PlayerInputコンポーネントから呼ばれる</summary>
         public void OnMove(InputAction.CallbackContext context)
         {
+            // 移動入力を受け付けない場合は処理を抜ける
+            if (!_stateHandler.CanAcceptMoveInput()) return;
+            
             // 移動の入力値を取得する
             var moveInput = context.ReadValue<Vector2>();
             
@@ -220,27 +293,61 @@ namespace Player
         }
         
         //-------------------------------------------------------------------------------
-        // 攻撃のコールバック
+        // 通常攻撃のコールバック
         //-------------------------------------------------------------------------------
 
-        /// <summary>PlayerInputから呼ばれる</summary>
-        public void OnAttack(InputAction.CallbackContext context)
+        /// <summary>PlayerInputコンポーネントから呼ばれる</summary>
+        public void OnAttackNormal(InputAction.CallbackContext context)
         {
-            
-            // ボタンを押した瞬間の処理
+            // 入力が実行された時の処理
             if (context.performed)
             {
-                // アニメーション処理
-                
-                switch (context.action.name)
-                {
-                    case "Attack 1": _animationHandler.TriggerAttack(InGameEnum.PlayerAttackType.Iai); break;
-                    case "Attack 2": _animationHandler.TriggerAttack(InGameEnum.PlayerAttackType.Hien); break;
-                    case "Attack 3": _animationHandler.TriggerAttack(InGameEnum.PlayerAttackType.Shiden); break;
-                }
-                
+                // 通常攻撃状態に切り替える
+                _stateHandler.SwitchState(_stateHandler.AttackNormalState);
                 // 回転処理
-                _attackHandler.RotateSmoothlyTowardsEnemy(enemy.transform.position, stats.attackAimAssistSpeed);
+                //_attackHandler.RotateSmoothlyTowardsEnemy(enemy.transform.position, stats.attackAimAssistSpeed);
+            }
+        }
+        //-------------------------------------------------------------------------------
+        // 特殊攻撃のコールバック
+        //-------------------------------------------------------------------------------
+
+        /// <summary>PlayerInputコンポーネントから呼ばれる</summary>
+        public void OnAttackSpecial(InputAction.CallbackContext context)
+        {
+            // 入力が実行された時の処理
+            if (context.performed)
+            {
+                // 特殊攻撃状態に切り替える
+                _stateHandler.SwitchState(_stateHandler.AttackSpecialState);
+            }
+        }
+        //-------------------------------------------------------------------------------
+        // 空中攻撃のコールバック
+        //-------------------------------------------------------------------------------
+
+        /// <summary>PlayerInputコンポーネントから呼ばれる</summary>
+        public void OnAttackAerial(InputAction.CallbackContext context)
+        {
+            // 入力が実行された時の処理
+            if (context.performed)
+            {
+                // 空中攻撃状態に切り替える
+                _stateHandler.SwitchState(_stateHandler.AttackAerialState);
+            }
+        }
+        //-------------------------------------------------------------------------------
+        // EX攻撃のコールバック
+        //-------------------------------------------------------------------------------
+
+        /// <summary>PlayerInputコンポーネントから呼ばれる</summary>
+        public void OnAttackExtra(InputAction.CallbackContext context)
+        {
+            // 入力が実行された時の処理
+            if (context.performed)
+            {
+                // EX攻撃状態に切り替える
+                _stateHandler.SwitchState(_stateHandler.AttackExtraState);
             }
         }
         
