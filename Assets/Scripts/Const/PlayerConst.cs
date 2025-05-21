@@ -7,7 +7,7 @@ namespace Const
         // タグ
         //-------------------------------------------------------------------------------
         
-        public const string TagName = "Player";
+        public const string GameObjectTag = "Player"; // プレイヤーのGameObjectに割り当てるタグ
         
         //-------------------------------------------------------------------------------
         // アニメーションステート
@@ -29,6 +29,10 @@ namespace Const
         // アニメーショントリガー
         //-------------------------------------------------------------------------------
         
+        public const string AttackNormalTrigger = "Attack Normal"; // 通常攻撃
+        public const string AttackSpecialTrigger = "Attack Special"; // 特殊攻撃
+        public const string AttackAerialTrigger = "Attack Aerial"; // 空中攻撃
+        public const string AttackExtraTrigger = "Attack Extra"; // 必殺攻撃
         public const string ParryTrigger = "Parry"; // パリィ
         
         //-------------------------------------------------------------------------------
