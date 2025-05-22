@@ -61,6 +61,15 @@ namespace Player.Handler
         {
             _rb.AddForce(transform.forward * attackSpecial4Power, ForceMode.Impulse);
         }
+
+        /// <summary>EX攻撃アニメーションに合わせて、プレイヤーを前方に移動させる</summary>
+        public void ApplyAttackExtraMovement(float attackExtraSpeed)
+        {
+            if (MoveDirection.magnitude > 0.1f)
+            {
+                transform.Translate(Time.deltaTime * attackExtraSpeed * transform.forward, Space.World);
+            }
+        }
         
         //-------------------------------------------------------------------------------
         // 回転処理
