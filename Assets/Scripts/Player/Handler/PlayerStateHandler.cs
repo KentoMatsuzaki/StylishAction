@@ -30,6 +30,9 @@ namespace Player.Handler
         /// <summary>EX攻撃状態</summary>
         public PlayerState AttackExtraState { get; private set; }
         
+        /// <summary>着地状態</summary>
+        public PlayerState LandState { get; private set; }
+        
         //-------------------------------------------------------------------------------
         // 初期設定
         //-------------------------------------------------------------------------------
@@ -64,6 +67,9 @@ namespace Player.Handler
             
             // 必殺攻撃状態
             AttackExtraState = new PlayerState(PlayerEnum.EPlayerState.AttackExtra);
+            
+            // 着地状態
+            LandState = new PlayerState(PlayerEnum.EPlayerState.Land);
         }
 
         /// <summary>各状態ごとに遷移できない状態を定義する</summary>
@@ -136,7 +142,8 @@ namespace Player.Handler
         /// <summary>移動入力を受け付けるかどうか</summary>
         public bool CanAcceptMoveInput()
         {
-            return CurrentState == IdleState || CurrentState == MoveState || CurrentState == SprintState;
+            return CurrentState == IdleState || CurrentState == MoveState || 
+                   CurrentState == SprintState || CurrentState == AttackExtraState;
         }
     }
 }
