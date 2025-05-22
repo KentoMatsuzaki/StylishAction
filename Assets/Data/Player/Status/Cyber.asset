@@ -16,4 +16,5 @@ MonoBehaviour:
   moveSpeed: 7.5
   sprintSpeed: 12.5
   dodgePower: 10
+  attackSpecial4Power: 50
   attackAimAssistSpeed: 0.5
