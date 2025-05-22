@@ -55,6 +55,12 @@ namespace Player.Handler
         {
             _rb.AddForce(transform.forward * dodgePower, ForceMode.Impulse);
         }
+
+        /// <summary>特殊攻撃アニメーション4に合わせて、前方に力を加える</summary>
+        public void ApplyAttackSpecial4Force(float attackSpecial4Power)
+        {
+            _rb.AddForce(transform.forward * attackSpecial4Power, ForceMode.Impulse);
+        }
         
         //-------------------------------------------------------------------------------
         // 回転処理
