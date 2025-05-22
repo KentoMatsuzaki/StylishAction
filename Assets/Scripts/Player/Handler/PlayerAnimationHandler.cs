@@ -72,9 +72,8 @@ namespace Player.Handler
         //-------------------------------------------------------------------------------
 
         /// <summary>通常攻撃のトリガーを有効化する</summary>
-        public void TriggerNormalAttack()
+        public void TriggerAttackNormal()
         {
-            // 通常攻撃アニメーションをトリガーする
             _animator.SetTrigger(PlayerConst.AttackNormalTrigger);
         }
         
@@ -83,21 +82,25 @@ namespace Player.Handler
         //-------------------------------------------------------------------------------
 
         /// <summary>特殊攻撃のトリガーを有効化する</summary>
-        public void TriggerSpecialAttack()
+        public void TriggerAttackSpecial()
         {
-            // 特殊攻撃アニメーションをトリガーする
             _animator.SetTrigger(PlayerConst.AttackSpecialTrigger);
         }
         
         //-------------------------------------------------------------------------------
-        // 必殺攻撃に関する処理
+        // EX攻撃に関する処理
         //-------------------------------------------------------------------------------
 
-        /// <summary>必殺攻撃のトリガーを有効化する</summary>
-        public void TriggerExtraAttack()
+        /// <summary>EX攻撃のフラグを有効化する</summary>
+        public void EnableAttackExtra()
         {
-            // 必殺攻撃アニメーションをトリガーする
-            _animator.SetTrigger(PlayerConst.AttackExtraTrigger);
+            _animator.SetBool(PlayerConst.IsExtraAttacking, true);
+        }
+
+        /// <summary>EX攻撃のフラグを無効化する</summary>
+        public void DisableAttackExtra()
+        {
+            _animator.SetBool(PlayerConst.IsExtraAttacking, false);
         }
         
         //-------------------------------------------------------------------------------
@@ -107,7 +110,6 @@ namespace Player.Handler
         /// <summary>パリィアニメーションをトリガーする</summary>
         public void TriggerParry()
         {
-            // パリィアニメーションを再生中は処理を抜ける
             if (_animator.GetCurrentAnimatorStateInfo(0).IsName("Parry")) return; 
             _animator.SetTrigger(PlayerConst.ParryTrigger);
         }
