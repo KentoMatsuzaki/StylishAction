@@ -21,6 +21,10 @@ namespace SO.Player
         [Range(0f, 100f)] 
         public float dodgePower = 10f;
 
+        /// <summary>特殊攻撃時に前方へ加える力</summary>
+        [Range(0f, 100f)] 
+        public float attackSpecial4Power = 10f;
+
         /// <summary>攻撃時のエイム補正速度</summary>
         public float attackAimAssistSpeed;
     }
