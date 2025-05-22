@@ -27,9 +27,6 @@ namespace Player.Handler
         /// <summary>特殊攻撃状態</summary>
         public PlayerState AttackSpecialState { get; private set; }
         
-        /// <summary>空中攻撃状態</summary>
-        public PlayerState AttackAerialState { get; private set; }
-        
         /// <summary>EX攻撃状態</summary>
         public PlayerState AttackExtraState { get; private set; }
         
@@ -65,9 +62,6 @@ namespace Player.Handler
             // 特殊攻撃状態
             AttackSpecialState = new PlayerState(PlayerEnum.EPlayerState.AttackSpecial);
             
-            // 空中攻撃状態
-            AttackAerialState = new PlayerState(PlayerEnum.EPlayerState.AttackAerial);
-            
             // 必殺攻撃状態
             AttackExtraState = new PlayerState(PlayerEnum.EPlayerState.AttackExtra);
         }
@@ -78,13 +72,11 @@ namespace Player.Handler
             // 移動状態
             MoveState.InvalidTransitions.Add(PlayerEnum.EPlayerState.AttackNormal);
             MoveState.InvalidTransitions.Add(PlayerEnum.EPlayerState.AttackSpecial);
-            MoveState.InvalidTransitions.Add(PlayerEnum.EPlayerState.AttackAerial);
             MoveState.InvalidTransitions.Add(PlayerEnum.EPlayerState.AttackExtra);
             
             // スプリント状態
             SprintState.InvalidTransitions.Add(PlayerEnum.EPlayerState.AttackNormal);
             SprintState.InvalidTransitions.Add(PlayerEnum.EPlayerState.AttackSpecial);
-            SprintState.InvalidTransitions.Add(PlayerEnum.EPlayerState.AttackAerial);
             SprintState.InvalidTransitions.Add(PlayerEnum.EPlayerState.AttackExtra);
             
             // 通常攻撃状態
@@ -94,10 +86,6 @@ namespace Player.Handler
             // 特殊攻撃状態
             AttackSpecialState.InvalidTransitions.Add(PlayerEnum.EPlayerState.Move);
             AttackSpecialState.InvalidTransitions.Add(PlayerEnum.EPlayerState.Sprint);
-            
-            // 空中攻撃状態
-            AttackAerialState.InvalidTransitions.Add(PlayerEnum.EPlayerState.Move);
-            AttackAerialState.InvalidTransitions.Add(PlayerEnum.EPlayerState.Sprint);
             
             // 必殺攻撃状態
             AttackExtraState.InvalidTransitions.Add(PlayerEnum.EPlayerState.Move);

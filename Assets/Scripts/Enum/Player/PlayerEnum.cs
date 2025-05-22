@@ -6,15 +6,16 @@ namespace Enum.Player
         /// <summary>プレイヤーの状態</summary>
         public enum EPlayerState
         {
-            Idle,   // 静止
-            Move,   // 移動
-            Sprint, // スプリント
-            Dodge,  // 回避
-            Attack, // 攻撃
-            Parry,  // パリィ
-            PostParry, // パリィ後の硬直
-            Damage, // 被ダメージ
-            Dead    // 死亡
+            Idle,          // 静止
+            Move,          // 移動
+            Sprint,        // スプリント
+            Dodge,         // 回避
+            AttackNormal,  // 通常攻撃
+            AttackSpecial, // 特殊攻撃
+            AttackExtra,   // EX攻撃
+            Parry,         // パリィ
+            Damage,        // 被ダメージ
+            Dead           // 死亡
         }
     }
 }

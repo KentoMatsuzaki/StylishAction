@@ -31,8 +31,7 @@ namespace Const
         
         public const string AttackNormalTrigger = "Attack Normal"; // 通常攻撃
         public const string AttackSpecialTrigger = "Attack Special"; // 特殊攻撃
-        public const string AttackAerialTrigger = "Attack Aerial"; // 空中攻撃
-        public const string AttackExtraTrigger = "Attack Extra"; // 必殺攻撃
+        public const string AttackExtraTrigger = "Attack Extra"; // EX攻撃
         public const string ParryTrigger = "Parry"; // パリィ
         
         //-------------------------------------------------------------------------------
