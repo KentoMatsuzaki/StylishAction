@@ -25,6 +25,10 @@ namespace SO.Player
         [Range(0f, 100f)] 
         public float attackSpecial4Power = 10f;
 
+        /// <summary>EX攻撃時に移動方向へ加える力</summary>
+        [Range(0f, 100f)] 
+        public float attackExtraSpeed = 10f;
+
         /// <summary>攻撃時のエイム補正速度</summary>
         public float attackAimAssistSpeed;
     }
