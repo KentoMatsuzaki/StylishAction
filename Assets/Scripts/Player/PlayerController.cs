@@ -4,13 +4,14 @@ using Enemy;
 using Enemy.AI;
 using Enum;
 using Player.Handler;
+using Player.Interface;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace Player
 {
     /// <summary>プレイヤーを制御するクラス</summary>
-    public class PlayerController : MonoBehaviour
+    public class PlayerController : MonoBehaviour, IPlayerAnimationEventHandler
     {
         private PlayerLocomotionHandler _locomotionHandler;
         private PlayerStateHandler _stateHandler;
@@ -156,34 +157,16 @@ namespace Player
                 _locomotionHandler.SyncWithModelPosition(modelTransform);
             };
             
-            // 空中攻撃状態の開始時に呼ばれる処理
-            _stateHandler.AttackAerialState.OnEnter = () =>
-            {
-                // RootMotionを有効化する
-                _animationHandler.EnableRootMotion();
-                // 空中攻撃のトリガーを有効化する
-                _animationHandler.TriggerAerialAttack();
-            };
-            
-            // 空中攻撃状態の終了時に呼ばれる処理
-            _stateHandler.AttackAerialState.OnExit = () =>
-            {
-                // RootMotionを無効化する
-                _animationHandler.DisableRootMotion();
-                // モデルと本体の位置を同期させる
-                _locomotionHandler.SyncWithModelPosition(modelTransform);
-            };
-            
-            // 必殺攻撃状態の開始時に呼ばれる処理
+            // EX攻撃状態の開始時に呼ばれる処理
             _stateHandler.AttackExtraState.OnEnter = () =>
             {
                 // RootMotionを有効化する
                 _animationHandler.EnableRootMotion();
-                // 必殺攻撃のトリガーを有効化する
+                // EX攻撃のトリガーを有効化する
                 _animationHandler.TriggerExtraAttack();
             };
             
-            // 必殺攻撃状態の終了時に呼ばれる処理
+            // EX攻撃状態の終了時に呼ばれる処理
             _stateHandler.AttackExtraState.OnExit = () =>
             {
                 // RootMotionを無効化する
@@ -308,6 +291,7 @@ namespace Player
                 //_attackHandler.RotateSmoothlyTowardsEnemy(enemy.transform.position, stats.attackAimAssistSpeed);
             }
         }
+        
         //-------------------------------------------------------------------------------
         // 特殊攻撃のコールバック
         //-------------------------------------------------------------------------------
@@ -322,20 +306,7 @@ namespace Player
                 _stateHandler.SwitchState(_stateHandler.AttackSpecialState);
             }
         }
-        //-------------------------------------------------------------------------------
-        // 空中攻撃のコールバック
-        //-------------------------------------------------------------------------------
-
-        /// <summary>PlayerInputコンポーネントから呼ばれる</summary>
-        public void OnAttackAerial(InputAction.CallbackContext context)
-        {
-            // 入力が実行された時の処理
-            if (context.performed)
-            {
-                // 空中攻撃状態に切り替える
-                _stateHandler.SwitchState(_stateHandler.AttackAerialState);
-            }
-        }
+        
         //-------------------------------------------------------------------------------
         // EX攻撃のコールバック
         //-------------------------------------------------------------------------------
@@ -431,6 +402,22 @@ namespace Player
 
             // アニメーション処理
             _animationHandler.PlayDieAnimation();
+        }
+        
+        //-------------------------------------------------------------------------------
+        // アニメーションイベント
+        //-------------------------------------------------------------------------------
+        
+        /// <summary>静止アニメーションのアニメーションイベントから呼ばれる</summary>
+        public void SwitchStateToIdle()
+        {
+            _stateHandler.SwitchState(_stateHandler.IdleState);
+        }
+        
+        /// <summary>特殊攻撃アニメーション4のアニメーションイベントから呼ばれる</summary>
+        public void ApplyAttackSpecial4Force()
+        {
+            _locomotionHandler.ApplyAttackSpecial4Force(stats.attackSpecial4Power);
         }
     }
 }
