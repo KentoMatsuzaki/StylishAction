@@ -127,7 +127,7 @@ namespace Player
                 // RootMotionを有効化する
                 _animationHandler.EnableRootMotion();
                 // 通常攻撃のトリガーを有効化する
-                _animationHandler.TriggerNormalAttack();
+                _animationHandler.TriggerAttackNormal();
             };
             
             // 通常攻撃状態の終了時に呼ばれる処理
@@ -145,7 +145,7 @@ namespace Player
                 // RootMotionを有効化する
                 _animationHandler.EnableRootMotion();
                 // 特殊攻撃のトリガーを有効化する
-                _animationHandler.TriggerSpecialAttack();
+                _animationHandler.TriggerAttackSpecial();
             };
             
             // 特殊攻撃状態の終了時に呼ばれる処理
@@ -160,19 +160,24 @@ namespace Player
             // EX攻撃状態の開始時に呼ばれる処理
             _stateHandler.AttackExtraState.OnEnter = () =>
             {
-                // RootMotionを有効化する
-                _animationHandler.EnableRootMotion();
-                // EX攻撃のトリガーを有効化する
-                _animationHandler.TriggerExtraAttack();
+                // EX攻撃のフラグを有効化する
+                _animationHandler.EnableAttackExtra();
+            };
+
+            // EX攻撃状態の更新処理
+            _stateHandler.AttackExtraState.OnUpdate = () =>
+            {
+                // プレイヤーを回転させる
+                _locomotionHandler.RotateTowardsCameraRelativeDirection(cameraTransform);
+                // プレイヤーを移動させる
+                _locomotionHandler.ApplyAttackExtraMovement(stats.attackExtraSpeed);
             };
             
             // EX攻撃状態の終了時に呼ばれる処理
             _stateHandler.AttackExtraState.OnExit = () =>
             {
-                // RootMotionを無効化する
-                _animationHandler.DisableRootMotion();
-                // モデルと本体の位置を同期させる
-                _locomotionHandler.SyncWithModelPosition(modelTransform);
+                // EX攻撃のフラグを無効化する
+                _animationHandler.DisableAttackExtra();
             };
         }
         
@@ -201,8 +206,9 @@ namespace Player
             // 入力が実行された時の処理
             if (context.performed)
             {
-                // スプリント状態でない場合
-                if (_stateHandler.CurrentState != _stateHandler.SprintState)
+                // スプリント状態またはEX攻撃状態でない場合
+                if (_stateHandler.CurrentState != _stateHandler.SprintState &&
+                    _stateHandler.CurrentState != _stateHandler.AttackExtraState)
                 {
                     // 移動状態に切り替える
                     _stateHandler.SwitchState(_stateHandler.MoveState);
@@ -216,8 +222,12 @@ namespace Player
             // 入力が終了された時の処理
             else if (context.canceled)
             {
-                // 静止状態に切り替える
-                _stateHandler.SwitchState(_stateHandler.IdleState);
+                // EX攻撃状態でない場合
+                if (_stateHandler.CurrentState != _stateHandler.AttackExtraState)
+                {
+                    // 静止状態に切り替える
+                    _stateHandler.SwitchState(_stateHandler.IdleState);
+                }
                 // 移動方向を初期化する
                 _locomotionHandler.SetMoveDirection(Vector2.zero);
                 // アニメーターの移動パラメーターを初期化する
@@ -317,8 +327,19 @@ namespace Player
             // 入力が実行された時の処理
             if (context.performed)
             {
-                // EX攻撃状態に切り替える
-                _stateHandler.SwitchState(_stateHandler.AttackExtraState);
+                // EX攻撃状態である場合
+                if (_stateHandler.CurrentState == _stateHandler.AttackExtraState)
+                {
+                    // 着地状態に切り替える
+                    _stateHandler.SwitchState(_stateHandler.LandState);
+                }
+                
+                // EX攻撃状態でない場合
+                else
+                {
+                    // EX攻撃状態に切り替える
+                    _stateHandler.SwitchState(_stateHandler.AttackExtraState);
+                }
             }
         }
         
