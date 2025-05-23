@@ -14,6 +14,7 @@ namespace Const
         //-------------------------------------------------------------------------------
 
         public const string DodgeState = "Dodge"; // 回避
+        public const string ParryState = "Parry"; // パリィ
         public const string LightHitState = "Light Hit"; // 被ダメージ（軽）
         public const string HeavyHitState = "Heavy Hit"; // 被ダメージ（重）
         public const string DieState = "Die"; // 死亡
@@ -25,6 +26,7 @@ namespace Const
         public const string IsMoving = "Is Moving"; // 移動
         public const string IsSprinting = "Is Sprinting"; // スプリント
         public const string IsExtraAttacking = "Is ExtraAttacking"; // EX攻撃
+        public const string IsGuarding = "Is Guarding"; // 防御
         
         //-------------------------------------------------------------------------------
         // アニメーショントリガー
@@ -32,7 +34,6 @@ namespace Const
         
         public const string AttackNormalTrigger = "Attack Normal"; // 通常攻撃
         public const string AttackSpecialTrigger = "Attack Special"; // 特殊攻撃
-        public const string ParryTrigger = "Parry"; // パリィ
         
         //-------------------------------------------------------------------------------
         // アニメーションパラメーター
