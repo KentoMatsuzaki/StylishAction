@@ -24,18 +24,9 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Attack Aerial",
+                    "name": "Attack Extra",
                     "type": "Button",
                     "id": "eb59e43d-6798-4307-8f80-046173273bd0",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Attack Ex",
-                    "type": "Button",
-                    "id": "574f6cc7-bfc9-4530-800f-2f9ba5bb3905",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -94,6 +85,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Guard",
+                    "type": "Button",
+                    "id": "1403533f-8db2-4a1c-a57d-78daf4e80263",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -126,7 +126,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Key Board + Mouse",
-                    "action": "Attack Aerial",
+                    "action": "Attack Extra",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -171,17 +171,6 @@
                     "processors": "",
                     "groups": "Key Board + Mouse",
                     "action": "LockOn",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "0eea4b05-b092-4b67-8200-d59dc9a30764",
-                    "path": "<Keyboard>/x",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Key Board + Mouse",
-                    "action": "Attack Ex",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -250,6 +239,17 @@
                     "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "55ac7842-e797-41b7-8784-064b5419b647",
+                    "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Key Board + Mouse",
+                    "action": "Guard",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }
