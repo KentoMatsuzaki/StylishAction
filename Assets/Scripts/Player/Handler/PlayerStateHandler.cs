@@ -31,7 +31,13 @@ namespace Player.Handler
         public PlayerState AttackExtraState { get; private set; }
         
         /// <summary>着地状態</summary>
-        public PlayerState LandState { get; private set; }
+        public PlayerState TransitionState { get; private set; }
+        
+        /// <summary>パリィ状態</summary>
+        public PlayerState ParryState { get; private set; }
+        
+        /// <summary>防御状態</summary>
+        public PlayerState GuardState { get; private set; }
         
         //-------------------------------------------------------------------------------
         // 初期設定
@@ -68,8 +74,14 @@ namespace Player.Handler
             // 必殺攻撃状態
             AttackExtraState = new PlayerState(PlayerEnum.EPlayerState.AttackExtra);
             
-            // 着地状態
-            LandState = new PlayerState(PlayerEnum.EPlayerState.Land);
+            // 遷移状態（他の状態へ遷移するための中継的な状態）
+            TransitionState = new PlayerState(PlayerEnum.EPlayerState.Transition);
+            
+            // パリィ状態
+            ParryState = new PlayerState(PlayerEnum.EPlayerState.Parry);
+            
+            // 防御状態
+            GuardState = new PlayerState(PlayerEnum.EPlayerState.Guard);
         }
 
         /// <summary>各状態ごとに遷移できない状態を定義する</summary>
@@ -79,11 +91,13 @@ namespace Player.Handler
             MoveState.InvalidTransitions.Add(PlayerEnum.EPlayerState.AttackNormal);
             MoveState.InvalidTransitions.Add(PlayerEnum.EPlayerState.AttackSpecial);
             MoveState.InvalidTransitions.Add(PlayerEnum.EPlayerState.AttackExtra);
+            MoveState.InvalidTransitions.Add(PlayerEnum.EPlayerState.Guard);
             
             // スプリント状態
             SprintState.InvalidTransitions.Add(PlayerEnum.EPlayerState.AttackNormal);
             SprintState.InvalidTransitions.Add(PlayerEnum.EPlayerState.AttackSpecial);
             SprintState.InvalidTransitions.Add(PlayerEnum.EPlayerState.AttackExtra);
+            SprintState.InvalidTransitions.Add(PlayerEnum.EPlayerState.Guard);
             
             // 通常攻撃状態
             AttackNormalState.InvalidTransitions.Add(PlayerEnum.EPlayerState.Move);
