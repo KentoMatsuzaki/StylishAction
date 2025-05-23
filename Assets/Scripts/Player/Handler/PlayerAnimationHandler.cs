@@ -107,11 +107,26 @@ namespace Player.Handler
         // パリィに関する処理
         //-------------------------------------------------------------------------------
 
-        /// <summary>パリィアニメーションをトリガーする</summary>
-        public void TriggerParry()
+        /// <summary>パリィのアニメーションを再生する</summary>
+        public void PlayParryAnimation()
         {
-            if (_animator.GetCurrentAnimatorStateInfo(0).IsName("Parry")) return; 
-            _animator.SetTrigger(PlayerConst.ParryTrigger);
+            _animator.Play(PlayerConst.ParryState);
+        }
+        
+        //-------------------------------------------------------------------------------
+        // 防御に関する処理
+        //-------------------------------------------------------------------------------
+
+        /// <summary>防御のフラグを有効化する</summary>
+        public void EnableGuard()
+        {
+            _animator.SetBool(PlayerConst.IsGuarding, true);
+        }
+
+        /// <summary>防御のフラグを無効化する</summary>
+        public void DisableGuard()
+        {
+            _animator.SetBool(PlayerConst.IsGuarding, false);
         }
         
         //-------------------------------------------------------------------------------
