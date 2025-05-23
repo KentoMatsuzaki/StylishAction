@@ -13,8 +13,9 @@ namespace Enum.Player
             AttackNormal,  // 通常攻撃
             AttackSpecial, // 特殊攻撃
             AttackExtra,   // EX攻撃
-            Land,          // 着地
+            Transition,    // 遷移
             Parry,         // パリィ
+            Guard,         // 防御
             Damage,        // 被ダメージ
             Dead           // 死亡
         }
