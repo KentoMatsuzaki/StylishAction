@@ -179,6 +179,27 @@ namespace Player
                 // EX攻撃のフラグを無効化する
                 _animationHandler.DisableAttackExtra();
             };
+            
+            // パリィ状態の開始時に呼ばれる処理
+            _stateHandler.ParryState.OnEnter = () =>
+            {
+                // パリィのアニメーションを再生する
+                _animationHandler.PlayParryAnimation();
+            };
+            
+            // 防御状態の開始時に呼ばれる処理
+            _stateHandler.GuardState.OnEnter = () =>
+            {
+                // 防御のフラグを有効化する
+                _animationHandler.EnableGuard();
+            };
+            
+            // 防御状態の終了時に呼ばれる処理
+            _stateHandler.GuardState.OnExit = () =>
+            {
+                // 防御のフラグを無効化する
+                _animationHandler.DisableGuard();
+            };
         }
         
         //-------------------------------------------------------------------------------
@@ -330,8 +351,8 @@ namespace Player
                 // EX攻撃状態である場合
                 if (_stateHandler.CurrentState == _stateHandler.AttackExtraState)
                 {
-                    // 着地状態に切り替える
-                    _stateHandler.SwitchState(_stateHandler.LandState);
+                    // 遷移状態に切り替える
+                    _stateHandler.SwitchState(_stateHandler.TransitionState);
                 }
                 
                 // EX攻撃状態でない場合
@@ -347,14 +368,40 @@ namespace Player
         // パリィのコールバック
         //-------------------------------------------------------------------------------
 
-        /// <summary>PlayerInputから呼ばれる</summary>
+        /// <summary>PlayerInputコンポーネントから呼ばれる</summary>
         public void OnParry(InputAction.CallbackContext context)
         {
-            // ボタンを押した瞬間の処理
+            // 入力が開始された時の処理
+            if (context.started)
+            {
+                // パリィ状態に切り替える
+                _stateHandler.SwitchState(_stateHandler.ParryState);
+            }
+        }
+        
+        //-------------------------------------------------------------------------------
+        // 防御のコールバック
+        //-------------------------------------------------------------------------------
+
+        /// <summary>PlayerInputコンポーネントから呼ばれる</summary>
+        public void OnGuard(InputAction.CallbackContext context)
+        {
+            // 入力が実行された時の処理
             if (context.performed)
             {
-                // アニメーション処理
-                _animationHandler.TriggerParry();
+                // 防御状態に切り替える
+                _stateHandler.SwitchState(_stateHandler.GuardState);
+            }
+            
+            // 入力が終了された時の処理
+            if (context.canceled)
+            {
+                // 防御状態である場合
+                if (_stateHandler.CurrentState == _stateHandler.GuardState)
+                {
+                    // 遷移状態に切り替える
+                    _stateHandler.SwitchState(_stateHandler.TransitionState);
+                }
             }
         }
         
