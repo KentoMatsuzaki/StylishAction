@@ -1,5 +1,6 @@
 using Enum;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SO.Enemy
 {
@@ -8,7 +9,7 @@ namespace SO.Enemy
     public class EnemyAttackStats : ScriptableObject
     {
         /// <summary>攻撃の種類</summary>
-        public EnemyEnum.AttackType type;
+        public EnemyEnum.AttackType attackType;
 
         /// <summary>ダメージ量</summary>
         public float attackDamage;
@@ -21,5 +22,8 @@ namespace SO.Enemy
 
         /// <summary>有効角度</summary>
         public float attackAngle;
+
+        /// <summary>クールタイム</summary>
+        public float attackCooldown;
     }
 }
