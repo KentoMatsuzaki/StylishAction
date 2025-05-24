@@ -3,8 +3,8 @@ using UnityEngine;
 namespace SO.Enemy
 {
     /// <summary>敵のステータス情報を保持するスクリプタブルオブジェクト</summary>
-    [CreateAssetMenu(fileName = "EnemyStatus", menuName = "ScriptableObjects/CreateEnemyStatusAsset")]
-    public class EnemyStatusData : ScriptableObject
+    [CreateAssetMenu(fileName = "EnemyStats", menuName = "ScriptableObjects/EnemyStats")]
+    public class EnemyStats : ScriptableObject
     {
         /// <summary>最大体力</summary>
         public float maxHp;
