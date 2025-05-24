@@ -25,10 +25,13 @@ namespace Enemy.AI
         protected EnemyAttackStats CurrentAttackStats;
         
         /// <summary>ビヘイビアツリーの最上位ノード</summary>
-        protected BaseAsyncNode RootNode;
+        protected AsyncSelectorNode RootNode;
 
         /// <summary>ビヘイビアツリーのキャンセルトークン</summary>
         protected CancellationTokenSource Cts;
+        
+        /// <summary>アニメーションの制御クラス</summary>
+        protected EnemyAnimationHandler AnimationHandler;
 
         /// <summary>攻撃の制御クラス</summary>
         protected EnemyAttackHandler AttackHandler;
@@ -51,6 +54,9 @@ namespace Enemy.AI
         //-------------------------------------------------------------------------------
 
         /// <summary>攻撃の結果を適用する</summary>
-        public abstract void ApplyAttack();
+        public abstract void ApplyAttack(PlayerController player);
+        
+        /// <summary>パリィの結果を適用する</summary>
+        public abstract void ApplyParry();
     }
 }
