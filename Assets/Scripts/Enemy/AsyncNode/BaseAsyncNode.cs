@@ -9,6 +9,6 @@ namespace Enemy.AsyncNode
     {
         /// <summary>ノードの評価結果を返す</summary>
         /// <returns>Success = 成功, Failure = 失敗, Running = 実行中</returns>
-        public abstract UniTask<InGameEnum.EnemyNodeStatus> ExecuteAsync(CancellationToken token);
+        public abstract UniTask<EnemyEnum.NodeStatus> TickAsync(CancellationToken token);
     }
 }
