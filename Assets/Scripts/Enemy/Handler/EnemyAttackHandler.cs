@@ -71,8 +71,21 @@ namespace Enemy.Handler
         /// <summary>プレイヤーが攻撃の有効射程内にいるか</summary>
         private bool IsPlayerInAttackRange(PlayerController player, EnemyAttackStats attackStats)
         {
+            return !IsPlayerTooClose(player, attackStats) && !IsPlayerTooFar(player, attackStats);
+        }
+
+        /// <summary>プレイヤーが最小有効射程よりも近くにいるか</summary>
+        public bool IsPlayerTooClose(PlayerController player, EnemyAttackStats attackStats)
+        {
             var distance = GetFlatDistanceToPlayer(player);
-            return attackStats.minAttackRange <= distance && distance <= attackStats.maxAttackRange;
+            return attackStats.minAttackRange > distance;
+        }
+
+        /// <summary>プレイヤーが最大有効射程よりも遠くにいるか</summary>
+        public bool IsPlayerTooFar(PlayerController player, EnemyAttackStats attackStats)
+        {
+            var distance = GetFlatDistanceToPlayer(player);
+            return distance > attackStats.maxAttackRange;
         }
         
         //-------------------------------------------------------------------------------
