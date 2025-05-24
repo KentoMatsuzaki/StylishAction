@@ -49,7 +49,7 @@ namespace Enemy
                 // プレイヤーの制御クラスを取得する
                 var player = other.GetComponent<PlayerController>();
                 // 攻撃の結果を適用する
-                _ai.ApplyAttack();
+                _ai.ApplyAttack(player);
             }
         }
     }
