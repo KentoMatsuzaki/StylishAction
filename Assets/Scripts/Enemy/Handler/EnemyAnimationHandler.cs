@@ -51,7 +51,7 @@ namespace Enemy.Handler
         // 非同期処理
         //-------------------------------------------------------------------------------
         
-        /// <summary>アニメーションの再生終了を待つ</summary>
+        /// <summary>アニメーションの再生完了を待つ</summary>
         public async UniTask WaitUntilAnimationComplete(CancellationToken token)
         {
             // 現在のステート情報を取得する
