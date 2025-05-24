@@ -5,6 +5,7 @@ using Enemy.AI;
 using Enum;
 using Player.Handler;
 using Player.Interface;
+using SO.Enemy;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -427,15 +428,49 @@ namespace Player
         }
         
         //-------------------------------------------------------------------------------
-        // 被ダメージ処理
+        // 被弾時の処理
         //-------------------------------------------------------------------------------
 
-        /// <summary>敵の攻撃が命中した時の処理</summary>
-        public void OnHitByEnemy(float damage, EnemyAIBase ai)
+        /// <summary>ダメージを適用する</summary>
+        public void ApplyDamage(EnemyAIBase enemyAI, EnemyAttackStats attackStats)
         {
+            // パリィ状態である場合
+            if (_stateHandler.CurrentState == _stateHandler.ParryState)
+            {
+                // パリィのエフェクトを表示する
+                
+                // 敵側のパリィの結果を適用する処理を呼ぶ
+                enemyAI.ApplyParry();
+            }
+            
+            // パリィ状態でない場合
+            else
+            {
+                // ダメージを反映する
+            }
+        }
+
+        /// <summary>ダメージを反映する</summary>
+        private void TakeDamage()
+        {
+            
+        }
+
+        /// <summary>敵の攻撃が命中した時の処理</summary>
+        public void OnHitByEnemy(float damage, OldEnemyAIBase ai)
+        {
+
+            // パリィ状態でない場合
+            else
+            {
+                
+                // 死亡判定
+                
+                // アニメーションを再生する
+            }
+            
             // パリィした場合は処理を抜ける
-            _particleHandler.ActivateParticle(InGameEnum.PlayerParticleType.Parry.ToString());
-            ai.OnParried();
+            //_particleHandler.ActivateParticle(InGameEnum.PlayerParticleType.Parry.ToString());
             
             // ダメージ処理
             TakeDamage(damage);
