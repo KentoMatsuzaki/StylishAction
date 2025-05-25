@@ -28,6 +28,7 @@ namespace Player
         public Transform modelTransform;
 
         private float _currentHp;
+        private Collider _collider;
         
         //-------------------------------------------------------------------------------
         // 初期設定
@@ -40,6 +41,7 @@ namespace Player
             _attackHandler = GetComponent<PlayerAttackHandler>();
             _particleHandler = GetComponent<PlayerParticleHandler>();
             _animationHandler = GetComponent<PlayerAnimationHandler>();
+            _collider = GetComponent<Collider>();
             Initialize();
             SetUpAllStatesActions();
         }
@@ -200,6 +202,30 @@ namespace Player
             {
                 // 防御のフラグを無効化する
                 _animationHandler.DisableGuard();
+            };
+            
+            // 被弾状態の開始時に呼ばれる処理
+            _stateHandler.DamageState.OnEnter = () =>
+            {
+                // 当たり判定を無効化する
+                _collider.enabled = false;
+                
+                // 被弾アニメーションを再生する
+                _animationHandler.PlayDamageAnimation();
+            };
+            
+            // 被弾状態の終了時に呼ばれる処理
+            _stateHandler.DamageState.OnExit = () =>
+            {
+                // 当たり判定を有効化する
+                _collider.enabled = true;
+            };
+            
+            // 死亡状態の開始時に呼ばれる処理
+            _stateHandler.DamageState.OnExit = () =>
+            {
+                // 死亡アニメーションを再生する
+                _animationHandler.PlayDieAnimation();
             };
         }
         
@@ -407,6 +433,72 @@ namespace Player
         }
         
         //-------------------------------------------------------------------------------
+        // 被弾時の処理
+        //-------------------------------------------------------------------------------
+
+        /// <summary>ダメージを適用する</summary>
+        public void ApplyDamage(EnemyAIBase enemyAI, EnemyAttackStats attackStats)
+        {
+            // パリィ状態である場合
+            if (_stateHandler.CurrentState == _stateHandler.ParryState)
+            {
+                // パリィのエフェクトを表示する
+                
+                // 敵側のパリィの結果を適用する処理を呼ぶ
+                enemyAI.ApplyParry();
+            }
+            
+            // 防御状態である場合
+            else if (_stateHandler.CurrentState == _stateHandler.GuardState)
+            {
+                // 防御のエフェクトを表示する
+                
+            }
+            
+            // パリィ状態でも防御状態でもない場合
+            else
+            {
+                // ダメージを反映する
+                TakeDamage(attackStats.attackDamage);
+            }
+        }
+
+        /// <summary>ダメージを反映する</summary>
+        private void TakeDamage(float attackDamage)
+        {
+            // ダメージが0以下の場合はログを出力して処理を抜ける
+            if (attackDamage <= 0)
+            {
+                Debug.LogWarning($"Received non-positive damage value : {attackDamage}");
+                return;
+            }
+
+            // 現在の体力からダメージ量を減少させる
+            _currentHp = Mathf.Max(0, _currentHp - attackDamage);
+            Debug.Log($"Received damage : {attackDamage}. Current HP : {_currentHp}");
+            
+            // 死亡している場合
+            if (_currentHp <= 0)
+            {
+                // 死亡時の処理を呼び出す
+                ApplyDeath();
+            }
+            // 死亡していない場合
+            else
+            {
+                // 被弾状態に切り替える
+                _stateHandler.SwitchState(_stateHandler.DamageState);
+            }
+        }
+
+        /// <summary>死亡時の処理</summary>
+        private void ApplyDeath()
+        {
+            // 死亡状態に切り替える
+            _stateHandler.SwitchState(_stateHandler.DeathState);
+        }
+        
+        //-------------------------------------------------------------------------------
         // ロックオン処理
         //-------------------------------------------------------------------------------
 
@@ -425,86 +517,6 @@ namespace Player
                 
                 OrbitCamera.Instance.SwitchLockOnTarget();
             }
-        }
-        
-        //-------------------------------------------------------------------------------
-        // 被弾時の処理
-        //-------------------------------------------------------------------------------
-
-        /// <summary>ダメージを適用する</summary>
-        public void ApplyDamage(EnemyAIBase enemyAI, EnemyAttackStats attackStats)
-        {
-            // パリィ状態である場合
-            if (_stateHandler.CurrentState == _stateHandler.ParryState)
-            {
-                // パリィのエフェクトを表示する
-                
-                // 敵側のパリィの結果を適用する処理を呼ぶ
-                enemyAI.ApplyParry();
-            }
-            
-            // パリィ状態でない場合
-            else
-            {
-                // ダメージを反映する
-            }
-        }
-
-        /// <summary>ダメージを反映する</summary>
-        private void TakeDamage()
-        {
-            
-        }
-
-        /// <summary>敵の攻撃が命中した時の処理</summary>
-        public void OnHitByEnemy(float damage, OldEnemyAIBase ai)
-        {
-
-            // パリィ状態でない場合
-            else
-            {
-                
-                // 死亡判定
-                
-                // アニメーションを再生する
-            }
-            
-            // パリィした場合は処理を抜ける
-            //_particleHandler.ActivateParticle(InGameEnum.PlayerParticleType.Parry.ToString());
-            
-            // ダメージ処理
-            TakeDamage(damage);
-            
-            // 死亡処理
-            if (IsDied())
-            {
-                OnDie();
-            }
-            
-            // アニメーション処理
-            _animationHandler.PlayHitAnimation();
-        }
-
-        /// <summary>ダメージ処理</summary>
-        /// <param name="damage"></param>
-        private void TakeDamage(float damage)
-        {
-            if (damage > 0)
-            {
-                // ダメージを適用する
-                _currentHp = Mathf.Max(_currentHp - damage, 0);
-            }
-        }
-        
-        /// <summary>死亡判定</summary>
-        private bool IsDied() => _currentHp == 0;
-
-        /// <summary>死亡時の処理</summary>
-        private void OnDie()
-        {
-
-            // アニメーション処理
-            _animationHandler.PlayDieAnimation();
         }
         
         //-------------------------------------------------------------------------------
