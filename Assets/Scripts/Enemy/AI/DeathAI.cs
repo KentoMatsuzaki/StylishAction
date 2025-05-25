@@ -6,6 +6,7 @@ using Enemy.AsyncNode;
 using Enemy.Handler;
 using Enum;
 using Player;
+using SO.Player;
 
 namespace Enemy.AI
 {
@@ -156,8 +157,108 @@ namespace Enemy.AI
         public override void ApplyParry()
         {
             // ビヘイビアツリーの評価をキャンセルする
-            Cts.Cancel();
-            // 
+            Cts?.Cancel();
+            // 敵をスタンさせる
+            ApplyStun();
+        }
+
+        /// <summary>スタン時の処理</summary>
+        private async void ApplyStun()
+        {
+            // スタンのアニメーションを再生する
+            AnimationHandler.PlayStunAnimation();
+            // スタンの終了を待機する
+            await UniTask.Delay(TimeSpan.FromSeconds(Stats.stunDuration));
+            // ビヘイビアツリーの評価を開始する
+            StartBehaviour();
+        }
+        
+        //-------------------------------------------------------------------------------
+        // 被弾時の処理
+        //-------------------------------------------------------------------------------
+
+        /// <summary>ダメージを適用する</summary>
+        public void ApplyDamage(PlayerAttackStats attackStats)
+        {
+            // ダメージを反映する
+            TakeDamage(attackStats.attackDamage);
+            
+            // 死亡している場合
+            if (CurrentHp <= 0)
+            {
+                // 死亡処理を呼ぶ
+                ApplyDeath();
+            }
+            
+            // 死亡していない場合
+            else
+            {
+                // 現在の靭性値が0でない場合
+                if (CurrentPoise != 0)
+                {
+                    // 現在の靭性値を1だけ減少させる
+                    CurrentPoise--;
+                }
+
+                // 現在の靭性値が0である場合
+                if (CurrentPoise == 0)
+                {
+                    // スタン処理を呼ぶ
+                    ApplyStun();
+                }
+                
+                // 現在の靭性値が0でない場合
+                else
+                {
+                    // 被弾のアニメーションを再生する
+                    AnimationHandler.PlayDamageAnimation();
+                    // ノックバックさせる
+                    ApplyKnockBack();
+                }
+            }
+        }
+
+        /// <summary>ダメージを反映する</summary>
+        private void TakeDamage(float attackDamage)
+        {
+            // ダメージが0以下の場合はログを出力して処理を抜ける
+            if (attackDamage <= 0)
+            {
+                Debug.LogWarning($"Received non-positive damage value : {attackDamage}");
+                return;
+            }
+
+            // 現在の体力からダメージ量を減少させる
+            CurrentHp = Mathf.Max(0, CurrentHp - attackDamage);
+            Debug.Log($"Received damage : {attackDamage}. Current HP : {CurrentHp}");
+        }
+
+        /// <summary>死亡時の処理</summary>
+        private void ApplyDeath()
+        {
+            // ビヘイビアツリーの評価をキャンセルする
+            Cts?.Cancel();
+            // 死亡アニメーションを再生する
+            AnimationHandler.PlayDieAnimation();
+        }
+
+        /// <summary>ノックバックを適用する</summary>
+        private void ApplyKnockBack()
+        {
+            // プレイヤーの方向へ回転させる
+            AttackHandler.RotateTowardsPlayer(Player, Stats.rotateSpeed);
+            // プレイヤーの逆方向へ力を加える
+            Rb.AddForce(AttackHandler.GetFlatDirectionToPlayer(Player) * Stats.knockBackPower, ForceMode.Impulse);
+        }
+        
+        //-------------------------------------------------------------------------------
+        // アニメーションイベント
+        //-------------------------------------------------------------------------------
+
+        /// <summary>靭性値を最大まで回復させる</summary>
+        public void RestoreMaxPoise()
+        {
+            CurrentPoise = Stats.maxPoise;
         }
     }
 }
