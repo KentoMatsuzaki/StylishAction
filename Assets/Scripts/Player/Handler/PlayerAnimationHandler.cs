@@ -130,11 +130,11 @@ namespace Player.Handler
         }
         
         //-------------------------------------------------------------------------------
-        // 被ダメージに関する処理
+        // 被弾に関する処理
         //-------------------------------------------------------------------------------
 
-        /// <summary>被ダメージアニメーションを再生する</summary>
-        public void PlayHitAnimation()
+        /// <summary>被弾アニメーションを再生する</summary>
+        public void PlayDamageAnimation()
         {
             _animator.Play(PlayerConst.HeavyHitState);
         }
