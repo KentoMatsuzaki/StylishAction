@@ -36,6 +36,15 @@ namespace Enemy.AI
         /// <summary>攻撃の制御クラス</summary>
         protected EnemyAttackHandler AttackHandler;
 
+        /// <summary>現在の体力値</summary>
+        protected float CurrentHp;
+
+        /// <summary>現在の靭性値</summary>
+        protected int CurrentPoise;
+
+        /// <summary>剛体</summary>
+        protected Rigidbody Rb;
+
         //-------------------------------------------------------------------------------
         // ビヘイビアツリーに関する処理
         //-------------------------------------------------------------------------------
