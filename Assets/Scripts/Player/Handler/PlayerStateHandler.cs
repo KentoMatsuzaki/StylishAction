@@ -39,6 +39,12 @@ namespace Player.Handler
         /// <summary>防御状態</summary>
         public PlayerState GuardState { get; private set; }
         
+        /// <summary>被弾状態</summary>
+        public PlayerState DamageState { get; private set; }
+        
+        /// <summary>死亡状態</summary>
+        public PlayerState DeathState { get; private set; }
+        
         //-------------------------------------------------------------------------------
         // 初期設定
         //-------------------------------------------------------------------------------
@@ -82,6 +88,12 @@ namespace Player.Handler
             
             // 防御状態
             GuardState = new PlayerState(PlayerEnum.EPlayerState.Guard);
+            
+            // 被弾状態
+            DamageState = new PlayerState(PlayerEnum.EPlayerState.Damage);
+            
+            // 死亡状態
+            DeathState = new PlayerState(PlayerEnum.EPlayerState.Death);
         }
 
         /// <summary>各状態ごとに遷移できない状態を定義する</summary>
@@ -134,10 +146,9 @@ namespace Player.Handler
                 return;
             }
             
-            // 次の状態へ現在の状態から遷移できない場合は処理を抜ける
+            // 現在の状態から次の状態へ遷移できない場合は処理を抜ける
             if (CurrentState.InvalidTransitions.Contains(nextState.StateType))
             {
-                Debug.Log("Invalid Transition");
                 return;
             }
             
