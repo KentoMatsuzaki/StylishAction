@@ -16,8 +16,8 @@ namespace Enum.Player
             Transition,    // 遷移
             Parry,         // パリィ
             Guard,         // 防御
-            Damage,        // 被ダメージ
-            Dead           // 死亡
+            Damage,        // 被弾
+            Death          // 死亡
         }
     }
 }
