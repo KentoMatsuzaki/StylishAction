@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SO.Enemy
 {
@@ -6,7 +7,7 @@ namespace SO.Enemy
     [CreateAssetMenu(fileName = "EnemyStats", menuName = "ScriptableObjects/EnemyStats")]
     public class EnemyStats : ScriptableObject
     {
-        /// <summary>最大体力</summary>
+        /// <summary>最大体力値</summary>
         public float maxHp;
         
         /// <summary>移動速度</summary>
@@ -15,10 +16,13 @@ namespace SO.Enemy
         /// <summary>回転速度</summary>
         public float rotateSpeed;
 
-        /// <summary>ノックバック速度</summary>
-        public float knockBackSpeed;
+        /// <summary>スタン時間</summary>
+        public float stunDuration;
 
-        /// <summary>最大ヒット数</summary>
-        public int maxHitCount;
+        /// <summary>ノックバック時に加える力の大きさ</summary>
+        public float knockBackPower;
+
+        /// <summary>最大靭性値</summary>
+        public int maxPoise;
     }
 }
