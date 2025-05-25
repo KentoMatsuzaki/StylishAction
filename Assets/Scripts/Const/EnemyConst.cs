@@ -7,14 +7,14 @@ namespace Const
         // タグ
         //-------------------------------------------------------------------------------
         
-        public const string TagName = "Enemy";
+        public const string GameObjectTag = "Enemy"; // 敵のGameObjectに割り当てるタグ
         
         //-------------------------------------------------------------------------------
         // アニメーションステート
         //-------------------------------------------------------------------------------
         
-        public const string HitState = "Hit"; // 被ダメージ
-        public const string DownState = "Down"; // 弱体化
+        public const string DamageState = "Damage"; // 被弾
+        public const string StunState = "Stun"; // スタン
         public const string DieState = "Die"; // 死亡
         
         //-------------------------------------------------------------------------------
