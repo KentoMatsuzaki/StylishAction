@@ -93,7 +93,7 @@ namespace Enemy.Handler
         //-------------------------------------------------------------------------------
 
         /// <summary>Y座標を無視してプレイヤーへの方向を求める</summary>
-        private Vector3 GetFlatDirectionToPlayer(PlayerController player)
+        public Vector3 GetFlatDirectionToPlayer(PlayerController player)
         {
             return (new Vector3(player.transform.position.x, 0, player.transform.position.z) - 
                     new Vector3(transform.position.x, 0, transform.position.z)).normalized;
