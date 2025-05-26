@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Enum.Player;
+using Enum;
 
 namespace Player
 {
@@ -18,12 +18,12 @@ namespace Player
         public Action OnExit;
 
         /// <summary>状態の種類</summary>
-        public readonly PlayerEnum.EPlayerState StateType;
+        public readonly PlayerEnums.PlayerState StateType;
         
         /// <summary>この状態から遷移できない状態の一覧</summary>
-        public readonly List<PlayerEnum.EPlayerState> InvalidTransitions = new List<PlayerEnum.EPlayerState>();
+        public readonly List<PlayerEnums.PlayerState> InvalidTransitions = new List<PlayerEnums.PlayerState>();
         
-        public PlayerState(PlayerEnum.EPlayerState stateType)
+        public PlayerState(PlayerEnums.PlayerState stateType)
         {
             StateType = stateType;
         }

@@ -1,4 +1,4 @@
-using Enum.Player;
+using Enum;
 using UnityEngine;
 
 namespace Player.Handler
@@ -60,68 +60,68 @@ namespace Player.Handler
         private void CreateAllStates()
         {
             // 静止状態
-            IdleState = new PlayerState(PlayerEnum.EPlayerState.Idle);
+            IdleState = new PlayerState(PlayerEnums.PlayerState.Idle);
             
             // 移動状態
-            MoveState = new PlayerState(PlayerEnum.EPlayerState.Move);
+            MoveState = new PlayerState(PlayerEnums.PlayerState.Move);
             
             // スプリント状態
-            SprintState = new PlayerState(PlayerEnum.EPlayerState.Sprint);
+            SprintState = new PlayerState(PlayerEnums.PlayerState.Sprint);
             
             // 回避状態
-            DodgeState = new PlayerState(PlayerEnum.EPlayerState.Dodge);
+            DodgeState = new PlayerState(PlayerEnums.PlayerState.Dodge);
             
             // 通常攻撃状態
-            AttackNormalState = new PlayerState(PlayerEnum.EPlayerState.AttackNormal);
+            AttackNormalState = new PlayerState(PlayerEnums.PlayerState.AttackNormal);
             
             // 特殊攻撃状態
-            AttackSpecialState = new PlayerState(PlayerEnum.EPlayerState.AttackSpecial);
+            AttackSpecialState = new PlayerState(PlayerEnums.PlayerState.AttackSpecial);
             
             // 必殺攻撃状態
-            AttackExtraState = new PlayerState(PlayerEnum.EPlayerState.AttackExtra);
+            AttackExtraState = new PlayerState(PlayerEnums.PlayerState.AttackExtra);
             
             // 遷移状態（他の状態へ遷移するための中継的な状態）
-            TransitionState = new PlayerState(PlayerEnum.EPlayerState.Transition);
+            TransitionState = new PlayerState(PlayerEnums.PlayerState.Transition);
             
             // パリィ状態
-            ParryState = new PlayerState(PlayerEnum.EPlayerState.Parry);
+            ParryState = new PlayerState(PlayerEnums.PlayerState.Parry);
             
             // 防御状態
-            GuardState = new PlayerState(PlayerEnum.EPlayerState.Guard);
+            GuardState = new PlayerState(PlayerEnums.PlayerState.Guard);
             
             // 被弾状態
-            DamageState = new PlayerState(PlayerEnum.EPlayerState.Damage);
+            DamageState = new PlayerState(PlayerEnums.PlayerState.Damage);
             
             // 死亡状態
-            DeathState = new PlayerState(PlayerEnum.EPlayerState.Death);
+            DeathState = new PlayerState(PlayerEnums.PlayerState.Death);
         }
 
         /// <summary>各状態ごとに遷移できない状態を定義する</summary>
         private void DefineInvalidTransitions()
         {
             // 移動状態
-            MoveState.InvalidTransitions.Add(PlayerEnum.EPlayerState.AttackNormal);
-            MoveState.InvalidTransitions.Add(PlayerEnum.EPlayerState.AttackSpecial);
-            MoveState.InvalidTransitions.Add(PlayerEnum.EPlayerState.AttackExtra);
-            MoveState.InvalidTransitions.Add(PlayerEnum.EPlayerState.Guard);
+            MoveState.InvalidTransitions.Add(PlayerEnums.PlayerState.AttackNormal);
+            MoveState.InvalidTransitions.Add(PlayerEnums.PlayerState.AttackSpecial);
+            MoveState.InvalidTransitions.Add(PlayerEnums.PlayerState.AttackExtra);
+            MoveState.InvalidTransitions.Add(PlayerEnums.PlayerState.Guard);
             
             // スプリント状態
-            SprintState.InvalidTransitions.Add(PlayerEnum.EPlayerState.AttackNormal);
-            SprintState.InvalidTransitions.Add(PlayerEnum.EPlayerState.AttackSpecial);
-            SprintState.InvalidTransitions.Add(PlayerEnum.EPlayerState.AttackExtra);
-            SprintState.InvalidTransitions.Add(PlayerEnum.EPlayerState.Guard);
+            SprintState.InvalidTransitions.Add(PlayerEnums.PlayerState.AttackNormal);
+            SprintState.InvalidTransitions.Add(PlayerEnums.PlayerState.AttackSpecial);
+            SprintState.InvalidTransitions.Add(PlayerEnums.PlayerState.AttackExtra);
+            SprintState.InvalidTransitions.Add(PlayerEnums.PlayerState.Guard);
             
             // 通常攻撃状態
-            AttackNormalState.InvalidTransitions.Add(PlayerEnum.EPlayerState.Move);
-            AttackNormalState.InvalidTransitions.Add(PlayerEnum.EPlayerState.Sprint);
+            AttackNormalState.InvalidTransitions.Add(PlayerEnums.PlayerState.Move);
+            AttackNormalState.InvalidTransitions.Add(PlayerEnums.PlayerState.Sprint);
             
             // 特殊攻撃状態
-            AttackSpecialState.InvalidTransitions.Add(PlayerEnum.EPlayerState.Move);
-            AttackSpecialState.InvalidTransitions.Add(PlayerEnum.EPlayerState.Sprint);
+            AttackSpecialState.InvalidTransitions.Add(PlayerEnums.PlayerState.Move);
+            AttackSpecialState.InvalidTransitions.Add(PlayerEnums.PlayerState.Sprint);
             
             // 必殺攻撃状態
-            AttackExtraState.InvalidTransitions.Add(PlayerEnum.EPlayerState.Move);
-            AttackExtraState.InvalidTransitions.Add(PlayerEnum.EPlayerState.Sprint);
+            AttackExtraState.InvalidTransitions.Add(PlayerEnums.PlayerState.Move);
+            AttackExtraState.InvalidTransitions.Add(PlayerEnums.PlayerState.Sprint);
         }
 
         /// <summary>状態の初期化を行う</summary>
@@ -158,7 +158,7 @@ namespace Player.Handler
                 CurrentState.Exit();
             }
             
-            Debug.Log($"{CurrentState.StateType} to {nextState.StateType} {Time.time}");
+            //Debug.Log($"{CurrentState.StateType} to {nextState.StateType} {Time.time}");
             
             CurrentState = nextState;
             CurrentState.Enter();
