@@ -7,16 +7,16 @@ using UnityEngine.Serialization;
 
 namespace Particle
 {
-    /// <summary>パーティクルを制御する基底クラス</summary>
+    /// <summary>パーティクルを制御する抽象クラス</summary>
     public abstract class ParticleControllerBase : MonoBehaviour
     {
-        /// <summary>パーティクルの持続時間</summary>
+        /// <summary>パーティクルの表示時間</summary>
         [SerializeField] private float lifeTime;
+
+        /// <summary>パーティクルを存続させるか</summary>
+        [SerializeField] private bool isLasting;
         
-        /// <summary>パーティクルの種類</summary>
-        [SerializeField] private InGameEnum.ParticleLifeTimeType lifeTimeType;
-        
-        /// <summary>子のパーティクル配列</summary>
+        /// <summary>パーティクルの一覧</summary>
         private ParticleSystem[] _particles;
         
         //-------------------------------------------------------------------------------
@@ -35,53 +35,67 @@ namespace Particle
         /// <summary>パーティクルを有効化する</summary>
         public virtual void Activate()
         {
-            // アクティブ時
+            // パーティクルが有効化されている場合
             if (gameObject.activeSelf)
             {
+                // パーティクルをリスタートする
                 ReplayParticles();
             }
-            // 非アクティブ時
+            // パーティクルが無効化されている場合
             else
             {
-                HandleActivationByLifeTimeType();
+                // パーティクルを有効化する
+                HandleActivation();
             }
         }
 
-        /// <summary>パーティクルを再再生する</summary>
+        /// <summary>パーティクルを無効化する</summary>
+        public virtual void Deactivate()
+        {
+            foreach (var particle in _particles)
+            {
+                particle.Stop();
+                particle.Clear();
+            }
+        }
+
+        /// <summary>パーティクルをリスタートする</summary>
         private void ReplayParticles()
         {
             foreach (var particle in _particles)
             {
+                particle.Stop();
                 particle.Clear();
                 particle.Play();
             }
         }
 
-        /// <summary>パーティクルのライフタイムの種類に応じて有効化する</summary>
-        private void HandleActivationByLifeTimeType()
+        /// <summary>パーティクルを有効化する</summary>
+        private void HandleActivation()
         {
-            switch (lifeTimeType)
+            if (isLasting)
             {
-                case InGameEnum.ParticleLifeTimeType.OneShot :
-                    WaitForAllParticlesThenDeactivate().Forget(); break;
-                case InGameEnum.ParticleLifeTimeType.Lasting :
-                    WaitForLifeTimeThenDeactivate().Forget(); break;
+                ActivateAndDeactivateAfterLifetime();
+            }
+            else
+            {
+                ActivateAndDeactivateAfterParticlesComplete();
             }
         }
 
-        /// <summary>パーティクルを有効化して、再生終了した後に非アクティブにする</summary>
-        private async UniTaskVoid WaitForAllParticlesThenDeactivate()
-        {
-            gameObject.SetActive(true);
-            await UniTask.WaitUntil(() => _particles.All(p => !p.isPlaying));
-            gameObject.SetActive(false);
-        }
-
-        /// <summary>パーティクルを有効化して、持続時間の後に非アクティブにする</summary>
-        private async UniTaskVoid WaitForLifeTimeThenDeactivate()
+        /// <summary>パーティクルを有効化して、表示時間が経過した後に無効化する</summary>
+        private async void ActivateAndDeactivateAfterLifetime()
         {
             gameObject.SetActive(true);
             await UniTask.Delay(TimeSpan.FromSeconds(lifeTime));
+            gameObject.SetActive(false);
+        }
+        
+        /// <summary>パーティクルを有効化して、再生が完了した後に無効化する</summary>
+        private async void ActivateAndDeactivateAfterParticlesComplete()
+        {
+            gameObject.SetActive(true);
+            await UniTask.WaitUntil(() => _particles.All(p => !p.isPlaying));
             gameObject.SetActive(false);
         }
     }
