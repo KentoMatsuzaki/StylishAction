@@ -8,7 +8,7 @@ namespace Enemy
     /// <summary>敵の攻撃を発生させるクラス</summary>
     public class EnemyAttackInvoker : MonoBehaviour
     {
-        /// <summary>AI制御クラス</summary>
+        /// <summary>敵AIの制御クラス</summary>
         private EnemyAIBase _ai;
         
         /// <summary>攻撃の当たり判定</summary>
@@ -20,7 +20,7 @@ namespace Enemy
 
         private void Awake()
         {
-            // AI制御クラスを取得する
+            // 敵AIの制御クラスを取得する
             _ai = GetComponentInParent<EnemyAIBase>();
             // 攻撃の当たり判定を取得する
             _collider = GetComponent<Collider>();
