@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Enum;
@@ -14,11 +15,11 @@ namespace Particle
         [Header("敵の攻撃エフェクトのリスト"), SerializeField] 
         private List<EnemyParticleController> enemyParticleList;
 
-        /// <summary>プレイヤーのパーティクルのディクショナリー</summary>
-        private Dictionary<InGameEnum.PlayerParticleType, PlayerParticleController> _playerParticleDic;
+        /// <summary>プレイヤーのパーティクル</summary>
+        private Dictionary<ParticleEnums.PlayerParticleType, PlayerParticleController> _playerParticleDic;
 
-        /// <summary>敵のパーティクルのディクショナリー</summary>
-        private Dictionary<InGameEnum.EnemyParticleType, EnemyParticleController> _enemyParticleDic;
+        /// <summary>敵のパーティクル</summary>
+        private Dictionary<ParticleEnums.EnemyParticleType, EnemyParticleController> _enemyParticleDic;
         
         public static ParticleManager Instance;
         
@@ -28,41 +29,42 @@ namespace Particle
 
         private void Awake()
         {
-            if (Instance == null) Instance = this;
-            else Destroy(gameObject);
+            if (Instance == null) Instance = this; else Destroy(gameObject);
             
-            _playerParticleDic = playerParticleList.ToDictionary(e => e.playerParticleType, e => e);
-            _enemyParticleDic = enemyParticleList.ToDictionary(e => e.enemyParticleType, e => e);
+            _playerParticleDic = playerParticleList.ToDictionary(e => e.particleType, e => e);
+            _enemyParticleDic = enemyParticleList.ToDictionary(e => e.particleType, e => e);
         }
         
         //-------------------------------------------------------------------------------
-        // パーティクルの処理
+        // プレイヤーのパーティクルの処理
         //-------------------------------------------------------------------------------
 
         /// <summary>プレイヤーのパーティクルを有効化する</summary>
-        public void ActivatePlayerParticle(InGameEnum.PlayerParticleType type)
+        public void ActivatePlayerParticle(ParticleEnums.PlayerParticleType particleType)
         {
-            if (_playerParticleDic.TryGetValue(type, out var particle))
-            {
-                particle.Activate();
-            }
-            else
-            {
-                Debug.LogWarning($"Particle not found : {type}");
-            }
+            _playerParticleDic.GetValueOrDefault(particleType).Activate();
         }
 
-        /// <summary>敵のパーティクルを有効化する</summary>
-        public void ActivateEnemyParticle(InGameEnum.EnemyParticleType type)
+        /// <summary>プレイヤーのパーティクルを無効化する</summary>
+        public void DeactivatePlayerParticle(ParticleEnums.PlayerParticleType particleType)
         {
-            if (_enemyParticleDic.TryGetValue(type, out var particle))
-            {
-                particle.Activate();
-            }
-            else
-            {
-                Debug.LogWarning($"Particle not found : {type}");
-            }
+            _playerParticleDic.GetValueOrDefault(particleType).Deactivate();
+        }
+        
+        //-------------------------------------------------------------------------------
+        // 敵のパーティクルの処理
+        //-------------------------------------------------------------------------------
+
+        /// <summary>敵のパーティクルを有効化する</summary>
+        public void ActivateEnemyParticle(ParticleEnums.EnemyParticleType particleType)
+        {
+            _enemyParticleDic.GetValueOrDefault(particleType).Activate();
+        }
+
+        /// <summary>敵のパーティクルを無効化する</summary>
+        public void DeactivateEnemyParticle(ParticleEnums.EnemyParticleType particleType)
+        {
+            _enemyParticleDic.GetValueOrDefault(particleType).Deactivate();
         }
     }
 }
