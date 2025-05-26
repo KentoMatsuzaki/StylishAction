@@ -7,22 +7,23 @@ namespace Particle
     public class EnemyParticleController : ParticleControllerBase
     {
         /// <summary>敵のパーティクルの種類</summary>
-        public InGameEnum.EnemyParticleType enemyParticleType;
+        public ParticleEnums.EnemyParticleType particleType;
 
         /// <summary>パーティクルを有効化する</summary>
         public override void Activate()
         {
             base.Activate();
-            HandleCustomBehaviour();
+            ApplyCustomBehaviour();
         }
 
         /// <summary>パーティクルの固有処理</summary>
-        private void HandleCustomBehaviour()
+        private void ApplyCustomBehaviour()
         {
-            switch (enemyParticleType)
+            switch (particleType)
             {
-                case InGameEnum.EnemyParticleType.Meteor :
-                    transform.position = GameManager.Instance.Player.transform.position; break;
+                case ParticleEnums.EnemyParticleType.Meteor :
+                    //transform.position = GameManager.Instance.Player.transform.position;
+                    break;
             }
         }
     }
