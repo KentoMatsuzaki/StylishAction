@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Enemy.AsyncNode;
 using Enemy.Handler;
+using SO.Player;
 
 namespace Enemy.AI
 {
@@ -67,5 +68,8 @@ namespace Enemy.AI
         
         /// <summary>パリィの結果を適用する</summary>
         public abstract void ApplyParry();
+
+        /// <summary>ダメージを適用する</summary>
+        public abstract void ApplyDamage(PlayerAttackStats attackStats);
     }
 }
