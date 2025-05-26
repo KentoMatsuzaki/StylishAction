@@ -4,21 +4,21 @@ using UnityEngine;
 
 namespace Enemy.Handler
 {
-    /// <summary>敵のパーティクル処理を仲介するクラス</summary>
+    /// <summary>敵のパーティクルを制御するクラス</summary>
     public class EnemyParticleHandler : MonoBehaviour
     {
         /// <summary>パーティクルを有効化する</summary>
         /// <param name="particleType">パーティクルの種類</param>
-        public void ActivateParticle(string particleType)
+        public void ActivateParticle(ParticleEnums.EnemyParticleType particleType)
         {
-            if (System.Enum.TryParse<InGameEnum.EnemyParticleType>(particleType, out var type))
-            {
-                ParticleManager.Instance.ActivateEnemyParticle(type);
-            }
-            else
-            {
-                Debug.LogWarning($"Particle not found : {particleType}");
-            }
+            ParticleManager.Instance.ActivateEnemyParticle(particleType);
+        }
+
+        /// <summary>パーティクルを無効化する</summary>
+        /// <param name="particleType">パーティクルの種類</param>
+        public void DeactivateParticle(ParticleEnums.EnemyParticleType particleType)
+        {
+            ParticleManager.Instance.DeactivateEnemyParticle(particleType);
         }
     }
 }
