@@ -1,58 +1,82 @@
+using System.Collections;
 using UnityEngine;
 using System.Collections.Generic;
-using Common.Attacker;
-using UnityEngine.Serialization;
+using DefaultNamespace;
+using Enemy.AI;
+using Enum;
 
 namespace Player.Handler
 {
     /// <summary>プレイヤーの攻撃を制御するクラス</summary>
     public class PlayerAttackHandler : MonoBehaviour
     {
-        [Header("攻撃クラスのリスト"), SerializeField] 
-        private List<PlayerAttacker> attackerList;
+        [Header("攻撃の発生クラス")] 
+        [SerializeField] private PlayerAttackInvoker rightHandInvoker;
+        [SerializeField] private PlayerAttackInvoker leftHandInvoker;
+        [SerializeField] private PlayerAttackInvoker extraInvoker;
 
-        /// <summary>コライダーを有効化する</summary>
-        /// <param name="attackNumber">攻撃の番号(1~)</param>
-        public void EnableCollider(int attackNumber)
-        {
-            // 攻撃の番号が正常でない場合は処理を抜ける
-            if (!IsValidAttackNumber(attackNumber)) return;
-            // 攻撃コライダーを有効化する
-            attackerList[attackNumber - 1].EnableCollider();
-        }
+        /// <summary>攻撃の発生クラスの辞書</summary>
+        private readonly Dictionary<PlayerEnums.AttackType, PlayerAttackInvoker> _invokerDic = new();
+        
+        //-------------------------------------------------------------------------------
+        // 初期設定
+        //-------------------------------------------------------------------------------
 
-        /// <summary>コライダーを無効化する</summary>
-        /// <param name="attackNumber">攻撃の番号(1~)</param>
-        public void DisableCollider(int attackNumber)
+        private void Awake()
         {
-            // 攻撃の番号が正常出ない場合は処理を抜ける
-            if (!IsValidAttackNumber(attackNumber)) return;
-            // 攻撃コライダーを無効化する
-            attackerList[attackNumber - 1].DisableCollider();
-        }
-
-        /// <summary>正しい攻撃の番号であるか</summary>
-        private bool IsValidAttackNumber(int attackNumber)
-        {
-            if (attackNumber < 1 || attackNumber > attackerList.Count)
-            {
-                Debug.LogWarning($"Invalid Attack Number : {attackNumber}"); return false;
-            }
-            return true;
+            _invokerDic.Add(PlayerEnums.AttackType.RightSword, rightHandInvoker);
+            _invokerDic.Add(PlayerEnums.AttackType.LeftSword, leftHandInvoker);
+            _invokerDic.Add(PlayerEnums.AttackType.ExtraAttack, extraInvoker);
         }
         
-        /// <summary>敵の方向へ滑らかに回転させる</summary>
-        public void RotateSmoothlyTowardsEnemy(Vector3 enemyPosition, float attackAimAssistSpeed)
+        //-------------------------------------------------------------------------------
+        // 攻撃に関する処理
+        //-------------------------------------------------------------------------------
+
+        /// <summary>攻撃の種類を指定して、発生クラスを取得する</summary>
+        private PlayerAttackInvoker GetInvoker(PlayerEnums.AttackType attackType)
         {
-            var dir = enemyPosition - transform.position;
-            var rot = Quaternion.LookRotation(dir);
-            transform.rotation = Quaternion.Lerp(transform.rotation, rot, attackAimAssistSpeed);
+            return _invokerDic.GetValueOrDefault(attackType);
+        }
+        
+        /// <summary>攻撃の当たり判定を有効化する</summary>
+        public void EnableAttackCollider(PlayerEnums.AttackType attackType)
+        {
+            GetInvoker(attackType).EnableCollider();
         }
 
-        /// <summary>敵の方向へ即座に回転させる</summary>
-        public void RotateInstantlyTowardsEnemy(Vector3 enemyPosition)
+        /// <summary>攻撃の当たり判定を無効化する</summary>
+        public void DisableAttackCollider(PlayerEnums.AttackType attackType)
         {
-            transform.LookAt(enemyPosition);
+            GetInvoker(attackType).DisableCollider();
+        }
+
+        /// <summary>攻撃の当たり判定を持続時間だけ有効化する</summary>
+        public void EnableAttackColliderForDuration(PlayerEnums.AttackType attackType, float attackDuration)
+        {
+            GetInvoker(attackType).EnableCollider();
+            StartCoroutine(DisableAttackColliderRoutine(attackType, attackDuration));
+        }
+        
+        /// <summary>攻撃の持続時間後に、攻撃の当たり判定を無効化するコルーチン</summary>
+        private IEnumerator DisableAttackColliderRoutine(PlayerEnums.AttackType attackType, float attackDuration)
+        {
+            yield return new WaitForSeconds(attackDuration);
+            GetInvoker(attackType).DisableCollider();
+        }
+
+        /// <summary>Y座標を無視して敵への方向を求める</summary>
+        private Vector3 GetFlatDirectionToEnemy(EnemyAIBase enemy)
+        {
+            return (new Vector3(enemy.transform.position.x, 0, enemy.transform.position.z) - 
+                    new Vector3(transform.position.x, 0, transform.position.z)).normalized;
+        }
+        
+        /// <summary>敵の方向へ回転させる</summary>
+        public void RotateTowardsEnemy(EnemyAIBase enemy, float rotateSpeed)
+        {
+            var rotation = Quaternion.LookRotation(GetFlatDirectionToEnemy(enemy));
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, rotation, rotateSpeed * Time.deltaTime);
         }
     }
 }
