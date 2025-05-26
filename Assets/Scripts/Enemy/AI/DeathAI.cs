@@ -102,7 +102,7 @@ namespace Enemy.AI
                     // 攻撃情報をリセットする
                     CurrentAttackStats = null;
                     // 評価結果を返す
-                    return EnemyEnum.NodeStatus.Success;
+                    return EnemyEnums.NodeStatus.Success;
                 }
 
                 // 移動アニメーションのフラグを有効化する
@@ -125,7 +125,7 @@ namespace Enemy.AI
                 }
                     
                 // 評価結果を返す
-                return EnemyEnum.NodeStatus.Running;
+                return EnemyEnums.NodeStatus.Running;
             });
         }
         
@@ -178,7 +178,7 @@ namespace Enemy.AI
         //-------------------------------------------------------------------------------
 
         /// <summary>ダメージを適用する</summary>
-        public void ApplyDamage(PlayerAttackStats attackStats)
+        public override void ApplyDamage(PlayerAttackStats attackStats)
         {
             // ダメージを反映する
             TakeDamage(attackStats.attackDamage);
