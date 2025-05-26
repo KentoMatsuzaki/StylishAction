@@ -1,6 +1,5 @@
 using Camera;
 using SO.Player;
-using Enemy;
 using Enemy.AI;
 using Enum;
 using Player.Handler;
@@ -23,12 +22,13 @@ namespace Player
         
         [Header("ステータス情報"), SerializeField] private PlayerStats stats;
         [Header("カメラの位置"), SerializeField] private Transform cameraTransform;
-        [Header("敵"), SerializeField] private EnemyController enemy;
+        [Header("敵"), SerializeField] private EnemyAIBase enemy;
 
         public Transform modelTransform;
 
         private float _currentHp;
         private Collider _collider;
+        [SerializeField] private PlayerAttackStats currentAttackStats;
         
         //-------------------------------------------------------------------------------
         // 初期設定
@@ -127,6 +127,8 @@ namespace Player
             // 通常攻撃状態の開始時に呼ばれる処理
             _stateHandler.AttackNormalState.OnEnter = () =>
             {
+                // 敵の方向へ回転させる
+
                 // RootMotionを有効化する
                 _animationHandler.EnableRootMotion();
                 // 通常攻撃のトリガーを有効化する
@@ -445,7 +447,7 @@ namespace Player
                 // パリィのエフェクトを表示する
                 
                 // 敵側のパリィの結果を適用する処理を呼ぶ
-                enemyAI.ApplyParry();
+                //enemyAI.ApplyParry();
             }
             
             // 防御状態である場合
@@ -512,7 +514,7 @@ namespace Player
                 if (!OrbitCamera.Instance.IsLockingOnEnemy)
                 {
                     // 敵の方を向く
-                    _attackHandler.RotateInstantlyTowardsEnemy(enemy.transform.position);
+                    
                 }
                 
                 OrbitCamera.Instance.SwitchLockOnTarget();
@@ -533,6 +535,18 @@ namespace Player
         public void ApplyAttackSpecial4Force()
         {
             _locomotionHandler.ApplyAttackSpecial4Force(stats.attackSpecial4Power);
+        }
+
+        /// <summary>右手の攻撃の当たり判定を持続時間だけ有効化する</summary>
+        public void EnableRightAttackColliderForDuration()
+        {
+            _attackHandler.EnableAttackColliderForDuration(PlayerEnums.AttackType.RightSword, currentAttackStats.attackDuration);
+        }
+
+        /// <summary>左手の攻撃の当たり判定を持続時間だけ有効化する</summary>
+        public void EnableLeftAttackColliderForDuration()
+        {
+            _attackHandler.EnableAttackColliderForDuration(PlayerEnums.AttackType.LeftSword, currentAttackStats.attackDuration);
         }
     }
 }
