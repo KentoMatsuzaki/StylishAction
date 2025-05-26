@@ -19,10 +19,10 @@ namespace Enemy.AsyncNode
 
         /// <summary>ノードの評価結果を返す</summary>
         /// <returns>Success = 成功, Failure = 失敗</returns>
-        public override UniTask<EnemyEnum.NodeStatus> TickAsync(CancellationToken token)
+        public override UniTask<EnemyEnums.NodeStatus> TickAsync(CancellationToken token)
         {
             return UniTask.FromResult(_condition() ? 
-                EnemyEnum.NodeStatus.Success : EnemyEnum.NodeStatus.Failure);
+                EnemyEnums.NodeStatus.Success : EnemyEnums.NodeStatus.Failure);
         }
     }
 }

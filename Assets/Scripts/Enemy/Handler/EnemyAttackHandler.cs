@@ -16,7 +16,7 @@ namespace Enemy.Handler
         [SerializeField] private EnemyAttackInvoker seraphic;
 
         /// <summary>攻撃の発生クラスの辞書</summary>
-        private readonly Dictionary<EnemyEnum.AttackType, EnemyAttackInvoker> _invokerDic = new();
+        private readonly Dictionary<EnemyEnums.AttackType, EnemyAttackInvoker> _invokerDic = new();
         
         //-------------------------------------------------------------------------------
         // 初期設定
@@ -24,9 +24,9 @@ namespace Enemy.Handler
 
         private void Awake()
         {
-            _invokerDic.Add(EnemyEnum.AttackType.Scythe, scythe);
-            _invokerDic.Add(EnemyEnum.AttackType.Meteor, meteor);
-            _invokerDic.Add(EnemyEnum.AttackType.Seraphic, seraphic);
+            _invokerDic.Add(EnemyEnums.AttackType.Scythe, scythe);
+            _invokerDic.Add(EnemyEnums.AttackType.Meteor, meteor);
+            _invokerDic.Add(EnemyEnums.AttackType.Seraphic, seraphic);
         }
         
         //-------------------------------------------------------------------------------
@@ -34,19 +34,19 @@ namespace Enemy.Handler
         //-------------------------------------------------------------------------------
 
         /// <summary>攻撃の種類を指定して、発生クラスを取得する</summary>
-        private EnemyAttackInvoker GetInvoker(EnemyEnum.AttackType attackType)
+        private EnemyAttackInvoker GetInvoker(EnemyEnums.AttackType attackType)
         {
             return _invokerDic.GetValueOrDefault(attackType);
         }
         
         /// <summary>攻撃の当たり判定を有効化する</summary>
-        public void EnableAttackCollider(EnemyEnum.AttackType attackType)
+        public void EnableAttackCollider(EnemyEnums.AttackType attackType)
         {
             GetInvoker(attackType).EnableCollider();
         }
 
         /// <summary>攻撃の当たり判定を無効化する</summary>
-        public void DisableAttackCollider(EnemyEnum.AttackType attackType)
+        public void DisableAttackCollider(EnemyEnums.AttackType attackType)
         {
             GetInvoker(attackType).DisableCollider();
         }
@@ -140,13 +140,13 @@ namespace Enemy.Handler
         /// <summary>Meteorの攻撃アニメーションから呼ばれる</summary>
         public void EnableMeteorCollider()
         {
-            EnableAttackCollider(EnemyEnum.AttackType.Meteor);
+            EnableAttackCollider(EnemyEnums.AttackType.Meteor);
         }
 
         /// <summary>Meteorの攻撃アニメーションから呼ばれる</summary>
         public void DisableMeteorCollider()
         {
-            DisableAttackCollider(EnemyEnum.AttackType.Meteor);
+            DisableAttackCollider(EnemyEnums.AttackType.Meteor);
         }
     }
 }

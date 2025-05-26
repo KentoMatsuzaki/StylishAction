@@ -42,7 +42,7 @@ namespace Enemy.Handler
         
         /// <summary>攻撃のトリガーを有効化する</summary>
         /// <param name="attackType">攻撃の種類</param>
-        public void TriggerAttack(EnemyEnum.AttackType attackType)
+        public void TriggerAttack(EnemyEnums.AttackType attackType)
         {
             _animator.SetTrigger(attackType.ToString());
         }

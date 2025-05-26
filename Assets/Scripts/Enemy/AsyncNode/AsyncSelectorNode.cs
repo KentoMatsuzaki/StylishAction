@@ -19,16 +19,16 @@ namespace Enemy.AsyncNode
 
         /// <summary>ノードの評価結果を返す</summary>
         /// <returns>Success = 成功, Failure = 失敗, Running = 実行中</returns>
-        public override async UniTask<EnemyEnum.NodeStatus> TickAsync(CancellationToken token)
+        public override async UniTask<EnemyEnums.NodeStatus> TickAsync(CancellationToken token)
         {
             // 全ての子ノードを評価する
             foreach (var node in _nodeList)
             {
                 var status = await node.TickAsync(token);
-                if (status != EnemyEnum.NodeStatus.Failure) return status;
+                if (status != EnemyEnums.NodeStatus.Failure) return status;
             }
             // 全ての子ノードの評価結果が失敗の場合のみ、失敗の評価結果を返す
-            return EnemyEnum.NodeStatus.Failure;
+            return EnemyEnums.NodeStatus.Failure;
         }
     }
 }
