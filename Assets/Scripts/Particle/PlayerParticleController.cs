@@ -1,4 +1,5 @@
 using Enum;
+using UnityEngine.Serialization;
 
 namespace Particle
 {
@@ -6,6 +7,6 @@ namespace Particle
     public class PlayerParticleController : ParticleControllerBase
     {
         /// <summary>プレイヤーのパーティクルの種類</summary>
-        public InGameEnum.PlayerParticleType playerParticleType;
+        public ParticleEnums.PlayerParticleType particleType;
     }
 }
