@@ -1,19 +1,25 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Enum;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Particle
 {
     /// <summary>パーティクルを管理するクラス</summary>
     public class ParticleManager : MonoBehaviour
     {
-        /// <summary>攻撃パーティクルのリスト</summary>
-        [SerializeField] private List<AttackParticleBase> attackParticles;
+        /// <summary>再利用するパーティクルのリスト</summary>
+        [SerializeField] private List<ParticleBase> reusableParticles;
+        
+        /// <summary>一時的なパーティクルのリスト</summary>
+        [SerializeField] private List<LastingParticle> temporaryParticles;
 
-        /// <summary>攻撃パーティクルの辞書</summary>
-        private Dictionary<ParticleEnums.ParticleAttackType, AttackParticleBase> _attackParticleDic;
+        /// <summary>再利用するパーティクルのマップ</summary>
+        private Dictionary<ParticleEnums.ParticleType, ParticleBase> _reusableParticleMap;
+        
+        /// <summary>一時的なパーティクルのマップ</summary>
+        private Dictionary<ParticleEnums.ParticleType, LastingParticle> _temporaryParticleMap;
         
         public static ParticleManager Instance;
         
@@ -25,23 +31,31 @@ namespace Particle
         {
             if (Instance == null) Instance = this; else Destroy(gameObject);
             
-            _attackParticleDic = attackParticles.ToDictionary(k => k.attackType, v => v);
+            _reusableParticleMap = reusableParticles.ToDictionary(k => k.type, v => v);
+            _temporaryParticleMap = temporaryParticles.ToDictionary(k => k.type, v => v);
         }
         
         //-------------------------------------------------------------------------------
-        // 攻撃パーティクルの処理
+        // パーティクルの処理
         //-------------------------------------------------------------------------------
 
-        /// <summary>攻撃パーティクルを有効化する</summary>
-        public void ActivateAttackParticle(ParticleEnums.ParticleAttackType attackType)
+        /// <summary>パーティクルを有効化する</summary>
+        public void ActivateParticle(ParticleEnums.ParticleType type)
         {
-            _attackParticleDic.GetValueOrDefault(attackType).Activate();
+            _reusableParticleMap.GetValueOrDefault(type).Activate();
         }
 
-        /// <summary>攻撃パーティクルを無効化する</summary>
-        public void DeactivateAttackParticle(ParticleEnums.ParticleAttackType attackType)
+        /// <summary>パーティクルを無効化する</summary>
+        public void DeactivateParticle(ParticleEnums.ParticleType type)
         {
-            _attackParticleDic.GetValueOrDefault(attackType).Deactivate();
+            _reusableParticleMap.GetValueOrDefault(type).Deactivate();
+        }
+
+        /// <summary>パーティクルを生成する</summary>
+        public void InstantiateParticle(ParticleEnums.ParticleType type, Vector3 position, Transform parent)
+        {
+            Instantiate(_temporaryParticleMap.GetValueOrDefault(type).gameObject,
+                position, Quaternion.identity, parent);
         }
     }
 }
