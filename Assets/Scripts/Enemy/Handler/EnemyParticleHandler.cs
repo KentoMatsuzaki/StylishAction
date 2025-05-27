@@ -7,18 +7,18 @@ namespace Enemy.Handler
     /// <summary>敵のパーティクルを制御するクラス</summary>
     public class EnemyParticleHandler : MonoBehaviour
     {
-        /// <summary>パーティクルを有効化する</summary>
-        /// <param name="particleType">パーティクルの種類</param>
-        public void ActivateParticle(ParticleEnums.EnemyParticleType particleType)
+        /// <summary>攻撃パーティクルを有効化する</summary>
+        /// <param name="attackType">パーティクルと紐づいている攻撃の種類</param>
+        public void ActivateAttackParticle(ParticleEnums.ParticleAttackType attackType)
         {
-            ParticleManager.Instance.ActivateEnemyParticle(particleType);
+            ParticleManager.Instance.ActivateAttackParticle(attackType);
         }
 
-        /// <summary>パーティクルを無効化する</summary>
-        /// <param name="particleType">パーティクルの種類</param>
-        public void DeactivateParticle(ParticleEnums.EnemyParticleType particleType)
+        /// <summary>攻撃パーティクルを無効化する</summary>
+        /// <param name="attackType">パーティクルと紐づいている攻撃の種類</param>
+        public void DeactivateAttackParticle(ParticleEnums.ParticleAttackType attackType)
         {
-            ParticleManager.Instance.DeactivateEnemyParticle(particleType);
+            ParticleManager.Instance.DeactivateAttackParticle(attackType);
         }
     }
 }
