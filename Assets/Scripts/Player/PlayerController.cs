@@ -530,6 +530,12 @@ namespace Player
         {
             _stateHandler.SwitchState(_stateHandler.IdleState);
         }
+
+        /// <summary>着地アニメーションのアニメーションイベントから呼ばれる</summary>
+        public void SwitchStateToTransition()
+        {
+            _stateHandler.SwitchState(_stateHandler.TransitionState);
+        }
         
         /// <summary>特殊攻撃アニメーション4のアニメーションイベントから呼ばれる</summary>
         public void ApplyAttackSpecial4Force()
@@ -547,6 +553,47 @@ namespace Player
         public void EnableLeftAttackColliderForDuration()
         {
             _attackHandler.EnableAttackColliderForDuration(PlayerEnums.AttackType.LeftSword, currentAttackStats.attackDuration);
+        }
+
+        /// <summary>通常攻撃1の攻撃パーティクルを有効化する</summary>
+        public void ActivateAttackNormal1Particle()
+        {
+            _particleHandler.ActivateAttackParticle(ParticleEnums.ParticleAttackType.AttackNormal1);
+        }
+
+        public void ActivateAttackNormal2Particle()
+        {
+            _particleHandler.ActivateAttackParticle(ParticleEnums.ParticleAttackType.AttackNormal2);
+        }
+
+        public void ActivateAttackNormal3Particle()
+        {
+            _particleHandler.ActivateAttackParticle(ParticleEnums.ParticleAttackType.AttackNormal3);
+        }
+
+        public void ActivateAttackNormal4Particle()
+        {
+            _particleHandler.ActivateAttackParticle(ParticleEnums.ParticleAttackType.AttackNormal4);
+        }
+
+        public void ActivateAttackNormal5Particle()
+        {
+            _particleHandler.ActivateAttackParticle(ParticleEnums.ParticleAttackType.AttackNormal5);
+        }
+
+        public void ActivateAttackSpecial1Particle()
+        {
+            _particleHandler.ActivateAttackParticle(ParticleEnums.ParticleAttackType.AttackSpecial1);
+        }
+
+        public void ActivateAttackSpecial2Particle()
+        {
+            _particleHandler.ActivateAttackParticle(ParticleEnums.ParticleAttackType.AttackSpecial2);
+        }
+
+        public void ActivateAttackSpecial3Particle()
+        {
+            _particleHandler.ActivateAttackParticle(ParticleEnums.ParticleAttackType.AttackSpecial3);
         }
     }
 }
