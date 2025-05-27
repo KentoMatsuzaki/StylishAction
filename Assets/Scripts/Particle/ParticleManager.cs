@@ -9,17 +9,11 @@ namespace Particle
     /// <summary>パーティクルを管理するクラス</summary>
     public class ParticleManager : MonoBehaviour
     {
-        [Header("プレイヤーのパーティクルのリスト"), SerializeField]
-        private List<PlayerParticleController> playerParticleList;
+        /// <summary>攻撃パーティクルのリスト</summary>
+        [SerializeField] private List<AttackParticleBase> attackParticles;
 
-        [Header("敵の攻撃エフェクトのリスト"), SerializeField] 
-        private List<EnemyParticleController> enemyParticleList;
-
-        /// <summary>プレイヤーのパーティクル</summary>
-        private Dictionary<ParticleEnums.PlayerParticleType, PlayerParticleController> _playerParticleDic;
-
-        /// <summary>敵のパーティクル</summary>
-        private Dictionary<ParticleEnums.EnemyParticleType, EnemyParticleController> _enemyParticleDic;
+        /// <summary>攻撃パーティクルの辞書</summary>
+        private Dictionary<ParticleEnums.ParticleAttackType, AttackParticleBase> _attackParticleDic;
         
         public static ParticleManager Instance;
         
@@ -31,40 +25,23 @@ namespace Particle
         {
             if (Instance == null) Instance = this; else Destroy(gameObject);
             
-            _playerParticleDic = playerParticleList.ToDictionary(e => e.particleType, e => e);
-            _enemyParticleDic = enemyParticleList.ToDictionary(e => e.particleType, e => e);
+            _attackParticleDic = attackParticles.ToDictionary(k => k.attackType, v => v);
         }
         
         //-------------------------------------------------------------------------------
-        // プレイヤーのパーティクルの処理
+        // 攻撃パーティクルの処理
         //-------------------------------------------------------------------------------
 
-        /// <summary>プレイヤーのパーティクルを有効化する</summary>
-        public void ActivatePlayerParticle(ParticleEnums.PlayerParticleType particleType)
+        /// <summary>攻撃パーティクルを有効化する</summary>
+        public void ActivateAttackParticle(ParticleEnums.ParticleAttackType attackType)
         {
-            _playerParticleDic.GetValueOrDefault(particleType).Activate();
+            _attackParticleDic.GetValueOrDefault(attackType).Activate();
         }
 
-        /// <summary>プレイヤーのパーティクルを無効化する</summary>
-        public void DeactivatePlayerParticle(ParticleEnums.PlayerParticleType particleType)
+        /// <summary>攻撃パーティクルを無効化する</summary>
+        public void DeactivateAttackParticle(ParticleEnums.ParticleAttackType attackType)
         {
-            _playerParticleDic.GetValueOrDefault(particleType).Deactivate();
-        }
-        
-        //-------------------------------------------------------------------------------
-        // 敵のパーティクルの処理
-        //-------------------------------------------------------------------------------
-
-        /// <summary>敵のパーティクルを有効化する</summary>
-        public void ActivateEnemyParticle(ParticleEnums.EnemyParticleType particleType)
-        {
-            _enemyParticleDic.GetValueOrDefault(particleType).Activate();
-        }
-
-        /// <summary>敵のパーティクルを無効化する</summary>
-        public void DeactivateEnemyParticle(ParticleEnums.EnemyParticleType particleType)
-        {
-            _enemyParticleDic.GetValueOrDefault(particleType).Deactivate();
+            _attackParticleDic.GetValueOrDefault(attackType).Deactivate();
         }
     }
 }
