@@ -3,18 +3,20 @@ using System.Linq;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using Enum;
-using UnityEngine.Serialization;
 
 namespace Particle
 {
-    /// <summary>パーティクルを制御する抽象クラス</summary>
-    public abstract class ParticleControllerBase : MonoBehaviour
+    /// <summary>攻撃に紐づいたパーティクルを制御する抽象クラス</summary>
+    public abstract class AttackParticleBase : MonoBehaviour
     {
         /// <summary>パーティクルの表示時間</summary>
         [SerializeField] private float lifeTime;
 
         /// <summary>パーティクルを存続させるか</summary>
         [SerializeField] private bool isLasting;
+
+        /// <summary>パーティクルと紐づいている攻撃の種類</summary>
+        public ParticleEnums.ParticleAttackType attackType;
         
         /// <summary>パーティクルの一覧</summary>
         private ParticleSystem[] _particles;
