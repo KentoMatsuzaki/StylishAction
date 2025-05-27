@@ -3,10 +3,10 @@ namespace Enum
     /// <summary>パーティクルに関する列挙型を保持するクラス</summary>
     public static class ParticleEnums
     {
-        /// <summary>パーティクルが紐づいている攻撃の種類</summary>
-        public enum ParticleAttackType
+        /// <summary>パーティクルの種類</summary>
+        public enum ParticleType
         {
-            // プレイヤーの攻撃（1~100）
+            // プレイヤーの攻撃（1~30）
             None = 0,
             AttackNormal1 = 1,
             AttackNormal2 = 2,
@@ -18,10 +18,12 @@ namespace Enum
             AttackSpecial3 = 8,
             AttackExtra = 9,
             
-            // 敵の攻撃（101~200）
-            Scythe = 101,
-            Meteor = 102,
-            Seraph = 103,
+            // 敵の攻撃（31~100）
+            Scythe = 31,
+            Meteor = 32,
+            Seraph = 33,
+            
+            // 汎用（101~130）
         }
     }
 }
