@@ -2,6 +2,7 @@ using Camera;
 using SO.Player;
 using Enemy.AI;
 using Enum;
+using Particle;
 using Player.Handler;
 using Player.Interface;
 using SO.Enemy;
@@ -16,7 +17,6 @@ namespace Player
         private PlayerLocomotionHandler _locomotionHandler;
         private PlayerStateHandler _stateHandler;
         private PlayerAttackHandler _attackHandler;
-        private PlayerParticleHandler _particleHandler;
         private PlayerAnimationHandler _animationHandler;
         private PlayerInput _playerInput;
         
@@ -39,7 +39,6 @@ namespace Player
             _locomotionHandler = GetComponent<PlayerLocomotionHandler>();
             _stateHandler = GetComponent<PlayerStateHandler>();
             _attackHandler = GetComponent<PlayerAttackHandler>();
-            _particleHandler = GetComponent<PlayerParticleHandler>();
             _animationHandler = GetComponent<PlayerAnimationHandler>();
             _collider = GetComponent<Collider>();
             Initialize();
@@ -167,6 +166,8 @@ namespace Player
             {
                 // EX攻撃のフラグを有効化する
                 _animationHandler.EnableAttackExtra();
+                // EX攻撃のパーティクルを有効化する
+                ParticleManager.Instance.ActivateParticle(ParticleEnums.ParticleType.AttackExtra);
             };
 
             // EX攻撃状態の更新処理
@@ -183,6 +184,8 @@ namespace Player
             {
                 // EX攻撃のフラグを無効化する
                 _animationHandler.DisableAttackExtra();
+                // EX攻撃のパーティクルを無効化する
+                ParticleManager.Instance.DeactivateParticle(ParticleEnums.ParticleType.AttackExtra);
             };
             
             // パリィ状態の開始時に呼ばれる処理
@@ -558,42 +561,42 @@ namespace Player
         /// <summary>通常攻撃1の攻撃パーティクルを有効化する</summary>
         public void ActivateAttackNormal1Particle()
         {
-            _particleHandler.ActivateAttackParticle(ParticleEnums.ParticleAttackType.AttackNormal1);
+            ParticleManager.Instance.ActivateParticle(ParticleEnums.ParticleType.AttackNormal1);
         }
 
         public void ActivateAttackNormal2Particle()
         {
-            _particleHandler.ActivateAttackParticle(ParticleEnums.ParticleAttackType.AttackNormal2);
+            ParticleManager.Instance.ActivateParticle(ParticleEnums.ParticleType.AttackNormal2);
         }
 
         public void ActivateAttackNormal3Particle()
         {
-            _particleHandler.ActivateAttackParticle(ParticleEnums.ParticleAttackType.AttackNormal3);
+            ParticleManager.Instance.ActivateParticle(ParticleEnums.ParticleType.AttackNormal3);
         }
 
         public void ActivateAttackNormal4Particle()
         {
-            _particleHandler.ActivateAttackParticle(ParticleEnums.ParticleAttackType.AttackNormal4);
+            ParticleManager.Instance.ActivateParticle(ParticleEnums.ParticleType.AttackNormal4);
         }
 
         public void ActivateAttackNormal5Particle()
         {
-            _particleHandler.ActivateAttackParticle(ParticleEnums.ParticleAttackType.AttackNormal5);
+            ParticleManager.Instance.ActivateParticle(ParticleEnums.ParticleType.AttackNormal5);
         }
 
         public void ActivateAttackSpecial1Particle()
         {
-            _particleHandler.ActivateAttackParticle(ParticleEnums.ParticleAttackType.AttackSpecial1);
+            ParticleManager.Instance.ActivateParticle(ParticleEnums.ParticleType.AttackSpecial1);
         }
 
         public void ActivateAttackSpecial2Particle()
         {
-            _particleHandler.ActivateAttackParticle(ParticleEnums.ParticleAttackType.AttackSpecial2);
+            ParticleManager.Instance.ActivateParticle(ParticleEnums.ParticleType.AttackSpecial2);
         }
 
         public void ActivateAttackSpecial3Particle()
         {
-            _particleHandler.ActivateAttackParticle(ParticleEnums.ParticleAttackType.AttackSpecial3);
+            ParticleManager.Instance.ActivateParticle(ParticleEnums.ParticleType.AttackSpecial3);
         }
     }
 }
