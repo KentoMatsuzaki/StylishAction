@@ -147,16 +147,25 @@ namespace Enemy.Handler
             DisableAttackCollider(EnemyEnums.AttackType.Scythe);
         }
         
-        /// <summary>Meteorの攻撃アニメーションから呼ばれる</summary>
-        public void EnableMeteorCollider()
+        public void HandleMeteorCollider()
         {
             EnableAttackCollider(EnemyEnums.AttackType.Meteor);
+            Invoke(nameof(DisableMeteorCollider), 0.1f);
         }
-
-        /// <summary>Meteorの攻撃アニメーションから呼ばれる</summary>
+        
         public void DisableMeteorCollider()
         {
             DisableAttackCollider(EnemyEnums.AttackType.Meteor);
+        }
+
+        public void EnableSeraphCollider()
+        {
+            EnableAttackCollider(EnemyEnums.AttackType.Seraph);
+        }
+
+        public void DisableSeraphCollider()
+        {
+            DisableAttackCollider(EnemyEnums.AttackType.Seraph);
         }
     }
 }
