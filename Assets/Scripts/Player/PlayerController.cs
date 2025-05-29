@@ -8,6 +8,7 @@ using Player.Interface;
 using SO.Enemy;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 namespace Player
 {
@@ -28,7 +29,7 @@ namespace Player
 
         private float _currentHp;
         private Collider _collider;
-        [SerializeField] private PlayerAttackStats currentAttackStats;
+        public PlayerAttackStats CurrentAttackStats { get; private set; }
         
         //-------------------------------------------------------------------------------
         // 初期設定
@@ -127,7 +128,9 @@ namespace Player
             _stateHandler.AttackNormalState.OnEnter = () =>
             {
                 // 敵の方向へ回転させる
-
+                _attackHandler.RotateTowardsEnemyInstantly(enemy);
+                // 現在の攻撃の情報を通常攻撃に設定する
+                CurrentAttackStats = _attackHandler.GetAttackStats(PlayerEnums.AttackType.AttackNormal);
                 // RootMotionを有効化する
                 _animationHandler.EnableRootMotion();
                 // 通常攻撃のトリガーを有効化する
@@ -146,6 +149,10 @@ namespace Player
             // 特殊攻撃状態の開始時に呼ばれる処理
             _stateHandler.AttackSpecialState.OnEnter = () =>
             {
+                // 敵の方向へ回転させる
+                _attackHandler.RotateTowardsEnemyInstantly(enemy);
+                // 現在の攻撃の情報を特殊攻撃に設定する
+                CurrentAttackStats = _attackHandler.GetAttackStats(PlayerEnums.AttackType.AttackSpecial);
                 // RootMotionを有効化する
                 _animationHandler.EnableRootMotion();
                 // 特殊攻撃のトリガーを有効化する
@@ -164,6 +171,10 @@ namespace Player
             // EX攻撃状態の開始時に呼ばれる処理
             _stateHandler.AttackExtraState.OnEnter = () =>
             {
+                // 敵の方向へ回転させる
+                _attackHandler.RotateTowardsEnemyInstantly(enemy);
+                // 現在の攻撃の情報をEX攻撃に設定する
+                CurrentAttackStats = _attackHandler.GetAttackStats(PlayerEnums.AttackType.AttackExtra);
                 // EX攻撃のフラグを有効化する
                 _animationHandler.EnableAttackExtra();
                 // EX攻撃のパーティクルを有効化する
@@ -450,7 +461,7 @@ namespace Player
                 // パリィのエフェクトを表示する
                 
                 // 敵側のパリィの結果を適用する処理を呼ぶ
-                //enemyAI.ApplyParry();
+                enemyAI.ApplyParry();
             }
             
             // 防御状態である場合
@@ -544,18 +555,6 @@ namespace Player
         public void ApplyAttackSpecial4Force()
         {
             _locomotionHandler.ApplyAttackSpecial4Force(stats.attackSpecial4Power);
-        }
-
-        /// <summary>右手の攻撃の当たり判定を持続時間だけ有効化する</summary>
-        public void EnableRightAttackColliderForDuration()
-        {
-            _attackHandler.EnableAttackColliderForDuration(PlayerEnums.AttackType.RightSword, currentAttackStats.attackDuration);
-        }
-
-        /// <summary>左手の攻撃の当たり判定を持続時間だけ有効化する</summary>
-        public void EnableLeftAttackColliderForDuration()
-        {
-            _attackHandler.EnableAttackColliderForDuration(PlayerEnums.AttackType.LeftSword, currentAttackStats.attackDuration);
         }
 
         /// <summary>通常攻撃1の攻撃パーティクルを有効化する</summary>
