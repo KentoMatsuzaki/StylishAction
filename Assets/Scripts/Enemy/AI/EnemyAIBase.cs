@@ -15,7 +15,7 @@ namespace Enemy.AI
     public abstract class EnemyAIBase : MonoBehaviour
     {
         /// <summary>プレイヤー</summary>
-        [SerializeField] protected PlayerController player;
+        [SerializeField] public PlayerController player;
         
         /// <summary>ステータス情報</summary>
         [SerializeField] protected EnemyStats stats;
