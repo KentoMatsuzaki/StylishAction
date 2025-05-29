@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a75a177b41fcc424bb627e93ddeef44a, type: 3}
   m_Name: Meteor
   m_EditorClassIdentifier: 
-  type: 1
-  damageAmount: 1
+  attackType: 1
+  attackDamage: 1
   minAttackRange: 7.5
   maxAttackRange: 10
-  maxAttackAngle: 7.5
+  attackAngle: 15
+  attackCooldown: 0.1
