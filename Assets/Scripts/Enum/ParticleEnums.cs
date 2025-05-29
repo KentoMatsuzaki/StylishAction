@@ -21,7 +21,8 @@ namespace Enum
             // 敵の攻撃（31~100）
             Scythe = 31,
             Meteor = 32,
-            Seraph = 33,
+            Seraph1 = 33,
+            Seraph2 = 34,
             
             // 汎用（101~130）
         }
