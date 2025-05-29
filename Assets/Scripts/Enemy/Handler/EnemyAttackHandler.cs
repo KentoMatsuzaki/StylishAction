@@ -26,7 +26,7 @@ namespace Enemy.Handler
         {
             _invokerDic.Add(EnemyEnums.AttackType.Scythe, scythe);
             _invokerDic.Add(EnemyEnums.AttackType.Meteor, meteor);
-            _invokerDic.Add(EnemyEnums.AttackType.Seraphic, seraphic);
+            _invokerDic.Add(EnemyEnums.AttackType.Seraph, seraphic);
         }
         
         //-------------------------------------------------------------------------------
@@ -100,7 +100,7 @@ namespace Enemy.Handler
         }
 
         /// <summary>プレイヤーが攻撃の有効角度内にいるか</summary>
-        private bool IsPlayerInAttackAngle(PlayerController player, EnemyAttackStats attackStats)
+        public bool IsPlayerInAttackAngle(PlayerController player, EnemyAttackStats attackStats)
         {
             var angle = Vector3.Angle(transform.forward, GetFlatDirectionToPlayer(player));
             return angle <= attackStats.attackAngle;
@@ -137,6 +137,16 @@ namespace Enemy.Handler
         // アニメーションイベント
         //-------------------------------------------------------------------------------
 
+        public void EnableScytheCollider()
+        {
+            EnableAttackCollider(EnemyEnums.AttackType.Scythe);
+        }
+
+        public void DisableScytheCollider()
+        {
+            DisableAttackCollider(EnemyEnums.AttackType.Scythe);
+        }
+        
         /// <summary>Meteorの攻撃アニメーションから呼ばれる</summary>
         public void EnableMeteorCollider()
         {
