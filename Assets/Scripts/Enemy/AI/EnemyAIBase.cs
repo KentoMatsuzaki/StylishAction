@@ -7,6 +7,7 @@ using System.Threading;
 using Enemy.AsyncNode;
 using Enemy.Handler;
 using SO.Player;
+using UnityEngine.Serialization;
 
 namespace Enemy.AI
 {
@@ -14,13 +15,13 @@ namespace Enemy.AI
     public abstract class EnemyAIBase : MonoBehaviour
     {
         /// <summary>プレイヤー</summary>
-        protected PlayerController Player;
+        [SerializeField] protected PlayerController player;
         
         /// <summary>ステータス情報</summary>
-        protected EnemyStats Stats;
+        [SerializeField] protected EnemyStats stats;
 
         /// <summary>攻撃情報のリスト</summary>
-        protected List<EnemyAttackStats> AttackStatsList;
+        [SerializeField] protected List<EnemyAttackStats> attackStatsList;
 
         /// <summary>現在の攻撃情報</summary>
         protected EnemyAttackStats CurrentAttackStats;
