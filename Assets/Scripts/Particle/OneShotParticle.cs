@@ -1,3 +1,6 @@
+using Enemy.AI;
+using Enum;
+
 namespace Particle
 {
     /// <summary>再生完了後に非アクティブにするパーティクルを制御するクラス</summary>
@@ -26,6 +29,15 @@ namespace Particle
         private void CustomActivation()
         {
             gameObject.SetActive(true);
+
+            switch (type)
+            {
+                case ParticleEnums.ParticleType.Meteor:
+                    var playerPos = GetComponentInParent<EnemyAIBase>().player.transform.position;
+                    playerPos.y = 0;
+                    transform.position = playerPos; break;
+            }
+            
             PlayAllParticles();
         }
     }
