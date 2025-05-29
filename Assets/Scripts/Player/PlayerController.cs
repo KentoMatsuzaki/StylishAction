@@ -223,9 +223,8 @@ namespace Player
             // 被弾状態の開始時に呼ばれる処理
             _stateHandler.DamageState.OnEnter = () =>
             {
-                // 当たり判定を無効化する
-                _collider.enabled = false;
-                
+                // RootMotionを有効化する
+                _animationHandler.EnableRootMotion();
                 // 被弾アニメーションを再生する
                 _animationHandler.PlayDamageAnimation();
             };
@@ -233,15 +232,17 @@ namespace Player
             // 被弾状態の終了時に呼ばれる処理
             _stateHandler.DamageState.OnExit = () =>
             {
-                // 当たり判定を有効化する
-                _collider.enabled = true;
+                // RootMotionを無効化する
+                _animationHandler.DisableRootMotion();
+                // モデルと本体の位置を同期させる
+                _locomotionHandler.SyncWithModelPosition(modelTransform);
             };
             
             // 死亡状態の開始時に呼ばれる処理
-            _stateHandler.DamageState.OnExit = () =>
+            _stateHandler.DeathState.OnExit = () =>
             {
                 // 死亡アニメーションを再生する
-                _animationHandler.PlayDieAnimation();
+                //_animationHandler.PlayDieAnimation();
             };
         }
         
@@ -455,6 +456,13 @@ namespace Player
         /// <summary>ダメージを適用する</summary>
         public void ApplyDamage(EnemyAIBase enemyAI, EnemyAttackStats attackStats)
         {
+            // ダメージを受け付けない状態である場合
+            if (!_stateHandler.IsDamageReceivable())
+            {
+                // 処理を抜ける
+                return;
+            }
+            
             // パリィ状態である場合
             if (_stateHandler.CurrentState == _stateHandler.ParryState)
             {
@@ -471,7 +479,7 @@ namespace Player
                 
             }
             
-            // パリィ状態でも防御状態でもない場合
+            // その他の状態である場合
             else
             {
                 // ダメージを反映する
@@ -539,13 +547,13 @@ namespace Player
         // アニメーションイベント
         //-------------------------------------------------------------------------------
         
-        /// <summary>静止アニメーションのアニメーションイベントから呼ばれる</summary>
+        /// <summary>静止状態に切り替える</summary>
         public void SwitchStateToIdle()
         {
             _stateHandler.SwitchState(_stateHandler.IdleState);
         }
 
-        /// <summary>着地アニメーションのアニメーションイベントから呼ばれる</summary>
+        /// <summary>遷移状態に切り替える</summary>
         public void SwitchStateToTransition()
         {
             _stateHandler.SwitchState(_stateHandler.TransitionState);
