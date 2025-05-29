@@ -13,7 +13,7 @@ namespace Const
         // アニメーションステート
         //-------------------------------------------------------------------------------
         
-        public const string DamageState = "Damage"; // 被弾
+        public const string HitState = "Hit"; // 被弾
         public const string StunState = "Stun"; // スタン
         public const string DieState = "Die"; // 死亡
         
