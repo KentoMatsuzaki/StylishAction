@@ -26,8 +26,6 @@ namespace Enemy
             _collider = GetComponent<Collider>();
             // 攻撃の当たり判定をトリガーにする
             _collider.isTrigger = true;
-            // 攻撃の当たり判定を無効化する
-            _collider.enabled = false;
         }
         
         //-------------------------------------------------------------------------------
