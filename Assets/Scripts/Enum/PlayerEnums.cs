@@ -31,9 +31,9 @@ namespace Enum
         /// <summary>攻撃の種類</summary>
         public enum AttackType
         {
-            RightSword,
-            LeftSword,
-            ExtraAttack
+            AttackNormal,
+            AttackSpecial,
+            AttackExtra
         }
     }
 }
