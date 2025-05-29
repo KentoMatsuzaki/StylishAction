@@ -223,7 +223,7 @@ namespace Enemy.AI
                 else
                 {
                     // 被弾のアニメーションを再生する
-                    AnimationHandler.PlayDamageAnimation();
+                    AnimationHandler.PlayHitAnimation();
                     // ノックバックさせる
                     ApplyKnockBack();
                 }
