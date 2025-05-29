@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackType: 1
   attackDamage: 1
-  minAttackRange: 7.5
-  maxAttackRange: 10
+  minAttackRange: 5
+  maxAttackRange: 15
   attackAngle: 15
-  attackCooldown: 0.1
+  attackCooldown: 2
