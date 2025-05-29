@@ -1,8 +1,6 @@
 using Const;
-using DefaultNamespace;
 using Enemy.AI;
 using UnityEngine;
-using EnemyTest = DefaultNamespace.EnemyTest;
 
 namespace Player
 {
@@ -27,19 +25,13 @@ namespace Player
             _collider = GetComponent<Collider>();
             // 攻撃の当たり判定をトリガーにする
             _collider.isTrigger = true;
-            // 攻撃の当たり判定を無効化する
-            _collider.enabled = false;
+            // 攻撃の当たり判定を有効化する
+            _collider.enabled = true;
         }
         
         //-------------------------------------------------------------------------------
         // 攻撃に関する処理
         //-------------------------------------------------------------------------------
-        
-        /// <summary>攻撃の当たり判定を有効化する</summary>
-        public void EnableCollider() => _collider.enabled = true;
-        
-        /// <summary>攻撃の当たり判定を無効化する</summary>
-        public void DisableCollider() => _collider.enabled = false;
 
         /// <summary>攻撃の当たり判定による接触イベント</summary>
         private void OnTriggerEnter(Collider other)
@@ -48,10 +40,9 @@ namespace Player
             if (other.CompareTag(EnemyConst.GameObjectTag))
             {
                 // 敵AIの制御クラスを取得する
-                //var enemy = other.GetComponent<EnemyAIBase>();
+                var enemy = other.GetComponent<EnemyAIBase>();
                 // 敵AIのダメージ適用処理を呼び出す
-                //enemy.ApplyDamage(_player.CurrentAttackStats);
-                other.GetComponent<EnemyTest>().Test();
+                enemy.ApplyDamage(_player.CurrentAttackStats);
             }
         }
     }
