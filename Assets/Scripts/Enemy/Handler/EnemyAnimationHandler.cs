@@ -62,9 +62,9 @@ namespace Enemy.Handler
         //-------------------------------------------------------------------------------
 
         /// <summary>被弾のアニメーションを再生する</summary>
-        public void PlayDamageAnimation()
+        public void PlayHitAnimation()
         {
-            _animator.Play(EnemyConst.DamageState);
+            _animator.Play(EnemyConst.HitState);
         }
         
         //-------------------------------------------------------------------------------
