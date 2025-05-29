@@ -167,8 +167,13 @@ namespace Player.Handler
         /// <summary>移動入力を受け付けるかどうか</summary>
         public bool CanAcceptMoveInput()
         {
-            return CurrentState == IdleState || CurrentState == MoveState || 
-                   CurrentState == SprintState || CurrentState == AttackExtraState;
+            return CurrentState == IdleState || CurrentState == MoveState || CurrentState == SprintState || CurrentState == AttackExtraState;
+        }
+
+        /// <summary>ダメージを受け付けるかどうか</summary>
+        public bool IsDamageReceivable()
+        {
+            return CurrentState != DamageState && CurrentState != TransitionState;
         }
     }
 }
