@@ -102,8 +102,6 @@ namespace Enemy.AI
                     AnimationHandler.DisableMove();
                     // 攻撃アニメーションのトリガーを有効化する
                     AnimationHandler.TriggerAttack(CurrentAttackStats.attackType);
-                    // 攻撃アニメーションの再生完了を待つ
-                    await AnimationHandler.WaitUntilAnimationComplete(token);
                     // 攻撃のクールタイムを待機する
                     await UniTask.Delay(TimeSpan.FromSeconds(CurrentAttackStats.attackCooldown), cancellationToken: token);
                     // 攻撃情報をリセットする
@@ -272,8 +270,7 @@ namespace Enemy.AI
         {
             CurrentPoise = stats.maxPoise;
         }
-
-        /// <summary></summary>
+        
         public void ActivateMeteorParticle()
         {
             ParticleManager.Instance.ActivateParticle(ParticleEnums.ParticleType.Meteor);
@@ -288,6 +285,25 @@ namespace Enemy.AI
         {
             ParticleManager.Instance.ActivateParticle(ParticleEnums.ParticleType.Seraph2);
         }
+
+        public void ActivateEclipseParticle()
+        {
+            ParticleManager.Instance.ActivateParticle(ParticleEnums.ParticleType.Eclipse);
+        }
+
+        public void ActivateExplosionParticle()
+        {
+            ParticleManager.Instance.ActivateParticle(ParticleEnums.ParticleType.Explosion);
+        }
+
+        public void ActivateWaterFall1Particle()
+        {
+            ParticleManager.Instance.ActivateParticle(ParticleEnums.ParticleType.WaterFall1);
+        }
         
+        public void ActivateWaterFall2Particle()
+        {
+            ParticleManager.Instance.ActivateParticle(ParticleEnums.ParticleType.WaterFall2);
+        }
     }
 }
