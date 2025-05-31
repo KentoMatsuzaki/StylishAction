@@ -87,7 +87,7 @@ namespace Enemy.Handler
             // 現在のステート情報を取得する
             var stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
             // アニメーションを再生している場合
-            while (stateInfo.normalizedTime < 1.0f || _animator.IsInTransition(0) || stateInfo.normalizedTime > 1.1f)
+            while (stateInfo.normalizedTime < 1.0f || _animator.IsInTransition(0))
             {
                 // 次のフレームまで待機する
                 await UniTask.Yield(PlayerLoopTiming.Update, token);
