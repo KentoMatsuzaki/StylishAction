@@ -15,6 +15,10 @@ namespace Enum
             Scythe,
             Meteor,
             Seraph,
+            Eclipse,
+            Explosion,
+            WaterFall,
+            
         }
         
         //-------------------------------------------------------------------------------
