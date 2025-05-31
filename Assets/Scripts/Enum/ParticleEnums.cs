@@ -23,6 +23,11 @@ namespace Enum
             Meteor = 32,
             Seraph1 = 33,
             Seraph2 = 34,
+            Eclipse = 35,
+            Explosion = 36,
+            WaterFall1 = 37,
+            WaterFall2 = 38,
+            
             
             // 汎用（101~130）
         }
