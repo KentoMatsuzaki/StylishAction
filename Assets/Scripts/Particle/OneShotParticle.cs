@@ -36,6 +36,11 @@ namespace Particle
                     var playerPos = GetComponentInParent<EnemyAIBase>().player.transform.position;
                     playerPos.y = 0;
                     transform.position = playerPos; break;
+                
+                case ParticleEnums.ParticleType.Eclipse:
+                    var targetPos = GetComponentInParent<EnemyAIBase>().player.transform.position;
+                    targetPos.y = 0;
+                    transform.position = targetPos; break;
             }
             
             PlayAllParticles();
