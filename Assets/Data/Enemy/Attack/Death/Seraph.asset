@@ -15,6 +15,6 @@ MonoBehaviour:
   attackType: 2
   attackDamage: 1
   minAttackRange: 0
-  maxAttackRange: 7
+  maxAttackRange: 10
   attackAngle: 15
-  attackCooldown: 0.1
+  attackCooldown: 6
