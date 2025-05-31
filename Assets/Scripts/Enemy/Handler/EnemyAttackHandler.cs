@@ -14,6 +14,11 @@ namespace Enemy.Handler
         [SerializeField] private EnemyAttackInvoker scythe;
         [SerializeField] private EnemyAttackInvoker meteor;
         [SerializeField] private EnemyAttackInvoker seraphic;
+        [SerializeField] private EnemyAttackInvoker eclipse;
+        [SerializeField] private EnemyAttackInvoker explosion;
+
+        [Header("WaterFallの攻撃発生クラス")] 
+        [SerializeField] private List<EnemyAttackInvoker> waterFallInvokers;
 
         /// <summary>攻撃の発生クラスの辞書</summary>
         private readonly Dictionary<EnemyEnums.AttackType, EnemyAttackInvoker> _invokerDic = new();
@@ -27,6 +32,8 @@ namespace Enemy.Handler
             _invokerDic.Add(EnemyEnums.AttackType.Scythe, scythe);
             _invokerDic.Add(EnemyEnums.AttackType.Meteor, meteor);
             _invokerDic.Add(EnemyEnums.AttackType.Seraph, seraphic);
+            _invokerDic.Add(EnemyEnums.AttackType.Eclipse, eclipse);
+            _invokerDic.Add(EnemyEnums.AttackType.Explosion, explosion);
         }
         
         //-------------------------------------------------------------------------------
@@ -40,13 +47,13 @@ namespace Enemy.Handler
         }
         
         /// <summary>攻撃の当たり判定を有効化する</summary>
-        public void EnableAttackCollider(EnemyEnums.AttackType attackType)
+        private void EnableAttackCollider(EnemyEnums.AttackType attackType)
         {
             GetInvoker(attackType).EnableCollider();
         }
 
         /// <summary>攻撃の当たり判定を無効化する</summary>
-        public void DisableAttackCollider(EnemyEnums.AttackType attackType)
+        private void DisableAttackCollider(EnemyEnums.AttackType attackType)
         {
             GetInvoker(attackType).DisableCollider();
         }
@@ -166,6 +173,42 @@ namespace Enemy.Handler
         public void DisableSeraphCollider()
         {
             DisableAttackCollider(EnemyEnums.AttackType.Seraph);
+        }
+
+        public void EnableEclipseCollider()
+        {
+            EnableAttackCollider(EnemyEnums.AttackType.Eclipse);
+        }
+
+        public void DisableEclipseCollider()
+        {
+            DisableAttackCollider(EnemyEnums.AttackType.Eclipse);
+        }
+
+        public void EnableExplosionCollider()
+        {
+            EnableAttackCollider(EnemyEnums.AttackType.Explosion);
+        }
+
+        public void DisableExplosionCollider()
+        {
+            DisableAttackCollider(EnemyEnums.AttackType.Explosion);
+        }
+
+        public void EnableWaterFallColliders()
+        {
+            foreach (var waterFallInvoker in waterFallInvokers)
+            {
+                waterFallInvoker.EnableCollider();
+            }
+        }
+
+        public void DisableWaterFallColliders()
+        {
+            foreach (var waterFallInvoker in waterFallInvokers)
+            {
+                waterFallInvoker.DisableCollider();
+            }
         }
     }
 }
