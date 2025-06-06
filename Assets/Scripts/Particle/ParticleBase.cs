@@ -12,15 +12,15 @@ namespace Particle
         public ParticleEnums.ParticleType type;
 
         /// <summary>パーティクルの一覧</summary>
-        protected ParticleSystem[] Particles;
+        private ParticleSystem[] _particles;
         
         //-------------------------------------------------------------------------------
         // 初期設定
         //-------------------------------------------------------------------------------
         
-        private void Awake()
+        protected void Awake()
         {
-            Particles = GetComponentsInChildren<ParticleSystem>();
+            _particles = GetComponentsInChildren<ParticleSystem>();
         }
         
         //-------------------------------------------------------------------------------
@@ -33,7 +33,7 @@ namespace Particle
         /// <summary>パーティクルを無効化する</summary>
         public void Deactivate()
         {
-            foreach (var particle in Particles)
+            foreach (var particle in _particles)
             {
                 particle.Stop(); 
                 particle.Clear();
@@ -45,7 +45,7 @@ namespace Particle
         /// <summary>全てのパーティクルを再生する</summary>
         protected void PlayAllParticles()
         {
-            foreach (var particle in Particles)
+            foreach (var particle in _particles)
             {
                 particle.Play();
             }
@@ -54,7 +54,7 @@ namespace Particle
         /// <summary>全てのパーティクルを再再生する</summary>
         protected void ReplayAllParticles()
         {
-            foreach (var particle in Particles)
+            foreach (var particle in _particles)
             {
                 particle.Stop();
                 particle.Clear();
@@ -65,7 +65,7 @@ namespace Particle
         /// <summary>全てのパーティクルの再生完了後にゲームオブジェクトを無効化する</summary>
         protected async void SetInactiveAfterAllParticlesStop()
         {
-            await UniTask.WaitUntil(() => Particles.All(p => !p.isPlaying));
+            await UniTask.WaitUntil(() => _particles.All(p => !p.isPlaying));
             gameObject.SetActive(false);
         }
     }
