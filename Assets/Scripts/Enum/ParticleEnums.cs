@@ -27,9 +27,15 @@ namespace Enum
             Explosion = 36,
             WaterFall1 = 37,
             WaterFall2 = 38,
-            
+            Vortex1 = 39,
+            Vortex2 = 40,
+            Photon = 41,
             
             // 汎用（101~130）
+            Parry = 101,
+            Guard = 102,
+            Stun = 103,
+            Hit = 104,
         }
     }
 }
