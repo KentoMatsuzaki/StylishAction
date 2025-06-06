@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Enum;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Particle
 {
@@ -11,15 +10,12 @@ namespace Particle
     {
         /// <summary>再利用するパーティクルのリスト</summary>
         [SerializeField] private List<ParticleBase> reusableParticles;
-        
-        /// <summary>一時的なパーティクルのリスト</summary>
-        [SerializeField] private List<LastingParticle> temporaryParticles;
 
         /// <summary>再利用するパーティクルのマップ</summary>
         private Dictionary<ParticleEnums.ParticleType, ParticleBase> _reusableParticleMap;
         
-        /// <summary>一時的なパーティクルのマップ</summary>
-        private Dictionary<ParticleEnums.ParticleType, LastingParticle> _temporaryParticleMap;
+        /// <summary>DeathエネミーのPhoton攻撃のパーティクル</summary>
+        [SerializeField] private List<ParticleBase> photonParticles;
         
         public static ParticleManager Instance;
         
@@ -32,7 +28,6 @@ namespace Particle
             if (Instance == null) Instance = this; else Destroy(gameObject);
             
             _reusableParticleMap = reusableParticles.ToDictionary(k => k.type, v => v);
-            _temporaryParticleMap = temporaryParticles.ToDictionary(k => k.type, v => v);
         }
         
         //-------------------------------------------------------------------------------
@@ -50,12 +45,24 @@ namespace Particle
         {
             _reusableParticleMap.GetValueOrDefault(type).Deactivate();
         }
+        
+        //-------------------------------------------------------------------------------
+        // パーティクルの固有処理
+        //-------------------------------------------------------------------------------
 
-        /// <summary>パーティクルを生成する</summary>
-        public void InstantiateParticle(ParticleEnums.ParticleType type, Vector3 position, Transform parent)
+        public void ActivatePhotonParticles()
         {
-            Instantiate(_temporaryParticleMap.GetValueOrDefault(type).gameObject,
-                position, Quaternion.identity, parent);
+            foreach (var photonParticle in photonParticles)
+            {
+                photonParticle.Activate();
+            }
+        }
+
+        public void ActivateHitParticle(Vector3 particlePosition)
+        {
+            var hitParticle = _reusableParticleMap.GetValueOrDefault(ParticleEnums.ParticleType.Hit);
+            hitParticle.transform.position = particlePosition;
+            hitParticle.Activate();
         }
     }
 }
