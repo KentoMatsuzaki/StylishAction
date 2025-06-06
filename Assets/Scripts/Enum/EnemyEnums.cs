@@ -18,7 +18,8 @@ namespace Enum
             Eclipse,
             Explosion,
             WaterFall,
-            
+            Vortex,
+            Photon
         }
         
         //-------------------------------------------------------------------------------
