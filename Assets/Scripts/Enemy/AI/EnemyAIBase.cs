@@ -65,12 +65,12 @@ namespace Enemy.AI
         //-------------------------------------------------------------------------------
 
         /// <summary>攻撃の結果を適用する</summary>
-        public abstract void ApplyAttack(PlayerController player);
+        public abstract void ApplyAttack(PlayerController playerController, Vector3 hitPosition);
         
         /// <summary>パリィの結果を適用する</summary>
         public abstract void ApplyParry();
 
         /// <summary>ダメージを適用する</summary>
-        public abstract void ApplyDamage(PlayerAttackStats attackStats);
+        public abstract void ApplyDamage(PlayerAttackStats attackStats, Vector3 hitPosition);
     }
 }
