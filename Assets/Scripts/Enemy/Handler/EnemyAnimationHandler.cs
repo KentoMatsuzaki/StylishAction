@@ -21,6 +21,16 @@ namespace Enemy.Handler
         }
         
         //-------------------------------------------------------------------------------
+        // 静止に関する処理
+        //-------------------------------------------------------------------------------
+
+        /// <summary>静止のアニメーションを再生する</summary>
+        public void PlayIdleAnimation()
+        {
+            _animator.Play(EnemyConst.IdleState);
+        }
+        
+        //-------------------------------------------------------------------------------
         // 移動に関する処理
         //-------------------------------------------------------------------------------
         
@@ -56,6 +66,12 @@ namespace Enemy.Handler
         {
             _animator.Play(EnemyConst.StunState);
         }
+
+        /// <summary>スタン復帰のアニメーションを再生する</summary>
+        public void PlayRecoverAnimation()
+        {
+            _animator.Play(EnemyConst.RecoverState);
+        }
         
         //-------------------------------------------------------------------------------
         // 被弾に関する処理
@@ -65,6 +81,13 @@ namespace Enemy.Handler
         public void PlayHitAnimation()
         {
             _animator.Play(EnemyConst.HitState);
+        }
+
+        /// <summary>攻撃アニメーションを再生しているか</summary>
+        public bool IsPlayingAttackAnimation()
+        {
+            var stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
+            return !(stateInfo.IsName(EnemyConst.IdleState) || stateInfo.IsName(EnemyConst.MoveState));
         }
         
         //-------------------------------------------------------------------------------
