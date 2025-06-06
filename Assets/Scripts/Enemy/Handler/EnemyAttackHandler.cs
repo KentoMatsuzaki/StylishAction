@@ -16,9 +16,13 @@ namespace Enemy.Handler
         [SerializeField] private EnemyAttackInvoker seraphic;
         [SerializeField] private EnemyAttackInvoker eclipse;
         [SerializeField] private EnemyAttackInvoker explosion;
+        [SerializeField] private EnemyAttackInvoker vortex;
 
         [Header("WaterFallの攻撃発生クラス")] 
         [SerializeField] private List<EnemyAttackInvoker> waterFallInvokers;
+        
+        [Header("Photonの攻撃発生クラス")]
+        [SerializeField] private List<EnemyAttackInvoker> photonInvokers;
 
         /// <summary>攻撃の発生クラスの辞書</summary>
         private readonly Dictionary<EnemyEnums.AttackType, EnemyAttackInvoker> _invokerDic = new();
@@ -34,6 +38,7 @@ namespace Enemy.Handler
             _invokerDic.Add(EnemyEnums.AttackType.Seraph, seraphic);
             _invokerDic.Add(EnemyEnums.AttackType.Eclipse, eclipse);
             _invokerDic.Add(EnemyEnums.AttackType.Explosion, explosion);
+            _invokerDic.Add(EnemyEnums.AttackType.Vortex, vortex);
         }
         
         //-------------------------------------------------------------------------------
@@ -208,6 +213,34 @@ namespace Enemy.Handler
             foreach (var waterFallInvoker in waterFallInvokers)
             {
                 waterFallInvoker.DisableCollider();
+            }
+        }
+
+        public void EnableVortexCollider()
+        {
+            EnableAttackCollider(EnemyEnums.AttackType.Vortex);
+        }
+
+        public void DisableVortexCollider()
+        {
+            DisableAttackCollider(EnemyEnums.AttackType.Vortex);
+        }
+
+        public void HandlePhotonCollider()
+        {
+            foreach (var photonInvoker in photonInvokers)
+            {
+                photonInvoker.EnableCollider();
+            }
+            
+            Invoke(nameof(DisablePhotonColliders), 1.25f);
+        }
+
+        public void DisablePhotonColliders()
+        {
+            foreach (var photonInvoker in photonInvokers)
+            {
+                photonInvoker.DisableCollider();
             }
         }
     }
