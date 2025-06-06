@@ -1,4 +1,4 @@
-using Enemy.AI;
+using System;
 using Enum;
 
 namespace Particle
@@ -33,14 +33,19 @@ namespace Particle
             switch (type)
             {
                 case ParticleEnums.ParticleType.Meteor:
-                    var playerPos = GetComponentInParent<EnemyAIBase>().player.transform.position;
-                    playerPos.y = 0;
-                    transform.position = playerPos; break;
+                    var meteorTarget = GameManager.Instance.Player.transform.position;
+                    meteorTarget.y = 0;
+                    transform.position = meteorTarget; break;
                 
                 case ParticleEnums.ParticleType.Eclipse:
-                    var targetPos = GetComponentInParent<EnemyAIBase>().player.transform.position;
-                    targetPos.y = 0;
-                    transform.position = targetPos; break;
+                    var eclipseTarget = GameManager.Instance.Player.transform.position;
+                    eclipseTarget.y = 0;
+                    transform.position = eclipseTarget; break;
+                
+                case ParticleEnums.ParticleType.Vortex2:
+                    var vortexTarget = GameManager.Instance.Player.transform.position;
+                    vortexTarget.y = 0;
+                    transform.position = vortexTarget; break;
             }
             
             PlayAllParticles();
