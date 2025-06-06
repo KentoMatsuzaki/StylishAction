@@ -153,10 +153,10 @@ namespace Enemy.AI
         //-------------------------------------------------------------------------------
         
         /// <summary>攻撃の結果を適用する</summary>
-        public override void ApplyAttack(PlayerController player)
+        public override void ApplyAttack(PlayerController playerController, Vector3 hitPosition)
         {
-            // プレイヤー側のダメージを適用する処理を呼ぶ
-            player.ApplyDamage(this, CurrentAttackStats);
+            // プレイヤーのダメージを適用する処理を呼ぶ
+            playerController.ApplyDamage(this, CurrentAttackStats, hitPosition);
         }
         
         //-------------------------------------------------------------------------------
@@ -177,8 +177,16 @@ namespace Enemy.AI
         {
             // スタンのアニメーションを再生する
             AnimationHandler.PlayStunAnimation();
-            // スタンの終了を待機する
+            // スタンのパーティクルを有効化する
+            ParticleManager.Instance.ActivateParticle(ParticleEnums.ParticleType.Stun);
+            // スタン時間だけ待機する
             await UniTask.Delay(TimeSpan.FromSeconds(stats.stunDuration));
+            // 復帰のアニメーションを再生する
+            AnimationHandler.PlayRecoverAnimation();
+            // スタンのパーティクルを無効化する
+            ParticleManager.Instance.DeactivateParticle(ParticleEnums.ParticleType.Stun);
+            // 復帰アニメーションの再生完了を待機する
+            await AnimationHandler.WaitUntilAnimationComplete(Cts.Token);
             // ビヘイビアツリーの評価を開始する
             StartBehaviour();
         }
@@ -188,8 +196,10 @@ namespace Enemy.AI
         //-------------------------------------------------------------------------------
 
         /// <summary>ダメージを適用する</summary>
-        public override void ApplyDamage(PlayerAttackStats attackStats)
+        public override void ApplyDamage(PlayerAttackStats attackStats, Vector3 hitPosition)
         {
+            // 被弾時のパーティクルを有効化する
+            ParticleManager.Instance.ActivateHitParticle(hitPosition);
             // ダメージを反映する
             TakeDamage(attackStats.attackDamage);
             
@@ -203,12 +213,8 @@ namespace Enemy.AI
             // 死亡していない場合
             else
             {
-                // 現在の靭性値が0でない場合
-                if (CurrentPoise != 0)
-                {
-                    // 現在の靭性値を1だけ減少させる
-                    CurrentPoise--;
-                }
+                // 現在の靭性値を1だけ減少させる
+                CurrentPoise--;
 
                 // 現在の靭性値が0である場合
                 if (CurrentPoise == 0)
@@ -220,8 +226,12 @@ namespace Enemy.AI
                 // 現在の靭性値が0でない場合
                 else
                 {
-                    // 被弾のアニメーションを再生する
-                    AnimationHandler.PlayHitAnimation();
+                    // 攻撃アニメーションを再生していない場合
+                    if (!AnimationHandler.IsPlayingAttackAnimation())
+                    {
+                        // 被弾のアニメーションを再生する
+                        AnimationHandler.PlayHitAnimation();
+                    }
                     // ノックバックさせる
                     ApplyKnockBack();
                 }
@@ -304,6 +314,26 @@ namespace Enemy.AI
         public void ActivateWaterFall2Particle()
         {
             ParticleManager.Instance.ActivateParticle(ParticleEnums.ParticleType.WaterFall2);
+        }
+
+        public void ActivateVortexParticle1()
+        {
+            ParticleManager.Instance.ActivateParticle(ParticleEnums.ParticleType.Vortex1);
+        }
+
+        public void DeactivateVortexParticle1()
+        {
+            ParticleManager.Instance.DeactivateParticle(ParticleEnums.ParticleType.Vortex1);
+        }
+        
+        public void ActivateVortexParticle2()
+        {
+            ParticleManager.Instance.ActivateParticle(ParticleEnums.ParticleType.Vortex2);
+        }
+
+        public void ActivatePhotonParticles()
+        {
+            ParticleManager.Instance.ActivatePhotonParticles();
         }
     }
 }
