@@ -15,8 +15,9 @@ namespace Const
 
         public const string DodgeState = "Dodge"; // 回避
         public const string ParryState = "Parry"; // パリィ
-        public const string LightHitState = "Light Hit"; // 被ダメージ（軽）
-        public const string HeavyHitState = "Heavy Hit"; // 被ダメージ（重）
+        public const string LightHitState = "Light Hit"; // 軽い攻撃の被弾
+        public const string HeavyHitState = "Heavy Hit"; // 重い攻撃の被弾
+        public const string GuardHitState = "Guard Hit"; // ガード状態の被弾
         public const string DieState = "Die"; // 死亡
         
         //-------------------------------------------------------------------------------
