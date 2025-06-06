@@ -133,10 +133,16 @@ namespace Player.Handler
         // 被弾に関する処理
         //-------------------------------------------------------------------------------
 
-        /// <summary>被弾アニメーションを再生する</summary>
-        public void PlayDamageAnimation()
+        /// <summary>重い攻撃を受けた際の被弾アニメーションを再生する</summary>
+        public void PlayHeavyHitAnimation()
         {
             _animator.Play(PlayerConst.HeavyHitState);
+        }
+
+        /// <summary>防御状態の被弾アニメーションを再生する</summary>
+        public void PlayGuardHitAnimation()
+        {
+            _animator.Play(PlayerConst.GuardHitState);
         }
         
         //-------------------------------------------------------------------------------
@@ -163,6 +169,22 @@ namespace Player.Handler
         public void DisableRootMotion()
         {
             _animator.applyRootMotion = false;
+        }
+
+        /// <summary>AnimatorのRootMotionによる移動量をプレイヤー本体に適用する</summary>
+        public void ApplyRootMotionToTransform()
+        {
+            Vector3 deltaPosition = _animator.deltaPosition;
+            transform.position += deltaPosition;
+        }
+        
+        /// <summary>モデルの位置にプレイヤー本体を同期させ、RootMotionによるズレを補正する</summary>
+        public void SnapToModelPosition(Transform modelTransform)
+        {
+            // プレイヤー本体の位置をモデルの位置に同期させる
+            transform.position = modelTransform.position;
+            // モデルのローカル位置を初期化する
+            modelTransform.localPosition = Vector3.zero;
         }
     }
 }

@@ -38,18 +38,6 @@ namespace Player.Handler
             transform.Translate(Time.deltaTime * moveSpeed * transform.forward, Space.World);
         }
 
-        /// <summary>
-        /// RootMotionによって移動したモデルの位置にプレイヤー本体を同期させ、
-        /// モデルのローカル位置をリセットして位置のズレを解消する
-        /// </summary>
-        public void SyncWithModelPosition(Transform modelTransform)
-        {
-            // プレイヤー本体の位置をモデルの位置に同期させる
-            transform.position = modelTransform.position;
-            // モデルのローカル位置を初期化する
-            modelTransform.localPosition = Vector3.zero;
-        }
-
         /// <summary>回避アニメーションに合わせて、前方に力を加える</summary>
         public void ApplyDodgeForce(float dodgePower)
         {
