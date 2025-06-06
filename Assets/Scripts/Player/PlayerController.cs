@@ -110,7 +110,16 @@ namespace Player
                 // 回避のアニメーションを再生する
                 _animationHandler.PlayDodgeAnimation();
                 // 回避アニメーションに合わせて、前方に力を加える
-                _locomotionHandler.ApplyDodgeForce(stats.dodgePower);
+                //_locomotionHandler.ApplyDodgeForce(stats.dodgePower);
+            };
+
+            // 回避状態の更新処理
+            _stateHandler.DodgeState.OnUpdate = () =>
+            {
+                // RootMotionをプレイヤー本体に適用する
+                _animationHandler.ApplyRootMotionToTransform();
+                // モデルと本体の位置を同期させる
+                _animationHandler.SnapToModelPosition(modelTransform);
             };
             
             // 回避状態の終了時に呼ばれる処理
@@ -120,8 +129,6 @@ namespace Player
                 _locomotionHandler.UnfreezeRotationY();
                 // RootMotionを無効化する
                 _animationHandler.DisableRootMotion();
-                // モデルと本体の位置を同期させる
-                _locomotionHandler.SyncWithModelPosition(modelTransform);
             };
             
             // 通常攻撃状態の開始時に呼ばれる処理
@@ -143,7 +150,7 @@ namespace Player
                 // RootMotionを無効化する
                 _animationHandler.DisableRootMotion();
                 // モデルと本体の位置を同期させる
-                _locomotionHandler.SyncWithModelPosition(modelTransform);
+                _animationHandler.SnapToModelPosition(modelTransform);
             };
             
             // 特殊攻撃状態の開始時に呼ばれる処理
@@ -165,7 +172,7 @@ namespace Player
                 // RootMotionを無効化する
                 _animationHandler.DisableRootMotion();
                 // モデルと本体の位置を同期させる
-                _locomotionHandler.SyncWithModelPosition(modelTransform);
+                _animationHandler.SnapToModelPosition(modelTransform);
             };
             
             // EX攻撃状態の開始時に呼ばれる処理
@@ -211,6 +218,8 @@ namespace Player
             {
                 // 防御のフラグを有効化する
                 _animationHandler.EnableGuard();
+                // 防御のパーティクルを有効化する
+                ParticleManager.Instance.ActivateParticle(ParticleEnums.ParticleType.Guard);
             };
             
             // 防御状態の終了時に呼ばれる処理
@@ -218,15 +227,19 @@ namespace Player
             {
                 // 防御のフラグを無効化する
                 _animationHandler.DisableGuard();
+                // 防御のパーティクルを無効化する
+                ParticleManager.Instance.DeactivateParticle(ParticleEnums.ParticleType.Guard);
             };
             
             // 被弾状態の開始時に呼ばれる処理
             _stateHandler.DamageState.OnEnter = () =>
             {
+                // 敵の方向へ回転させる
+                _attackHandler.RotateTowardsEnemyInstantly(enemy);
                 // RootMotionを有効化する
                 _animationHandler.EnableRootMotion();
                 // 被弾アニメーションを再生する
-                _animationHandler.PlayDamageAnimation();
+                _animationHandler.PlayHeavyHitAnimation();
             };
             
             // 被弾状態の終了時に呼ばれる処理
@@ -235,7 +248,7 @@ namespace Player
                 // RootMotionを無効化する
                 _animationHandler.DisableRootMotion();
                 // モデルと本体の位置を同期させる
-                _locomotionHandler.SyncWithModelPosition(modelTransform);
+                _animationHandler.SnapToModelPosition(modelTransform);
             };
             
             // 死亡状態の開始時に呼ばれる処理
@@ -454,7 +467,7 @@ namespace Player
         //-------------------------------------------------------------------------------
 
         /// <summary>ダメージを適用する</summary>
-        public void ApplyDamage(EnemyAIBase enemyAI, EnemyAttackStats attackStats)
+        public void ApplyDamage(EnemyAIBase enemyAI, EnemyAttackStats attackStats, Vector3 hitPosition)
         {
             // ダメージを受け付けない状態である場合
             if (!_stateHandler.IsDamageReceivable())
@@ -467,21 +480,25 @@ namespace Player
             if (_stateHandler.CurrentState == _stateHandler.ParryState)
             {
                 // パリィのエフェクトを表示する
-                
-                // 敵側のパリィの結果を適用する処理を呼ぶ
+                ParticleManager.Instance.ActivateParticle(ParticleEnums.ParticleType.Parry);
+                // パリィの結果を適用する処理を呼ぶ
                 enemyAI.ApplyParry();
             }
             
             // 防御状態である場合
             else if (_stateHandler.CurrentState == _stateHandler.GuardState)
             {
-                // 防御のエフェクトを表示する
-                
+                // 被弾時のパーティクルを有効化する
+                ParticleManager.Instance.ActivateHitParticle(hitPosition);
+                // 被弾アニメーションを再生する
+                _animationHandler.PlayGuardHitAnimation();
             }
             
             // その他の状態である場合
             else
             {
+                // 被弾時のパーティクルを有効化する
+                ParticleManager.Instance.ActivateHitParticle(hitPosition);
                 // ダメージを反映する
                 TakeDamage(attackStats.attackDamage);
             }
@@ -544,7 +561,7 @@ namespace Player
         }
         
         //-------------------------------------------------------------------------------
-        // アニメーションイベント
+        // インターフェースを介するアニメーションイベント
         //-------------------------------------------------------------------------------
         
         /// <summary>静止状態に切り替える</summary>
