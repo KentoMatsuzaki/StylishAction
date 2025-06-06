@@ -46,8 +46,10 @@ namespace Enemy
             {
                 // プレイヤーの制御クラスを取得する
                 var player = other.GetComponent<PlayerController>();
+                // 攻撃がヒットした座標を取得する
+                var hitPos = other.ClosestPoint(transform.position);
                 // 攻撃の結果を適用する
-                _ai.ApplyAttack(player);
+                _ai.ApplyAttack(player, hitPos);
             }
         }
     }
