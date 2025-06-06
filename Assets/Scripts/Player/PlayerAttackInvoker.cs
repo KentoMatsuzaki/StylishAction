@@ -41,8 +41,10 @@ namespace Player
             {
                 // 敵AIの制御クラスを取得する
                 var enemy = other.GetComponent<EnemyAIBase>();
+                // 攻撃がヒットした座標を取得する
+                var hitPos = other.ClosestPoint(transform.position);
                 // 敵AIのダメージ適用処理を呼び出す
-                enemy.ApplyDamage(_player.CurrentAttackStats);
+                enemy.ApplyDamage(_player.CurrentAttackStats, hitPos);
             }
         }
     }
