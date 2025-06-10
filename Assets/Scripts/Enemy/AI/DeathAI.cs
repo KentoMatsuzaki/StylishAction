@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using Const;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using Enemy.AsyncNode;
@@ -8,25 +9,51 @@ using Enum;
 using Particle;
 using Player;
 using SO.Player;
+using Sound;
+using UI;
+using UniRx;
 
 namespace Enemy.AI
 {
     /// <summary>DeathのAI挙動を制御するクラス</summary>
     public class DeathAI : EnemyAIBase
     {
+        private readonly ReactiveProperty<float> _currentHp = new ();
+        public IReadOnlyReactiveProperty<float> CurrentHp => _currentHp;
+        
+        public float MaxHp { get; private set; }
+        
         //-------------------------------------------------------------------------------
         // 初期設定
         //-------------------------------------------------------------------------------
 
-        private void Start()
+        public override async UniTask Initialize()
+        {
+            InitializeComponents();
+            InitializeStats();
+            InitializeTransform();
+            AnimationHandler.PlayBornAnimation();
+            await AnimationHandler.WaitUntilAnimationComplete();
+            BuildTree();
+        }
+
+        private void InitializeComponents()
         {
             AttackHandler = GetComponent<EnemyAttackHandler>();
             AnimationHandler = GetComponent<EnemyAnimationHandler>();
             Rb = GetComponent<Rigidbody>();
-            CurrentHp = stats.maxHp;
-            CurrentPoise = stats.maxPoise;
-            BuildTree();
-            StartBehaviour();
+        }
+
+        private void InitializeStats()
+        {
+            _currentHp.Value = stats.maxHp;
+            MaxHp = stats.maxHp;
+        }
+
+        private void InitializeTransform()
+        {
+            transform.position = new Vector3(EnemyConst.InitialPositionX, EnemyConst.InitialPositionY, EnemyConst.InitialPositionZ);
+            transform.rotation = Quaternion.Euler(EnemyConst.InitialRotationX, EnemyConst.InitialRotationY, EnemyConst.InitialRotationZ);
         }
 
         //-------------------------------------------------------------------------------
@@ -62,7 +89,7 @@ namespace Enemy.AI
         }
 
         /// <summary>ビヘイビアツリーの評価を開始する</summary>
-        protected override void StartBehaviour()
+        public override void StartBehaviour()
         {
             // 既存のキャンセルトークンがあればキャンセルする
             Cts?.Cancel();
@@ -186,7 +213,7 @@ namespace Enemy.AI
             // スタンのパーティクルを無効化する
             ParticleManager.Instance.DeactivateParticle(ParticleEnums.ParticleType.Stun);
             // 復帰アニメーションの再生完了を待機する
-            await AnimationHandler.WaitUntilAnimationComplete(Cts.Token);
+            await AnimationHandler.WaitUntilAnimationComplete();
             // ビヘイビアツリーの評価を開始する
             StartBehaviour();
         }
@@ -204,7 +231,7 @@ namespace Enemy.AI
             TakeDamage(attackStats.attackDamage);
             
             // 死亡している場合
-            if (CurrentHp <= 0)
+            if (_currentHp.Value <= 0)
             {
                 // 死亡処理を呼ぶ
                 ApplyDeath();
@@ -213,28 +240,14 @@ namespace Enemy.AI
             // 死亡していない場合
             else
             {
-                // 現在の靭性値を1だけ減少させる
-                CurrentPoise--;
-
-                // 現在の靭性値が0である場合
-                if (CurrentPoise == 0)
+                // 攻撃アニメーションを再生していない場合
+                if (!AnimationHandler.IsPlayingAttackAnimation())
                 {
-                    // スタン処理を呼ぶ
-                    ApplyStun();
+                    // 被弾のアニメーションを再生する
+                    AnimationHandler.PlayHitAnimation();
                 }
-                
-                // 現在の靭性値が0でない場合
-                else
-                {
-                    // 攻撃アニメーションを再生していない場合
-                    if (!AnimationHandler.IsPlayingAttackAnimation())
-                    {
-                        // 被弾のアニメーションを再生する
-                        AnimationHandler.PlayHitAnimation();
-                    }
-                    // ノックバックさせる
-                    ApplyKnockBack();
-                }
+                // ノックバックさせる
+                ApplyKnockBack();
             }
         }
 
@@ -249,8 +262,8 @@ namespace Enemy.AI
             }
 
             // 現在の体力からダメージ量を減少させる
-            CurrentHp = Mathf.Max(0, CurrentHp - attackDamage);
-            Debug.Log($"Received damage : {attackDamage}. Current HP : {CurrentHp}");
+            _currentHp.Value = Mathf.Max(0, _currentHp.Value - attackDamage);
+            Debug.Log($"Received damage : {attackDamage}. Current HP : {_currentHp}");
         }
 
         /// <summary>死亡時の処理</summary>
@@ -260,6 +273,12 @@ namespace Enemy.AI
             Cts?.Cancel();
             // 死亡アニメーションを再生する
             AnimationHandler.PlayDieAnimation();
+            // ゲームクリア時のUIを表示する
+            UIManager.Instance.ShowGameClearUI();
+            // メインUIを非表示にする
+            UIManager.Instance.HideMainUI();
+            // サウンドを再生する
+            SoundManager.Instance.PlayOneShot(OutGameEnums.SoundType.Clear);
         }
 
         /// <summary>ノックバックを適用する</summary>
@@ -274,12 +293,6 @@ namespace Enemy.AI
         //-------------------------------------------------------------------------------
         // アニメーションイベント
         //-------------------------------------------------------------------------------
-
-        /// <summary>靭性値を最大まで回復させる</summary>
-        public void RestoreMaxPoise()
-        {
-            CurrentPoise = stats.maxPoise;
-        }
         
         public void ActivateMeteorParticle()
         {
@@ -334,6 +347,50 @@ namespace Enemy.AI
         public void ActivatePhotonParticles()
         {
             ParticleManager.Instance.ActivatePhotonParticles();
+        }
+
+        public void PlayScytheSound()
+        {
+            SoundManager.Instance.PlayOneShot(OutGameEnums.SoundType.Scythe);
+        }
+
+        public void PlayMeteorSound()
+        {
+            SoundManager.Instance.PlayOneShot(OutGameEnums.SoundType.Meteor);
+        }
+
+        public void PlaySeraphSound()
+        {
+            SoundManager.Instance.PlayOneShot(OutGameEnums.SoundType.Seraph);
+        }
+
+        public void PlayVortexSound()
+        {
+            SoundManager.Instance.PlayOneShot(OutGameEnums.SoundType.Vortex);
+        }
+
+        public void PlayPhotonSound()
+        {
+            SoundManager.Instance.PlayOneShot(OutGameEnums.SoundType.Photon);
+        }
+
+        public void PlayExplosionSound()
+        {
+            SoundManager.Instance.PlayOneShot(OutGameEnums.SoundType.Explosion);
+        }
+
+        public void PlayWaterFallSound()
+        {
+            SoundManager.Instance.PlayOneShot(OutGameEnums.SoundType.Waterfall);
+        }
+        
+        //-------------------------------------------------------------------------------
+        // その他の処理
+        //-------------------------------------------------------------------------------
+
+        public override void ResetBehaviour()
+        {
+            Cts?.Cancel();
         }
     }
 }
