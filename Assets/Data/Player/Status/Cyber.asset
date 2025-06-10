@@ -13,9 +13,16 @@ MonoBehaviour:
   m_Name: Cyber
   m_EditorClassIdentifier: 
   maxHp: 100
+  maxSp: 1
+  maxEp: 30
+  sPRegenRate: 0.05
+  sprintSpCost: 0.0025
+  dodgeSpCost: 0.25
+  parrySpCost: 0.5
+  guardSpCost: 0.005
+  attackSpecialSpCost: 0.3
+  attackExtraEpCost: 3
   moveSpeed: 7.5
   sprintSpeed: 12.5
-  dodgePower: 10
   attackSpecial4Power: 50
   attackExtraSpeed: 10
-  attackAimAssistSpeed: 0.5
