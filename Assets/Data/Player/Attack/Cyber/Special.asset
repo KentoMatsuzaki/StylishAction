@@ -13,6 +13,5 @@ MonoBehaviour:
   m_Name: Special
   m_EditorClassIdentifier: 
   attackType: 1
-  attackDamage: 1
-  attackDuration: 0
+  attackDamage: 3
   attackRotationSpeed: 0
