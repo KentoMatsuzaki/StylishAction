@@ -72,5 +72,15 @@ namespace Player.Handler
         {
             _animationEventHandler.ActivateAttackSpecial3Particle();
         }
+
+        public void EnableAttackExtraCollider()
+        {
+            _animationEventHandler.EnableAttackExtraCollider();
+        }
+
+        public void DisableAttackExtraCollider()
+        {
+            _animationEventHandler.DisableAttackExtraCollider();
+        }
     }
 }
