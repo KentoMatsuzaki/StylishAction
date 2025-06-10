@@ -1,4 +1,4 @@
-using Camera;
+using Const;
 using SO.Player;
 using Enemy.AI;
 using Enum;
@@ -6,9 +6,11 @@ using Particle;
 using Player.Handler;
 using Player.Interface;
 using SO.Enemy;
+using Sound;
+using UI;
+using UniRx;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Serialization;
 
 namespace Player
 {
@@ -27,28 +29,59 @@ namespace Player
 
         public Transform modelTransform;
 
-        private float _currentHp;
-        private Collider _collider;
+        private readonly ReactiveProperty<float> _currentHp = new();
+        public IReadOnlyReactiveProperty<float> CurrentHp => _currentHp;
+        
+        private readonly ReactiveProperty<float> _currentSp = new();
+        
+        public IReadOnlyReactiveProperty<float> CurrentSp => _currentSp;
+        
+        private readonly ReactiveProperty<float> _currentEp = new();
+        
+        public IReadOnlyReactiveProperty<float> CurrentEp => _currentEp;
+        
+        public float MaxHp { get; private set; }
+        
+        public float MaxSp { get; private set; }
+        
+        public float MaxEp { get; private set; }
         public PlayerAttackStats CurrentAttackStats { get; private set; }
         
         //-------------------------------------------------------------------------------
         // 初期設定
         //-------------------------------------------------------------------------------
 
-        private void Start()
+        public void Initialize()
+        {
+            InitializeComponents();
+            InitializeStats();
+            InitializeTransform();
+            SetUpAllStatesActions();
+        }
+
+        private void InitializeComponents()
         {
             _locomotionHandler = GetComponent<PlayerLocomotionHandler>();
             _stateHandler = GetComponent<PlayerStateHandler>();
             _attackHandler = GetComponent<PlayerAttackHandler>();
             _animationHandler = GetComponent<PlayerAnimationHandler>();
-            _collider = GetComponent<Collider>();
-            Initialize();
-            SetUpAllStatesActions();
         }
 
-        private void Initialize()
+        private void InitializeStats()
         {
-            _currentHp = stats.maxHp;
+            _currentHp.Value = stats.maxHp;
+            _currentSp.Value = stats.maxSp;
+            _currentEp.Value = 0f;
+            MaxHp = stats.maxHp;
+            MaxSp = stats.maxSp;
+            MaxEp = stats.maxEp;
+        }
+
+        private void InitializeTransform()
+        {
+            transform.position = new Vector3(PlayerConst.InitialPositionX, PlayerConst.InitialPositionY, PlayerConst.InitialPositionZ);
+            transform.rotation = Quaternion.Euler(PlayerConst.InitialRotationX, PlayerConst.InitialRotationY, PlayerConst.InitialRotationZ);
+            modelTransform.localPosition = Vector3.zero;
         }
 
         /// <summary>全ての状態のアクションを登録する</summary>
@@ -87,6 +120,10 @@ namespace Player
             // スプリント状態の更新処理
             _stateHandler.SprintState.OnUpdate = () =>
             {
+                // SPを消費する
+                _currentSp.Value -= stats.sprintSpCost;
+                // SPが不足している場合、静止状態に遷移させる
+                if (_currentSp.Value < stats.sprintSpCost) _animationHandler.PlayIdleAnimation();
                 // プレイヤーを回転させる
                 _locomotionHandler.RotateTowardsCameraRelativeDirection(cameraTransform);
                 // プレイヤーを移動させる
@@ -103,14 +140,16 @@ namespace Player
             // 回避状態の開始時に呼ばれる処理
             _stateHandler.DodgeState.OnEnter = () =>
             {
+                // SPを消費する
+                _currentSp.Value -= stats.dodgeSpCost;
                 // Y軸の回転を固定する
                 _locomotionHandler.FreezeRotationY();
                 // RootMotionを有効化する
                 _animationHandler.EnableRootMotion();
                 // 回避のアニメーションを再生する
                 _animationHandler.PlayDodgeAnimation();
-                // 回避アニメーションに合わせて、前方に力を加える
-                //_locomotionHandler.ApplyDodgeForce(stats.dodgePower);
+                // サウンドを再生する
+                SoundManager.Instance.PlayOneShot(OutGameEnums.SoundType.Dodge);
             };
 
             // 回避状態の更新処理
@@ -142,6 +181,8 @@ namespace Player
                 _animationHandler.EnableRootMotion();
                 // 通常攻撃のトリガーを有効化する
                 _animationHandler.TriggerAttackNormal();
+                // サウンドを再生する
+                SoundManager.Instance.PlayOneShot(OutGameEnums.SoundType.AttackNormal);
             };
             
             // 通常攻撃状態の終了時に呼ばれる処理
@@ -156,6 +197,8 @@ namespace Player
             // 特殊攻撃状態の開始時に呼ばれる処理
             _stateHandler.AttackSpecialState.OnEnter = () =>
             {
+                // SPを消費する
+                _currentSp.Value -= stats.attackSpecialSpCost;
                 // 敵の方向へ回転させる
                 _attackHandler.RotateTowardsEnemyInstantly(enemy);
                 // 現在の攻撃の情報を特殊攻撃に設定する
@@ -164,6 +207,8 @@ namespace Player
                 _animationHandler.EnableRootMotion();
                 // 特殊攻撃のトリガーを有効化する
                 _animationHandler.TriggerAttackSpecial();
+                // サウンドを再生する
+                SoundManager.Instance.PlayOneShot(OutGameEnums.SoundType.AttackSpecial);
             };
             
             // 特殊攻撃状態の終了時に呼ばれる処理
@@ -186,11 +231,19 @@ namespace Player
                 _animationHandler.EnableAttackExtra();
                 // EX攻撃のパーティクルを有効化する
                 ParticleManager.Instance.ActivateParticle(ParticleEnums.ParticleType.AttackExtra);
+                // EX攻撃のコライダーを有効化する
+                _attackHandler.EnableAttackExtraCollider();
+                // サウンドを再生する
+                SoundManager.Instance.PlayLoopSound(OutGameEnums.SoundType.AttackExtra);
             };
 
             // EX攻撃状態の更新処理
             _stateHandler.AttackExtraState.OnUpdate = () =>
             {
+                // EPを減少させる
+                _currentEp.Value -= Time.deltaTime * stats.attackExtraEpCost;
+                // EPが不足している場合、静止状態に遷移させる
+                if (_currentEp.Value <= 0) _animationHandler.PlayIdleAnimation();
                 // プレイヤーを回転させる
                 _locomotionHandler.RotateTowardsCameraRelativeDirection(cameraTransform);
                 // プレイヤーを移動させる
@@ -202,6 +255,8 @@ namespace Player
             {
                 // EX攻撃のフラグを無効化する
                 _animationHandler.DisableAttackExtra();
+                // EX攻撃のコライダーを無効化する
+                _attackHandler.DisableAttackExtraCollider();
                 // EX攻撃のパーティクルを無効化する
                 ParticleManager.Instance.DeactivateParticle(ParticleEnums.ParticleType.AttackExtra);
             };
@@ -209,6 +264,8 @@ namespace Player
             // パリィ状態の開始時に呼ばれる処理
             _stateHandler.ParryState.OnEnter = () =>
             {
+                // SPを消費する
+                _currentSp.Value -= stats.parrySpCost;
                 // パリィのアニメーションを再生する
                 _animationHandler.PlayParryAnimation();
             };
@@ -220,6 +277,15 @@ namespace Player
                 _animationHandler.EnableGuard();
                 // 防御のパーティクルを有効化する
                 ParticleManager.Instance.ActivateParticle(ParticleEnums.ParticleType.Guard);
+            };
+            
+            // 防御状態の更新処理
+            _stateHandler.GuardState.OnUpdate = () =>
+            {
+                // SPを消費する
+                _currentSp.Value -= stats.guardSpCost;
+                // SPが不足している場合、静止状態に遷移させる
+                if (_currentSp.Value < stats.guardSpCost) _animationHandler.PlayIdleAnimation();
             };
             
             // 防御状態の終了時に呼ばれる処理
@@ -252,10 +318,16 @@ namespace Player
             };
             
             // 死亡状態の開始時に呼ばれる処理
-            _stateHandler.DeathState.OnExit = () =>
+            _stateHandler.DeathState.OnEnter = () =>
             {
                 // 死亡アニメーションを再生する
-                //_animationHandler.PlayDieAnimation();
+                _animationHandler.PlayDieAnimation();
+                // ゲームオーバーUIを表示する
+                UIManager.Instance.ShowGameOverUI();
+                // メインUIを非表示にする
+                UIManager.Instance.HideMainUI();
+                // サウンドを再生する
+                SoundManager.Instance.PlayOneShot(OutGameEnums.SoundType.GameOver);
             };
         }
         
@@ -266,6 +338,7 @@ namespace Player
         private void Update()
         {
             _stateHandler.CurrentState.Update();
+            _currentSp.Value = Mathf.Min(1.0f, _currentSp.Value + Time.deltaTime * stats.sPRegenRate);
         }
 
         //-------------------------------------------------------------------------------
@@ -324,7 +397,7 @@ namespace Player
             if (context.performed)
             {
                 // 移動入力がある場合
-                if (_locomotionHandler.MoveDirection.magnitude > 0.1f)
+                if (_locomotionHandler.MoveDirection.magnitude > 0.1f && _currentSp.Value >= stats.sprintSpCost)
                 {
                     // スプリント状態に切り替える
                     _stateHandler.SwitchState(_stateHandler.SprintState);
@@ -359,7 +432,10 @@ namespace Player
             // 入力が開始された時の処理
             if (context.started)
             {
-                _stateHandler.SwitchState(_stateHandler.DodgeState);
+                if (_currentSp.Value >= stats.dodgeSpCost)
+                {
+                    _stateHandler.SwitchState(_stateHandler.DodgeState);
+                }
             }
         }
         
@@ -375,8 +451,6 @@ namespace Player
             {
                 // 通常攻撃状態に切り替える
                 _stateHandler.SwitchState(_stateHandler.AttackNormalState);
-                // 回転処理
-                //_attackHandler.RotateSmoothlyTowardsEnemy(enemy.transform.position, stats.attackAimAssistSpeed);
             }
         }
         
@@ -390,8 +464,11 @@ namespace Player
             // 入力が実行された時の処理
             if (context.performed)
             {
-                // 特殊攻撃状態に切り替える
-                _stateHandler.SwitchState(_stateHandler.AttackSpecialState);
+                if (_currentSp.Value >= stats.attackSpecialSpCost)
+                {
+                    // 特殊攻撃状態に切り替える
+                    _stateHandler.SwitchState(_stateHandler.AttackSpecialState);
+                }
             }
         }
         
@@ -413,7 +490,7 @@ namespace Player
                 }
                 
                 // EX攻撃状態でない場合
-                else
+                else if (_currentEp.Value >= stats.maxEp)
                 {
                     // EX攻撃状態に切り替える
                     _stateHandler.SwitchState(_stateHandler.AttackExtraState);
@@ -431,8 +508,11 @@ namespace Player
             // 入力が開始された時の処理
             if (context.started)
             {
-                // パリィ状態に切り替える
-                _stateHandler.SwitchState(_stateHandler.ParryState);
+                if (_currentSp.Value >= stats.parrySpCost)
+                {
+                    // パリィ状態に切り替える
+                    _stateHandler.SwitchState(_stateHandler.ParryState);
+                }
             }
         }
         
@@ -446,8 +526,11 @@ namespace Player
             // 入力が実行された時の処理
             if (context.performed)
             {
-                // 防御状態に切り替える
-                _stateHandler.SwitchState(_stateHandler.GuardState);
+                if (_currentSp.Value >= stats.guardSpCost)
+                {
+                    // 防御状態に切り替える
+                    _stateHandler.SwitchState(_stateHandler.GuardState);
+                }
             }
             
             // 入力が終了された時の処理
@@ -483,6 +566,8 @@ namespace Player
                 ParticleManager.Instance.ActivateParticle(ParticleEnums.ParticleType.Parry);
                 // パリィの結果を適用する処理を呼ぶ
                 enemyAI.ApplyParry();
+                // サウンドを再生する
+                SoundManager.Instance.PlayOneShot(OutGameEnums.SoundType.Parry);
             }
             
             // 防御状態である場合
@@ -492,6 +577,12 @@ namespace Player
                 ParticleManager.Instance.ActivateHitParticle(hitPosition);
                 // 被弾アニメーションを再生する
                 _animationHandler.PlayGuardHitAnimation();
+                // EPを減少させる
+                _currentEp.Value--;
+                // ダメージを4分の1だけ反映する
+                TakeDamage(attackStats.attackDamage / 4);
+                // サウンドを再生する
+                SoundManager.Instance.PlayOneShot(OutGameEnums.SoundType.Guard);
             }
             
             // その他の状態である場合
@@ -499,6 +590,8 @@ namespace Player
             {
                 // 被弾時のパーティクルを有効化する
                 ParticleManager.Instance.ActivateHitParticle(hitPosition);
+                // EPを減少させる
+                _currentEp.Value--;
                 // ダメージを反映する
                 TakeDamage(attackStats.attackDamage);
             }
@@ -515,11 +608,11 @@ namespace Player
             }
 
             // 現在の体力からダメージ量を減少させる
-            _currentHp = Mathf.Max(0, _currentHp - attackDamage);
-            Debug.Log($"Received damage : {attackDamage}. Current HP : {_currentHp}");
+            _currentHp.Value = Mathf.Max(0, _currentHp.Value - attackDamage);
+            Debug.Log($"Received damage : {attackDamage}. Current HP : {_currentHp.Value}");
             
             // 死亡している場合
-            if (_currentHp <= 0)
+            if (_currentHp.Value <= 0)
             {
                 // 死亡時の処理を呼び出す
                 ApplyDeath();
@@ -537,27 +630,6 @@ namespace Player
         {
             // 死亡状態に切り替える
             _stateHandler.SwitchState(_stateHandler.DeathState);
-        }
-        
-        //-------------------------------------------------------------------------------
-        // ロックオン処理
-        //-------------------------------------------------------------------------------
-
-        /// <summary>PlayerInputから呼ばれる</summary>
-        public void OnLockOn(InputAction.CallbackContext context)
-        {
-            // ボタンを押した瞬間の処理
-            if (context.performed)
-            {
-                // 非ロックオン時
-                if (!OrbitCamera.Instance.IsLockingOnEnemy)
-                {
-                    // 敵の方を向く
-                    
-                }
-                
-                OrbitCamera.Instance.SwitchLockOnTarget();
-            }
         }
         
         //-------------------------------------------------------------------------------
@@ -621,6 +693,32 @@ namespace Player
         public void ActivateAttackSpecial3Particle()
         {
             ParticleManager.Instance.ActivateParticle(ParticleEnums.ParticleType.AttackSpecial3);
+        }
+
+        public void EnableAttackExtraCollider()
+        {
+            _attackHandler.EnableAttackExtraCollider();
+        }
+
+        public void DisableAttackExtraCollider()
+        {
+            _attackHandler.DisableAttackExtraCollider();
+        }
+        
+        //-------------------------------------------------------------------------------
+        // その他の処理
+        //-------------------------------------------------------------------------------
+
+        public void IncreaseEp()
+        {
+            _currentEp.Value = Mathf.Min(stats.maxEp, ++_currentEp.Value);
+        }
+
+        public void Restart()
+        {
+            _stateHandler.ResetState();
+            _animationHandler.PlayIdleAnimation();
+            gameObject.SetActive(false);
         }
     }
 }
