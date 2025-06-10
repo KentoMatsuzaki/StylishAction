@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Seraph
   m_EditorClassIdentifier: 
   attackType: 2
-  attackDamage: 1
+  attackDamage: 3
   minAttackRange: 0
   maxAttackRange: 10
   attackAngle: 15
