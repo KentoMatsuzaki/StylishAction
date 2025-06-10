@@ -7,7 +7,7 @@ using System.Threading;
 using Enemy.AsyncNode;
 using Enemy.Handler;
 using SO.Player;
-using UnityEngine.Serialization;
+using UniRx;
 
 namespace Enemy.AI
 {
@@ -38,18 +38,15 @@ namespace Enemy.AI
         /// <summary>攻撃の制御クラス</summary>
         protected EnemyAttackHandler AttackHandler;
 
-        /// <summary>現在の体力値</summary>
-        protected float CurrentHp;
-
-        /// <summary>現在の靭性値</summary>
-        protected int CurrentPoise;
-
         /// <summary>剛体</summary>
         protected Rigidbody Rb;
 
         //-------------------------------------------------------------------------------
         // ビヘイビアツリーに関する処理
         //-------------------------------------------------------------------------------
+
+        /// <summary>敵を初期化する</summary>
+        public abstract UniTask Initialize();
         
         /// <summary>ビヘイビアツリーを構築する</summary>
         protected abstract void BuildTree();
@@ -58,7 +55,10 @@ namespace Enemy.AI
         protected abstract UniTask Tick();
         
         /// <summary>ビヘイビアツリーの評価を開始する</summary>
-        protected abstract void StartBehaviour();
+        public abstract void StartBehaviour();
+        
+        /// <summary>ビヘイビアツリーをリセットする</summary>
+        public abstract void ResetBehaviour();
         
         //-------------------------------------------------------------------------------
         // 攻撃に関する処理
