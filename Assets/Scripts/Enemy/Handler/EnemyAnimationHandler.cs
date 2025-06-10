@@ -21,6 +21,16 @@ namespace Enemy.Handler
         }
         
         //-------------------------------------------------------------------------------
+        // 登場に関する処理
+        //-------------------------------------------------------------------------------
+
+        /// <summary>登場のアニメーションを再生する</summary>
+        public void PlayBornAnimation()
+        {
+            _animator.Play(EnemyConst.BornState);
+        }
+        
+        //-------------------------------------------------------------------------------
         // 静止に関する処理
         //-------------------------------------------------------------------------------
 
@@ -105,7 +115,7 @@ namespace Enemy.Handler
         //-------------------------------------------------------------------------------
         
         /// <summary>アニメーションの再生完了を待つ</summary>
-        public async UniTask WaitUntilAnimationComplete(CancellationToken token)
+        public async UniTask WaitUntilAnimationComplete()
         {
             // 現在のステート情報を取得する
             var stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
@@ -113,7 +123,7 @@ namespace Enemy.Handler
             while (stateInfo.normalizedTime < 1.0f || _animator.IsInTransition(0))
             {
                 // 次のフレームまで待機する
-                await UniTask.Yield(PlayerLoopTiming.Update, token);
+                await UniTask.Yield(PlayerLoopTiming.Update);
                 // 現在のステート情報を更新する
                 stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
             }
