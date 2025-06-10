@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Explosion
   m_EditorClassIdentifier: 
   attackType: 4
-  attackDamage: 1
+  attackDamage: 3
   minAttackRange: 0
   maxAttackRange: 15
   attackAngle: 15
