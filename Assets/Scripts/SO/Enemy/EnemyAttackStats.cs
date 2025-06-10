@@ -9,7 +9,7 @@ namespace SO.Enemy
     public class EnemyAttackStats : ScriptableObject
     {
         /// <summary>攻撃の種類</summary>
-        public EnemyEnum.AttackType attackType;
+        public EnemyEnums.AttackType attackType;
 
         /// <summary>ダメージ量</summary>
         public float attackDamage;
