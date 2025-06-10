@@ -1,5 +1,6 @@
 using Const;
 using Enemy.AI;
+using Enum;
 using UnityEngine;
 
 namespace Player
@@ -12,6 +13,9 @@ namespace Player
         
         /// <summary>攻撃の当たり判定</summary>
         private Collider _collider;
+
+        /// <summary>攻撃の種類</summary>
+        [SerializeField] private PlayerEnums.AttackType type;
         
         //-------------------------------------------------------------------------------
         // 初期設定
@@ -45,7 +49,16 @@ namespace Player
                 var hitPos = other.ClosestPoint(transform.position);
                 // 敵AIのダメージ適用処理を呼び出す
                 enemy.ApplyDamage(_player.CurrentAttackStats, hitPos);
+                // EX攻撃でない場合
+                if (type != PlayerEnums.AttackType.AttackExtra)
+                {
+                    // EPを加算する
+                    _player.IncreaseEp();
+                }
             }
         }
+        
+        public void EnableCollider() => _collider.enabled = true;
+        public void DisableCollider() => _collider.enabled = false;
     }
 }
