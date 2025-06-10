@@ -1,8 +1,21 @@
+using System.Numerics;
+
 namespace Const
 {
     /// <summary>プレイヤーに関する定数を保持するクラス</summary>
     public static class PlayerConst
     {
+        //-------------------------------------------------------------------------------
+        // パラメーター
+        //-------------------------------------------------------------------------------
+
+        public const float InitialPositionX = 0f;
+        public const float InitialPositionY = 0f;
+        public const float InitialPositionZ = 15f;
+        public const float InitialRotationX = 0f;
+        public const float InitialRotationY = 180f;
+        public const float InitialRotationZ = 0f;
+        
         //-------------------------------------------------------------------------------
         // タグ
         //-------------------------------------------------------------------------------
@@ -13,6 +26,7 @@ namespace Const
         // アニメーションステート
         //-------------------------------------------------------------------------------
 
+        public const string IdleState = "Idle"; // 静止
         public const string DodgeState = "Dodge"; // 回避
         public const string ParryState = "Parry"; // パリィ
         public const string LightHitState = "Light Hit"; // 軽い攻撃の被弾
