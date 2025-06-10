@@ -15,6 +15,8 @@ namespace Player.Handler
 
         /// <summary>攻撃情報のマップ</summary>
         private Dictionary<PlayerEnums.AttackType, PlayerAttackStats> _attackStatsMap;
+
+        [SerializeField] private PlayerAttackInvoker attackExtraInvoker; 
         
         //-------------------------------------------------------------------------------
         // 初期設定
@@ -43,5 +45,8 @@ namespace Player.Handler
             enemyPos.y = transform.position.y;
             transform.LookAt(enemyPos);
         }
+
+        public void EnableAttackExtraCollider() => attackExtraInvoker.EnableCollider();
+        public void DisableAttackExtraCollider() => attackExtraInvoker.DisableCollider();
     }
 }
