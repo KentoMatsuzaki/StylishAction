@@ -4,6 +4,17 @@ namespace Const
     public static class EnemyConst
     {
         //-------------------------------------------------------------------------------
+        // パラメーター
+        //-------------------------------------------------------------------------------
+
+        public const float InitialPositionX = 0f;
+        public const float InitialPositionY = 0f;
+        public const float InitialPositionZ = 0f;
+        public const float InitialRotationX = 0f;
+        public const float InitialRotationY = 0f;
+        public const float InitialRotationZ = 0f;
+        
+        //-------------------------------------------------------------------------------
         // タグ
         //-------------------------------------------------------------------------------
         
@@ -13,6 +24,7 @@ namespace Const
         // アニメーションステート
         //-------------------------------------------------------------------------------
         
+        public const string BornState = "Born"; // 登場
         public const string IdleState = "Idle"; // 静止
         public const string MoveState = "Move"; // 移動
         public const string HitState = "Hit"; // 被弾
