@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07c479ab78a598542bdfff743a2a5beb, type: 3}
   m_Name: Death
   m_EditorClassIdentifier: 
-  maxHp: 100
+  maxHp: 1
   moveSpeed: 5
   rotateSpeed: 360
-  stunDuration: 5
+  stunDuration: 4.2
   knockBackPower: 5
-  maxPoise: 5
+  maxPoise: 100
