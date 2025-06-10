@@ -30,7 +30,7 @@ namespace Player.Handler
         /// <summary>EX攻撃状態</summary>
         public PlayerState AttackExtraState { get; private set; }
         
-        /// <summary>着地状態</summary>
+        /// <summary>遷移状態</summary>
         public PlayerState TransitionState { get; private set; }
         
         /// <summary>パリィ状態</summary>
@@ -109,19 +109,99 @@ namespace Player.Handler
             SprintState.InvalidTransitions.Add(PlayerEnums.PlayerState.AttackNormal);
             SprintState.InvalidTransitions.Add(PlayerEnums.PlayerState.AttackSpecial);
             SprintState.InvalidTransitions.Add(PlayerEnums.PlayerState.AttackExtra);
+            SprintState.InvalidTransitions.Add(PlayerEnums.PlayerState.Parry);
             SprintState.InvalidTransitions.Add(PlayerEnums.PlayerState.Guard);
+            
+            // 回避状態
+            DodgeState.InvalidTransitions.Add(PlayerEnums.PlayerState.Move);
+            DodgeState.InvalidTransitions.Add(PlayerEnums.PlayerState.Sprint);
+            DodgeState.InvalidTransitions.Add(PlayerEnums.PlayerState.AttackNormal);
+            DodgeState.InvalidTransitions.Add(PlayerEnums.PlayerState.AttackSpecial);
+            DodgeState.InvalidTransitions.Add(PlayerEnums.PlayerState.AttackExtra);
+            DodgeState.InvalidTransitions.Add(PlayerEnums.PlayerState.Parry);
+            DodgeState.InvalidTransitions.Add(PlayerEnums.PlayerState.Guard);
             
             // 通常攻撃状態
             AttackNormalState.InvalidTransitions.Add(PlayerEnums.PlayerState.Move);
             AttackNormalState.InvalidTransitions.Add(PlayerEnums.PlayerState.Sprint);
+            AttackNormalState.InvalidTransitions.Add(PlayerEnums.PlayerState.AttackSpecial);
+            AttackNormalState.InvalidTransitions.Add(PlayerEnums.PlayerState.AttackExtra);
+            AttackNormalState.InvalidTransitions.Add(PlayerEnums.PlayerState.Guard);
             
             // 特殊攻撃状態
             AttackSpecialState.InvalidTransitions.Add(PlayerEnums.PlayerState.Move);
             AttackSpecialState.InvalidTransitions.Add(PlayerEnums.PlayerState.Sprint);
+            AttackSpecialState.InvalidTransitions.Add(PlayerEnums.PlayerState.AttackNormal);
+            AttackSpecialState.InvalidTransitions.Add(PlayerEnums.PlayerState.AttackExtra);
+            AttackSpecialState.InvalidTransitions.Add(PlayerEnums.PlayerState.Guard);
             
             // 必殺攻撃状態
             AttackExtraState.InvalidTransitions.Add(PlayerEnums.PlayerState.Move);
             AttackExtraState.InvalidTransitions.Add(PlayerEnums.PlayerState.Sprint);
+            AttackExtraState.InvalidTransitions.Add(PlayerEnums.PlayerState.Dodge);
+            AttackExtraState.InvalidTransitions.Add(PlayerEnums.PlayerState.AttackNormal);
+            AttackExtraState.InvalidTransitions.Add(PlayerEnums.PlayerState.AttackSpecial);
+            AttackExtraState.InvalidTransitions.Add(PlayerEnums.PlayerState.Parry);
+            AttackExtraState.InvalidTransitions.Add(PlayerEnums.PlayerState.Guard);
+            
+            // 遷移状態
+            TransitionState.InvalidTransitions.Add(PlayerEnums.PlayerState.Move);
+            TransitionState.InvalidTransitions.Add(PlayerEnums.PlayerState.Sprint);
+            TransitionState.InvalidTransitions.Add(PlayerEnums.PlayerState.Dodge);
+            TransitionState.InvalidTransitions.Add(PlayerEnums.PlayerState.AttackNormal);
+            TransitionState.InvalidTransitions.Add(PlayerEnums.PlayerState.AttackSpecial);
+            TransitionState.InvalidTransitions.Add(PlayerEnums.PlayerState.AttackExtra);
+            TransitionState.InvalidTransitions.Add(PlayerEnums.PlayerState.Parry);
+            TransitionState.InvalidTransitions.Add(PlayerEnums.PlayerState.Guard);
+            TransitionState.InvalidTransitions.Add(PlayerEnums.PlayerState.Damage);
+            TransitionState.InvalidTransitions.Add(PlayerEnums.PlayerState.Death);
+            
+            // パリィ状態
+            ParryState.InvalidTransitions.Add(PlayerEnums.PlayerState.Move);
+            ParryState.InvalidTransitions.Add(PlayerEnums.PlayerState.Sprint);
+            ParryState.InvalidTransitions.Add(PlayerEnums.PlayerState.Dodge);
+            ParryState.InvalidTransitions.Add(PlayerEnums.PlayerState.AttackNormal);
+            ParryState.InvalidTransitions.Add(PlayerEnums.PlayerState.AttackSpecial);
+            ParryState.InvalidTransitions.Add(PlayerEnums.PlayerState.AttackExtra);
+            ParryState.InvalidTransitions.Add(PlayerEnums.PlayerState.Guard);
+            ParryState.InvalidTransitions.Add(PlayerEnums.PlayerState.Damage);
+            ParryState.InvalidTransitions.Add(PlayerEnums.PlayerState.Death);
+            
+            // ガード状態
+            GuardState.InvalidTransitions.Add(PlayerEnums.PlayerState.Move);
+            GuardState.InvalidTransitions.Add(PlayerEnums.PlayerState.Sprint);
+            GuardState.InvalidTransitions.Add(PlayerEnums.PlayerState.Dodge);
+            GuardState.InvalidTransitions.Add(PlayerEnums.PlayerState.AttackNormal);
+            GuardState.InvalidTransitions.Add(PlayerEnums.PlayerState.AttackSpecial);
+            GuardState.InvalidTransitions.Add(PlayerEnums.PlayerState.AttackExtra);
+            GuardState.InvalidTransitions.Add(PlayerEnums.PlayerState.Parry);
+            GuardState.InvalidTransitions.Add(PlayerEnums.PlayerState.Damage);
+            
+            // 被弾状態
+            DamageState.InvalidTransitions.Add(PlayerEnums.PlayerState.Move);
+            DamageState.InvalidTransitions.Add(PlayerEnums.PlayerState.Sprint);
+            DamageState.InvalidTransitions.Add(PlayerEnums.PlayerState.Dodge);
+            DamageState.InvalidTransitions.Add(PlayerEnums.PlayerState.AttackNormal);
+            DamageState.InvalidTransitions.Add(PlayerEnums.PlayerState.AttackSpecial);
+            DamageState.InvalidTransitions.Add(PlayerEnums.PlayerState.AttackExtra);
+            DamageState.InvalidTransitions.Add(PlayerEnums.PlayerState.Parry);
+            DamageState.InvalidTransitions.Add(PlayerEnums.PlayerState.Guard);
+            DamageState.InvalidTransitions.Add(PlayerEnums.PlayerState.Damage);
+            DamageState.InvalidTransitions.Add(PlayerEnums.PlayerState.Death);
+            
+            // 死亡状態
+            DeathState.InvalidTransitions.Add(PlayerEnums.PlayerState.Idle);
+            DeathState.InvalidTransitions.Add(PlayerEnums.PlayerState.Move);
+            DeathState.InvalidTransitions.Add(PlayerEnums.PlayerState.Sprint);
+            DeathState.InvalidTransitions.Add(PlayerEnums.PlayerState.Dodge);
+            DeathState.InvalidTransitions.Add(PlayerEnums.PlayerState.AttackNormal);
+            DeathState.InvalidTransitions.Add(PlayerEnums.PlayerState.AttackSpecial);
+            DeathState.InvalidTransitions.Add(PlayerEnums.PlayerState.AttackExtra);
+            DeathState.InvalidTransitions.Add(PlayerEnums.PlayerState.Transition);
+            DeathState.InvalidTransitions.Add(PlayerEnums.PlayerState.Parry);
+            DeathState.InvalidTransitions.Add(PlayerEnums.PlayerState.Guard);
+            DeathState.InvalidTransitions.Add(PlayerEnums.PlayerState.Damage);
+            DeathState.InvalidTransitions.Add(PlayerEnums.PlayerState.Death);
         }
 
         /// <summary>状態の初期化を行う</summary>
@@ -173,7 +253,12 @@ namespace Player.Handler
         /// <summary>ダメージを受け付けるかどうか</summary>
         public bool IsDamageReceivable()
         {
-            return CurrentState != DamageState && CurrentState != TransitionState;
+            return CurrentState != DamageState || CurrentState != TransitionState || CurrentState == AttackExtraState;
+        }
+
+        public void ResetState()
+        {
+            CurrentState = IdleState;
         }
     }
 }
