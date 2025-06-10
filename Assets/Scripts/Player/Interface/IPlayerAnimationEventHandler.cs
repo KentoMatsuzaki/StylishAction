@@ -26,5 +26,9 @@ namespace Player.Interface
         void ActivateAttackSpecial2Particle();
 
         void ActivateAttackSpecial3Particle();
+
+        void EnableAttackExtraCollider();
+
+        void DisableAttackExtraCollider();
     }
 }
