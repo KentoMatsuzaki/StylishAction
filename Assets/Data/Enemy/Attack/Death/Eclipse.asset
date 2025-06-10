@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Eclipse
   m_EditorClassIdentifier: 
   attackType: 3
-  attackDamage: 1
+  attackDamage: 2
   minAttackRange: 5
   maxAttackRange: 15
   attackAngle: 15
