@@ -1,35 +1,30 @@
 using System;
-using System.Collections.Generic;
-using Enum;
+using Definitions.Enum;
 
 namespace Player
 {
-    /// <summary>プレイヤーの状態を表すクラス</summary>
-    /// <summary>状態ごとにEnter,Update,Exit時の処理を登録する</summary>
+    /// <summary>
+    /// プレイヤーの状態を表すクラス
+    /// </summary>
     public class PlayerState
     {
-        /// <summary>状態開始時に呼ばれる処理</summary>
-        public Action OnEnter;
+        public Action OnEnter;  // 状態の開始時に呼ばれるアクション
+        public Action OnUpdate; // 状態の更新時に呼ばれるアクション
+        public Action OnExit;   // 状態の終了時に呼ばれるアクション
         
-        /// <summary>毎フレーム呼ばれる処理</summary>
-        public Action OnUpdate;
-        
-        /// <summary>状態終了時に呼ばれる処理</summary>
-        public Action OnExit;
+        public readonly InGameEnums.PlayerStateType StateType; // 状態の種類
 
-        /// <summary>状態の種類</summary>
-        public readonly PlayerEnums.PlayerState StateType;
-        
-        /// <summary>この状態から遷移できない状態の一覧</summary>
-        public readonly List<PlayerEnums.PlayerState> InvalidTransitions = new List<PlayerEnums.PlayerState>();
-        
-        public PlayerState(PlayerEnums.PlayerState stateType)
+        public PlayerState(InGameEnums.PlayerStateType stateType)
         {
             StateType = stateType;
         }
         
-        public void Enter() => OnEnter?.Invoke();
-        public void Update() => OnUpdate?.Invoke();
-        public void Exit() => OnExit?.Invoke();
+        /// <summary>各アクションを設定する</summary>
+        public void SetAction(Action onEnter = null, Action onUpdate = null, Action onExit = null)
+        {
+            OnEnter = onEnter;
+            OnUpdate = onUpdate;
+            OnExit = onExit;
+        }
     }
 }
