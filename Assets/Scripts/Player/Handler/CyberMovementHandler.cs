@@ -1,0 +1,52 @@
+using Player.Interface;
+using UnityEngine;
+
+namespace Player.Handler
+{
+    /// <summary>
+    /// Cyber（プレイヤー）の移動を制御するクラス
+    /// </summary>
+    public class CyberMovementHandler : MonoBehaviour, IPlayerMovementHandler
+    {
+        private Rigidbody _rb;
+        
+        public Vector3 MoveDirection { get; private set; } // 移動方向
+        
+        //-------------------------------------------------------------------------------
+        // 初期化に関する処理
+        //-------------------------------------------------------------------------------
+
+        private void Awake()
+        {
+            _rb = GetComponent<Rigidbody>();
+        }
+        
+        //-------------------------------------------------------------------------------
+        // 移動に関する処理
+        //-------------------------------------------------------------------------------
+
+        public void SetMoveDirection(Vector2 inputDirection)
+        {
+            MoveDirection = new Vector3(inputDirection.x, 0, inputDirection.y);
+        }
+        
+        //-------------------------------------------------------------------------------
+        // 回転に関する処理
+        //-------------------------------------------------------------------------------
+
+        public void RotateTowardsCameraRelativeDir(Transform cameraTransform)
+        {
+            // カメラの正面方向・右方向を取得する
+            var cameraForward = cameraTransform.forward.normalized; 
+            var cameraRight = cameraTransform.right.normalized; 
+            cameraForward.y = 0; 
+            cameraRight.y = 0;
+            
+            // 入力方向をカメラ基準に変換
+            var dir = cameraForward * MoveDirection.z + cameraRight * MoveDirection.x; 
+            
+            // 求めた方向へ回転させる
+            transform.rotation = Quaternion.LookRotation(dir); 
+        }
+    }
+}
