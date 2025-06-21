@@ -1,76 +1,93 @@
-using Cysharp.Threading.Tasks;
-using Player;
-using SO.Enemy;
-using UnityEngine;
-using System.Collections.Generic;
+using System;
 using System.Threading;
+using Cysharp.Threading.Tasks;
+using Definitions.Data;
 using Enemy.AsyncNode;
-using Enemy.Handler;
-using SO.Player;
+using Enemy.Interface;
 using UniRx;
+using UnityEngine;
 
 namespace Enemy.AI
 {
-    /// <summary>敵のAI挙動を制御する抽象クラス</summary>
+    /// <summary>
+    /// 敵のAI挙動を制御する基底クラス
+    /// 共通の制御ロジックを提供し、各種敵AIクラスが継承して実装する
+    /// </summary>
     public abstract class EnemyAIBase : MonoBehaviour
     {
-        /// <summary>プレイヤー</summary>
-        [SerializeField] public PlayerController player;
+        protected IEnemyAttackHandler AttackHandler; // 攻撃ハンドラー
+        protected IEnemyMovementHandler MovementHandler; // 移動ハンドラー
+        protected IEnemyAnimationHandler AnimationHandler; // アニメーション
+
+        protected ReactiveProperty<float> CurrentHp = new(); // 現在のHP
+        public IReadOnlyReactiveProperty<float> EnemyHp => CurrentHp;
         
-        /// <summary>ステータス情報</summary>
-        [SerializeField] protected EnemyStats stats;
-
-        /// <summary>攻撃情報のリスト</summary>
-        [SerializeField] protected List<EnemyAttackStats> attackStatsList;
-
-        /// <summary>現在の攻撃情報</summary>
-        protected EnemyAttackStats CurrentAttackStats;
+        public float MaxHp { get; private set; } // 最大HP
         
-        /// <summary>ビヘイビアツリーの最上位ノード</summary>
-        protected AsyncSelectorNode RootNode;
+        protected EnemyBaseStats BaseStats; // 基本パラメーター
 
-        /// <summary>ビヘイビアツリーのキャンセルトークン</summary>
-        protected CancellationTokenSource Cts;
-        
-        /// <summary>アニメーションの制御クラス</summary>
-        protected EnemyAnimationHandler AnimationHandler;
-
-        /// <summary>攻撃の制御クラス</summary>
-        protected EnemyAttackHandler AttackHandler;
-
-        /// <summary>剛体</summary>
-        protected Rigidbody Rb;
-
-        //-------------------------------------------------------------------------------
-        // ビヘイビアツリーに関する処理
-        //-------------------------------------------------------------------------------
-
-        /// <summary>敵を初期化する</summary>
-        public abstract UniTask Initialize();
-        
-        /// <summary>ビヘイビアツリーを構築する</summary>
-        protected abstract void BuildTree();
-
-        /// <summary>ビヘイビアツリーの評価を実行する</summary>
-        protected abstract UniTask Tick();
-        
-        /// <summary>ビヘイビアツリーの評価を開始する</summary>
-        public abstract void StartBehaviour();
-        
-        /// <summary>ビヘイビアツリーをリセットする</summary>
-        public abstract void ResetBehaviour();
+        protected AsyncSelectorNode RootNode = new(); // 最上位ノード
+        private CancellationTokenSource _cts; // キャンセルトークン
         
         //-------------------------------------------------------------------------------
-        // 攻撃に関する処理
+        // 初期化に関する処理
         //-------------------------------------------------------------------------------
 
-        /// <summary>攻撃の結果を適用する</summary>
-        public abstract void ApplyAttack(PlayerController playerController, Vector3 hitPosition);
-        
-        /// <summary>パリィの結果を適用する</summary>
-        public abstract void ApplyParry();
+        /// <summary>敵の初期化処理を行う</summary>
+        /// <param name="baseStats">敵の基本パラメーター</param>
+        public void Initialize(EnemyBaseStats baseStats)
+        {
+            InitializeComponent();
+            InitializeStats(baseStats);
+            BuildBehaviourTree();
+            StartBehaviourTree();
+        }
 
-        /// <summary>ダメージを適用する</summary>
-        public abstract void ApplyDamage(PlayerAttackStats attackStats, Vector3 hitPosition);
+        private void InitializeComponent()
+        {
+            AttackHandler = GetComponent<IEnemyAttackHandler>();
+            MovementHandler = GetComponent<IEnemyMovementHandler>();
+            AnimationHandler = GetComponent<IEnemyAnimationHandler>();
+        }
+
+        private void InitializeStats(EnemyBaseStats baseStats)
+        {
+            BaseStats = baseStats;
+            CurrentHp.Value = BaseStats.maxHp;
+            MaxHp = BaseStats.maxHp;
+        }
+        
+        //-------------------------------------------------------------------------------
+        // BehaviourTreeに関する処理
+        //-------------------------------------------------------------------------------
+
+        /// <summary>BehaviourTreeを構築する</summary>
+        protected abstract void BuildBehaviourTree();
+
+        /// <summary>BehaviourTreeを実行する</summary>
+        private async UniTask ExecuteBehaviourTree()
+        {
+            try
+            {
+                while (!_cts.IsCancellationRequested)
+                {
+                    await RootNode.ExecuteAsync(_cts.Token);
+                    await UniTask.Yield(PlayerLoopTiming.Update, _cts.Token);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                Debug.Log("BehaviourTree canceled.");
+            }
+        }
+
+        /// <summary>BehaviourTreeの実行を開始する</summary>
+        private void StartBehaviourTree()
+        {
+            _cts?.Cancel();
+            _cts = new CancellationTokenSource();
+            AttackHandler.SetAttackStats();
+            ExecuteBehaviourTree().Forget();
+        }
     }
 }
