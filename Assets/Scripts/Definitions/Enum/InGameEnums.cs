@@ -6,7 +6,7 @@ namespace Definitions.Enum
     public static class InGameEnums
     {
         //-------------------------------------------------------------------------------
-        // プレイヤーに関する項目
+        // プレイヤーに関する列挙型
         //-------------------------------------------------------------------------------
         
         /// <summary>プレイヤーの状態の種類</summary>
@@ -23,6 +23,31 @@ namespace Definitions.Enum
             AttackE, // EX攻撃
             Damage,  // 被弾状態
             Dead     // 死亡状態
+        }
+        
+        //-------------------------------------------------------------------------------
+        // 敵に関する列挙型
+        //-------------------------------------------------------------------------------
+
+        /// <summary>敵の攻撃の種類</summary>
+        public enum EnemyAttackType
+        {
+            Scythe,
+            Meteor,
+            Seraph,
+            Eclipse,
+            Vortex,
+            Photon,
+            Explosion,
+            Waterfall
+        }
+        
+        /// <summary>BehaviourTreeの評価結果</summary>
+        public enum EnemyNodeStatus
+        {
+            Success, 
+            Failure,
+            Running  
         }
     }
 }
