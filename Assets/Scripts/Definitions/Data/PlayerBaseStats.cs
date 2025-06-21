@@ -11,6 +11,8 @@ namespace Definitions.Data
         public float maxHp; // 最大HP
         public float maxSp; // 最大SP
         public float maxEp; // 最大EP
-        
+        public float moveForce; // 移動時に加える力の大きさ
+        public float dashForce; // ダッシュ時に加える力の大きさ
+        public float atkEForce; // EX攻撃時に加える力の大きさ
     }
 }
