@@ -42,7 +42,7 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Sprint",
+                    "name": "Dash",
                     "type": "Button",
                     "id": "9a1d61e0-66f8-4041-8876-faae8e0e574e",
                     "expectedControlType": "Button",
@@ -51,7 +51,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Dodge",
+                    "name": "Roll",
                     "type": "Button",
                     "id": "8ddea5b2-9c0d-46bb-b8e0-2540cc5b6127",
                     "expectedControlType": "Button",
@@ -76,15 +76,6 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
-                },
-                {
-                    "name": "LockOn",
-                    "type": "Button",
-                    "id": "0c6eb363-9791-4018-818a-b897624ad56a",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
                 },
                 {
                     "name": "Guard",
@@ -137,7 +128,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Key Board + Mouse",
-                    "action": "Dodge",
+                    "action": "Roll",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -165,23 +156,12 @@
                 },
                 {
                     "name": "",
-                    "id": "5011abe9-632f-4dfe-b614-a966ac8e8e56",
-                    "path": "<Keyboard>/r",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Key Board + Mouse",
-                    "action": "LockOn",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "41a65446-870f-421b-ad68-ce50eba02fcb",
                     "path": "<Keyboard>/leftShift",
                     "interactions": "",
                     "processors": "",
                     "groups": "Key Board + Mouse",
-                    "action": "Sprint",
+                    "action": "Dash",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
