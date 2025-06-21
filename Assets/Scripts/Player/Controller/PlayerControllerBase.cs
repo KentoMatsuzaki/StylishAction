@@ -1,4 +1,6 @@
 using Definitions.Data;
+using Definitions.Enum;
+using Enemy.AI;
 using Player.Interface;
 using UniRx;
 using UnityEngine;
@@ -8,14 +10,14 @@ namespace Player.Controller
 {
     /// <summary>
     /// プレイヤーの挙動を制御する基底クラス
-    /// 共通の制御ロジックを提供し、各種プレイヤーコントローラーが継承して実装する。
+    /// 共通の制御ロジックを提供し、各種プレイヤーコントローラーが継承して実装する
     /// </summary>
     public abstract class PlayerControllerBase : MonoBehaviour
     {
         protected IPlayerStateHandler StateHandler;　       // 状態ハンドラー
         protected IPlayerAttackHandler AttackHandler;       // 攻撃ハンドラー
         protected IPlayerMovementHandler MovementHandler;   // 移動ハンドラー
-        protected IPlayerAnimationHandler AnimationHandler; // アニメーション
+        protected IPlayerAnimationHandler AnimationHandler; // アニメーションハンドラー
 
         protected ReactiveProperty<float> CurrentHp = new(); // 現在のHP
         public IReadOnlyReactiveProperty<float> PlayerHp => CurrentHp;
@@ -24,9 +26,9 @@ namespace Player.Controller
         protected ReactiveProperty<float> CurrentEp = new(); // 現在のEP
         public IReadOnlyReactiveProperty<float> PlayerEp => CurrentEp;
         
-        public float MaxHp { get; protected set; } // 最大HP
-        public float MaxSp { get; protected set; } // 最大SP
-        public float MaxEp { get; protected set; } // 最大EP
+        public float MaxHp { get; private set; } // 最大HP
+        public float MaxSp { get; private set; } // 最大SP
+        public float MaxEp { get; private set; } // 最大EP
         
         protected PlayerBaseStats BaseStats; // 基本パラメーター
         
@@ -34,7 +36,8 @@ namespace Player.Controller
         // 初期化に関する処理
         //-------------------------------------------------------------------------------
 
-        /// <summary>プレイヤーを初期化する</summary>
+        /// <summary>プレイヤーの初期化処理を行う</summary>
+        /// <param name="baseStats">プレイヤーの基本パラメーター</param>
         public void Initialize(PlayerBaseStats baseStats)
         {
             InitializeComponent();
@@ -69,7 +72,7 @@ namespace Player.Controller
         }
 
         /// <summary>状態を初期化する</summary>
-        public abstract void InitializeState();
+        protected abstract void InitializeState();
         
         //-------------------------------------------------------------------------------
         // 入力のコールバックイベント
@@ -83,5 +86,22 @@ namespace Player.Controller
         public abstract void OnAttackNInput(InputAction.CallbackContext context);
         public abstract void OnAttackSInput(InputAction.CallbackContext context);
         public abstract void OnAttackEInput(InputAction.CallbackContext context);
+        
+        //-------------------------------------------------------------------------------
+        // 被弾時の処理
+        //-------------------------------------------------------------------------------
+
+        /// <summary>敵の攻撃を受けた際に呼ばれる被弾処理</summary>
+        /// <param name="enemy">攻撃を実行した敵のAI制御クラス</param>
+        /// <param name="attackStats">攻撃パラメーター</param>
+        /// <param name="hitPosition">攻撃がヒットしたワールド座標</param>
+        public abstract void OnHit(EnemyAIBase enemy, EnemyAttackStats attackStats, Vector3 hitPosition);
+
+        /// <summary>ダメージの数値だけHPを減少させ、適切な状態遷移を行う</summary>
+        protected void ApplyDamage(float damage)
+        {
+            CurrentHp.Value = Mathf.Max(0f, CurrentHp.Value - damage);
+            StateHandler.ChangeState(CurrentHp.Value > 0 ? InGameEnums.PlayerStateType.Damage : InGameEnums.PlayerStateType.Dead);
+        }
     }
 }
