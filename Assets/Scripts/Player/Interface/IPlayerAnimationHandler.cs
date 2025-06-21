@@ -1,8 +1,20 @@
+using System;
+using UnityEngine;
+
 namespace Player.Interface
 {
-    /// <summary>プレイヤーのアニメーションを制御するインターフェース</summary>
+    /// <summary>プレイヤーのアニメーション制御に関するインターフェース</summary>
     public interface IPlayerAnimationHandler
     {
+        /// <summary>ルートモーションによる移動の変化量</summary>
+        Vector3 DeltaPosition { get; }
+        
+        /// <summary>通常攻撃アニメーションを再生しているか</summary>
+        bool IsPlayingAtkNAnim { get; }
+        
+        /// <summary>特殊攻撃アニメーションを再生しているか</summary>
+        bool IsPlayingAtkSAnim { get; }
+        
         /// <summary>待機アニメーションを再生する</summary>
         void PlayIdleAnimation();
         
@@ -16,19 +28,34 @@ namespace Player.Interface
         void PlayDashAnimation();
         
         /// <summary>回避アニメーションを再生する</summary>
-        void PlayRollAnimation();
+        void PlayRollAnimation(Action onFinished);
+        
+        /// <summary>回避アニメーションを中止する</summary>
+        void CancelRollAnimation();
         
         /// <summary>パリィアニメーションを再生する</summary>
-        void PlayParryAnimation();
+        void PlayParryAnimation(Action onFinished);
+        
+        /// <summary>パリィアニメーションを中止する</summary>
+        void CancelParryAnimation();
         
         /// <summary>防御アニメーションを再生する</summary>
         void PlayGuardAnimation();
 
         /// <summary>通常攻撃アニメーションを再生する</summary>
-        void PlayAttackNAnimation();
+        void PlayAttackNAnimation(Action onFinished);
 
+        /// <summary>通常攻撃アニメーションを中止する</summary>
+        void CancelAttackNAnimation();
+        
         /// <summary>特殊攻撃アニメーションを再生する</summary>
-        void PlayAttackSAnimation();
+        void PlayAttackSAnimation(Action onFinished);
+
+        /// <summary>特殊攻撃アニメーションを中止する</summary>
+        void CancelAttackSAnimation();
+
+        /// <summary>攻撃アニメーションのループ回数と再生状態を初期化する</summary>
+        void ResetAttackContext();
 
         /// <summary>EX攻撃アニメーションを再生する</summary>
         void PlayAttackEAnimation();
