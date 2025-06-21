@@ -58,14 +58,14 @@ namespace Player.Handler
 
             // 移動状態
             _invalidMap[InGameEnums.PlayerStateType.Move] = new[] 
-            {
-                _parryState, _guardState, _attackNState, _attackSState, _attackEState
+            { 
+                _moveState, _rollState, _parryState, _guardState, _attackNState, _attackSState, _attackEState
             };
             
             // ダッシュ状態
             _invalidMap[InGameEnums.PlayerStateType.Dash] = new[]
             {
-                _parryState, _guardState, _attackNState, _attackSState, _attackEState
+                _rollState, _parryState, _guardState, _attackNState, _attackSState, _attackEState
             };
             
             // 回避状態
@@ -124,23 +124,30 @@ namespace Player.Handler
         // 状態の制御に関する処理
         //-------------------------------------------------------------------------------
         
-        public void SetStateAction(InGameEnums.PlayerStateType stateType, Action onEnter, Action onUpdate, Action onExit)
+        public void SetStateAction(InGameEnums.PlayerStateType stateType, Action onEnter, Action onUpdate, Action onExit, Action onFixedUpdate)
         {
-            _playerStates[stateType].SetAction(onEnter, onUpdate, onExit);
+            _playerStates[stateType].SetAction(onEnter, onUpdate, onExit, onFixedUpdate);
+        }
+        
+        public bool CanChangeState(InGameEnums.PlayerStateType newStateType)
+        {
+            return !_invalidMap[CurrentState.StateType].Contains(_playerStates[newStateType]);
         }
         
         public void ChangeState(InGameEnums.PlayerStateType newStateType)
         {
-            Debug.Log("a");
             if (!CanChangeState(newStateType)) return; // 状態を変更できない場合は処理を抜ける
+            
             CurrentState.OnExit?.Invoke();  // 現在の状態の終了アクションを呼ぶ
             CurrentState = _playerStates[newStateType]; // 新しい状態に変更する
             CurrentState.OnEnter?.Invoke(); // 新しい状態の開始アクションを呼ぶ
         }
 
-        public bool CanChangeState(InGameEnums.PlayerStateType newStateType)
+        public bool IsInvincible()
         {
-            return !_invalidMap[CurrentState.StateType].Contains(_playerStates[newStateType]);
+            if (CurrentState.StateType == InGameEnums.PlayerStateType.AttackE || 
+                CurrentState.StateType == InGameEnums.PlayerStateType.Damage ||
+                CurrentState.StateType == InGameEnums.PlayerStateType.Dead) return true; return false;
         }
     }
 }
