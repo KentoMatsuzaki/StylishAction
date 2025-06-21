@@ -4,7 +4,7 @@ using Definitions.Enum;
 namespace Player.Interface
 {
     /// <summary>
-    /// プレイヤーの状態を制御するインターフェース
+    /// プレイヤーの状態制御に関するインターフェース
     /// </summary>
     public interface IPlayerStateHandler
     {
@@ -16,7 +16,8 @@ namespace Player.Interface
         /// <param name="onEnter">状態の開始時に呼ばれるアクション</param>
         /// <param name="onUpdate">状態の更新時に呼ばれるアクション</param>
         /// <param name="onExit">状態の終了時に呼ばれるアクション</param>
-        void SetStateAction(InGameEnums.PlayerStateType stateType, Action onEnter = null, Action onUpdate = null, Action onExit = null);
+        /// <param name="onFixedUpdate">状態の更新時に呼ばれるアクション</param>
+        void SetStateAction(InGameEnums.PlayerStateType stateType, Action onEnter = null, Action onUpdate = null, Action onExit = null,  Action onFixedUpdate = null);
 
         /// <summary>現在の状態を終了させて、指定した新しい状態に変更する</summary>
         /// <param name="newStateType">新しい状態の種類</param>
@@ -25,5 +26,8 @@ namespace Player.Interface
         /// <summary>指定した新しい状態に変更できるかどうかを判定する</summary>
         /// <param name="newStateType">新しい状態の種類</param>
         bool CanChangeState(InGameEnums.PlayerStateType newStateType);
+
+        /// <summary>無敵状態であるかどうか</summary>
+        bool IsInvincible();
     }
 }
