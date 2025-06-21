@@ -29,6 +29,24 @@ namespace Player.Handler
         {
             MoveDirection = new Vector3(inputDirection.x, 0, inputDirection.y);
         }
+
+        public void ResetMoveDirection()
+        {
+            MoveDirection = Vector3.zero;
+        }
+
+        public void MoveForward(float moveForce)
+        {
+            if (MoveDirection != Vector3.zero) 
+                _rb.AddForce(transform.forward * moveForce, ForceMode.Force);
+        }
+        
+        public bool IsMoving() => MoveDirection != Vector3.zero;
+
+        public void ApplyRootMotion(Vector3 deltaPosition)
+        {
+            _rb.MovePosition(_rb.position + deltaPosition);
+        }
         
         //-------------------------------------------------------------------------------
         // 回転に関する処理
@@ -46,7 +64,7 @@ namespace Player.Handler
             var dir = cameraForward * MoveDirection.z + cameraRight * MoveDirection.x; 
             
             // 求めた方向へ回転させる
-            transform.rotation = Quaternion.LookRotation(dir); 
+            if (dir != Vector3.zero) transform.rotation = Quaternion.LookRotation(dir); 
         }
     }
 }
