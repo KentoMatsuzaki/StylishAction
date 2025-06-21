@@ -15,3 +15,6 @@ MonoBehaviour:
   maxHp: 1
   maxSp: 1
   maxEp: 1
+  moveForce: 75
+  dashForce: 100
+  atkEForce: 75
