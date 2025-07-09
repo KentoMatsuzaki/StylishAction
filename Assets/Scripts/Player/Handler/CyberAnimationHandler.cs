@@ -20,6 +20,8 @@ namespace Player.Handler
         private IDisposable _moveAnimDisposable;
         private IDisposable _rollAnimDisposable;
         private IDisposable _parryAnimDisposable;
+        private IDisposable _guardAnimDisposable;
+        private IDisposable _damageAnimDisposable;
         
         private CompositeDisposable _atkNDisposable = new();
         private CompositeDisposable _atkSDisposable = new();
@@ -55,8 +57,7 @@ namespace Player.Handler
         {
             { 0, InGameConsts.PlayerAttackSAnimState1 },
             { 1, InGameConsts.PlayerAttackSAnimState2 },
-            { 2, InGameConsts.PlayerAttackSAnimState3 },
-            { 3, InGameConsts.PlayerAttackSAnimState4 },
+            { 2, InGameConsts.PlayerAttackSAnimState3 }
         };
         
         //-------------------------------------------------------------------------------
@@ -163,6 +164,21 @@ namespace Player.Handler
         {
             _animator.CrossFade(InGameConsts.PlayerGuardAnimState, 0.05f);
         }
+
+        public void PlayGuardHitAnimation(Action onFinished)
+        {
+            _animator.CrossFade(InGameConsts.PlayerGuardHitAnimState, 0.05f);
+            _guardAnimDisposable = _animator.ObserveNormalizedTime(InGameConsts.PlayerGuardHitAnimState, loop: false)
+                .Where(t => t >= 1.0f)
+                .First()
+                .Subscribe(_ => onFinished?.Invoke());
+        }
+
+        public void CancelGuardHitAnimation()
+        {
+            _guardAnimDisposable?.Dispose();
+            _guardAnimDisposable = null;
+        }
         
         //-------------------------------------------------------------------------------
         // 通常攻撃アニメーション
@@ -251,9 +267,19 @@ namespace Player.Handler
         // 被弾アニメーション
         //-------------------------------------------------------------------------------
 
-        public void PlayDamageAnimation()
+        public void PlayDamageAnimation(Action onFinished)
         {
-            
+            _animator.CrossFade(InGameConsts.PlayerDamageAnimState, 0.05f);
+            _damageAnimDisposable = _animator.ObserveNormalizedTime(InGameConsts.PlayerDamageAnimState, loop: false)
+                .Where(t => t >= 0.75f)
+                .First()
+                .Subscribe(_ => onFinished?.Invoke());
+        }
+
+        public void CancelDamageAnimation()
+        {
+            _damageAnimDisposable?.Dispose();
+            _damageAnimDisposable = null;
         }
         
         //-------------------------------------------------------------------------------
@@ -262,7 +288,7 @@ namespace Player.Handler
 
         public void PlayDeadAnimation()
         {
-            
+            _animator.CrossFade(InGameConsts.PlayerDeadAnimState, 0.05f);
         }
     }
 }
