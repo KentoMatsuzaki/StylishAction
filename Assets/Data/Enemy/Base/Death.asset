@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ea430ec638241a08cd5a55b846d9464, type: 3}
   m_Name: Death
   m_EditorClassIdentifier: 
-  maxHp: 1
+  maxHp: 7500
   rotateSpeed: 360
-  moveForce: 1
+  moveForce: 75
+  knockBackForce: 2.5
+  parriedDuration: 4.5
