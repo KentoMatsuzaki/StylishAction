@@ -22,6 +22,11 @@ namespace Enemy.Handler
         // 回転に関する処理
         //-------------------------------------------------------------------------------
 
+        public void RotateTowardsPlayerInstantly()
+        {
+            transform.rotation = Quaternion.LookRotation(GetHorizontalDirectionToPlayer());
+        }
+
         public void RotateTowardsPlayer(float rotateSpeed)
         {
             var rotation = Quaternion.LookRotation(GetHorizontalDirectionToPlayer());
@@ -48,12 +53,10 @@ namespace Enemy.Handler
         {
             _rigidbody.AddForce(GetHorizontalDirectionToPlayer() * -moveForce, ForceMode.Force);
         }
-        
-        /// <summary>プレイヤーとの距離を求める（Y座標を無視する）</summary>
-        private float GetHorizontalDistanceToPlayer()
+
+        public void ApplyKnockBack(float knockBackForce)
         {
-            var playerPos = GameManager.Instance.Player.transform.position;
-            return Vector3.Distance(new Vector3(playerPos.x, 0, playerPos.z), new Vector3(transform.position.x, 0, transform.position.z));
+            _rigidbody.AddForce(transform.forward * -knockBackForce, ForceMode.Impulse);
         }
     }
 }
