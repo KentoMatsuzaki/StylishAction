@@ -1,6 +1,8 @@
+using Definitions.Const;
 using Definitions.Data;
 using Definitions.Enum;
 using Enemy.AI;
+using Managers;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using GameManager = Managers.GameManager;
@@ -13,16 +15,9 @@ namespace Player.Controller
     /// </summary>
     public class CyberController : PlayerControllerBase
     {
-        public PlayerBaseStats test;
-        
         //-------------------------------------------------------------------------------
         // 初期化に関する処理
         //-------------------------------------------------------------------------------
-
-        private void Start() // テスト用
-        {
-            Initialize(test);
-        }
 
         protected override void InitializeState()
         {
@@ -31,10 +26,12 @@ namespace Player.Controller
             StateHandler.SetStateAction(InGameEnums.PlayerStateType.Dash, OnDashEnter, OnDashUpdate, null, OnDashFixedUpdate);
             StateHandler.SetStateAction(InGameEnums.PlayerStateType.Roll, OnRollEnter, null, OnRollExit, OnRollFixedUpdate);
             StateHandler.SetStateAction(InGameEnums.PlayerStateType.Parry, OnParryEnter, null, OnParryExit);
-            StateHandler.SetStateAction(InGameEnums.PlayerStateType.Guard, OnGuardEnter);
+            StateHandler.SetStateAction(InGameEnums.PlayerStateType.Guard, OnGuardEnter, OnGuardUpdate, OnGuardExit);
             StateHandler.SetStateAction(InGameEnums.PlayerStateType.AttackN, OnAttackNEnter, null, OnAttackNExit, OnAttackNFixedUpdate);
             StateHandler.SetStateAction(InGameEnums.PlayerStateType.AttackS, OnAttackSEnter, null, OnAttackSExit, OnAttackSFixedUpdate);
-            StateHandler.SetStateAction(InGameEnums.PlayerStateType.AttackE, OnAttackEEnter, OnAttackEUpdate, null, OnAttackEFixedUpdate);
+            StateHandler.SetStateAction(InGameEnums.PlayerStateType.AttackE, OnAttackEEnter, OnAttackEUpdate, OnAttackEExit, OnAttackEFixedUpdate);
+            StateHandler.SetStateAction(InGameEnums.PlayerStateType.Damage, OnDamageEnter, null, OnDamageExit, OnDamageFixedUpdate);
+            StateHandler.SetStateAction(InGameEnums.PlayerStateType.Dead, OnDeadEnter);
         }
         
         //-------------------------------------------------------------------------------
@@ -45,6 +42,8 @@ namespace Player.Controller
         {
             // 現在の状態の更新処理（Update）を呼ぶ
             StateHandler.CurrentState.OnUpdate?.Invoke();
+            // SPを回復させる
+            CurrentSp.Value = Mathf.Min(MaxSp, CurrentSp.Value + Time.deltaTime * InGameConsts.PlayerSpRegenerateRate);
         }
 
         private void FixedUpdate()
@@ -59,6 +58,8 @@ namespace Player.Controller
         
         public override void OnMoveInput(InputAction.CallbackContext context)
         {
+            if (!StateHandler.CanHandleMoveInput()) return;
+            
             if (context.performed) // 入力実行時
             {
                 MovementHandler.SetMoveDirection(context.ReadValue<Vector2>()); // 移動方向を設定する
@@ -88,7 +89,7 @@ namespace Player.Controller
         {
             if (context.performed) // 入力実行時
             {
-                if (MovementHandler.IsMoving()) // 移動入力がある場合
+                if (MovementHandler.IsMoving())
                 {
                     StateHandler.ChangeState(InGameEnums.PlayerStateType.Dash);
                 }
@@ -108,7 +109,11 @@ namespace Player.Controller
         {
             if (context.started) // 入力開始時
             {
-                StateHandler.ChangeState(InGameEnums.PlayerStateType.Roll);
+                if (CurrentSp.Value >= InGameConsts.PlayerRollSpCost)
+                {
+                    CurrentSp.Value -= InGameConsts.PlayerRollSpCost;
+                    StateHandler.ChangeState(InGameEnums.PlayerStateType.Roll);
+                }
             }
         }
         
@@ -120,7 +125,11 @@ namespace Player.Controller
         {
             if (context.started) // 入力開始時
             {
-                StateHandler.ChangeState(InGameEnums.PlayerStateType.Parry);
+                if (CurrentSp.Value >= InGameConsts.PlayerParrySpCost)
+                {
+                    CurrentSp.Value -= InGameConsts.PlayerParrySpCost;
+                    StateHandler.ChangeState(InGameEnums.PlayerStateType.Parry);
+                }
             }
         }
         
@@ -163,8 +172,9 @@ namespace Player.Controller
         {
             if (context.performed) // 入力実行時
             {
-                if (!AnimationHandler.IsPlayingAtkSAnim)
+                if (!AnimationHandler.IsPlayingAtkSAnim && CurrentSp.Value >= InGameConsts.PlayerAtkSSpCost)
                 {
+                    CurrentSp.Value -= InGameConsts.PlayerAtkSSpCost;
                     StateHandler.ChangeState(InGameEnums.PlayerStateType.AttackS);
                 }
             }
@@ -230,6 +240,14 @@ namespace Player.Controller
         private void OnDashUpdate()
         {
             MovementHandler.RotateTowardsCameraRelativeDir(GameManager.Instance.MainCamera.transform);
+            
+            CurrentSp.Value = Mathf.Max(0f, CurrentSp.Value - InGameConsts.PlayerDashSpCost);
+            
+            if (CurrentSp.Value < InGameConsts.PlayerDashSpCost)
+            {
+                StateHandler.ChangeState(MovementHandler.IsMoving() ? 
+                    InGameEnums.PlayerStateType.Move : InGameEnums.PlayerStateType.Idle);
+            }
         }
 
         private void OnDashFixedUpdate()
@@ -245,6 +263,7 @@ namespace Player.Controller
         {
             AnimationHandler.PlayRollAnimation(
                 () => StateHandler.ChangeState(InGameEnums.PlayerStateType.Idle));
+            SoundManager.Instance.PlaySe(OutGameEnums.SoundType.Rolling);
         }
 
         private void OnRollExit()
@@ -278,7 +297,23 @@ namespace Player.Controller
 
         private void OnGuardEnter()
         {
+            ParticleHandler.PlayGuardParticle();
             AnimationHandler.PlayGuardAnimation();
+        }
+
+        private void OnGuardUpdate()
+        {
+            CurrentSp.Value = Mathf.Max(0f, CurrentSp.Value - InGameConsts.PlayerGuardSpCost);
+            
+            if (CurrentSp.Value < InGameConsts.PlayerGuardSpCost)
+            {
+                StateHandler.ChangeState(InGameEnums.PlayerStateType.Idle);
+            }
+        }
+
+        private void OnGuardExit()
+        {
+            ParticleHandler.StopGuardParticle();
         }
         
         //-------------------------------------------------------------------------------
@@ -287,6 +322,7 @@ namespace Player.Controller
 
         private void OnAttackNEnter()
         {
+            AttackHandler.RotateTowardsEnemyInstantly();
             AnimationHandler.PlayAttackNAnimation(
                 () => StateHandler.ChangeState(InGameEnums.PlayerStateType.Idle));
         }
@@ -307,6 +343,7 @@ namespace Player.Controller
 
         private void OnAttackSEnter()
         {
+            AttackHandler.RotateTowardsEnemyInstantly();
             AnimationHandler.PlayAttackSAnimation(
                 () => StateHandler.ChangeState(InGameEnums.PlayerStateType.Idle));
         }
@@ -328,11 +365,24 @@ namespace Player.Controller
         private void OnAttackEEnter()
         {
             AnimationHandler.PlayAttackEAnimation();
+            ParticleHandler.PlayAtkE01Particle();
         }
 
         private void OnAttackEUpdate()
         {
             MovementHandler.RotateTowardsCameraRelativeDir(GameManager.Instance.MainCamera.transform);
+
+            CurrentEp.Value = Mathf.Max(0f, CurrentEp.Value - Time.deltaTime * MaxEp * 0.1f);
+
+            if (CurrentEp.Value <= 0)
+            {
+                StateHandler.ChangeState(InGameEnums.PlayerStateType.Idle);
+            }
+        }
+
+        private void OnAttackEExit()
+        {
+            ParticleHandler.StopAtkE01Particle();
         }
 
         private void OnAttackEFixedUpdate()
@@ -343,16 +393,38 @@ namespace Player.Controller
         //-------------------------------------------------------------------------------
         // 被弾状態のアクション
         //-------------------------------------------------------------------------------
+
+        private void OnDamageEnter()
+        {
+            AnimationHandler.PlayDamageAnimation(
+                () => StateHandler.ChangeState(InGameEnums.PlayerStateType.Idle));
+        }
+
+        private void OnDamageExit()
+        {
+            AnimationHandler.CancelDamageAnimation();
+        }
+
+        private void OnDamageFixedUpdate()
+        {
+            MovementHandler.ApplyRootMotion(AnimationHandler.DeltaPosition);
+        }
         
         //-------------------------------------------------------------------------------
         // 死亡状態のアクション
         //-------------------------------------------------------------------------------
+
+        private void OnDeadEnter()
+        {
+            AnimationHandler.PlayDeadAnimation();
+            enabled = false;
+        }
         
         //-------------------------------------------------------------------------------
         // 被弾時の処理
         //-------------------------------------------------------------------------------
 
-        public override void OnHit(EnemyAIBase enemy, EnemyAttackStats attackStats, Vector3 hitPosition)
+        public override void OnHit(EnemyAIBase enemy, float damage, Vector3 hitPosition)
         {
             // 無敵状態
             if (StateHandler.IsInvincible())
@@ -364,24 +436,37 @@ namespace Player.Controller
             if (StateHandler.CurrentState.StateType == InGameEnums.PlayerStateType.Guard)
             {
                 // エフェクトを表示する
+                ParticleHandler.PlayHitParticle(hitPosition);
                 // サウンドを再生する
+                SoundManager.Instance.PlaySe(OutGameEnums.SoundType.GuardHit);
                 // ヒットアニメーションを再生する
+                AnimationHandler.PlayGuardHitAnimation(
+                    () => StateHandler.ChangeState(StateHandler.CurrentState.StateType == InGameEnums.PlayerStateType.Guard ? InGameEnums.PlayerStateType.Guard : InGameEnums.PlayerStateType.Idle));
+                return;
             }
             
             // パリィ状態
             if (StateHandler.CurrentState.StateType == InGameEnums.PlayerStateType.Parry)
             {
                 // エフェクトを表示する
+                ParticleHandler.PlayParryParticle();
                 // サウンドを再生する
+                SoundManager.Instance.PlaySe(OutGameEnums.SoundType.Parry);
                 // 被パリィ処理を呼ぶ
+                enemy.OnParried();
             }
 
             // その他の状態
             else
             {
                 // エフェクトを表示する
+                ParticleHandler.PlayHitParticle(hitPosition);
+                // サウンドを再生する
+                SoundManager.Instance.PlaySe(OutGameEnums.SoundType.PlayerHit);
                 // ダメージを適用する
-                ApplyDamage(attackStats.damage);
+                ApplyDamage(damage);
+                // ダメージUIを表示する
+                UIManager.Instance.ShowDamageUI(hitPosition, damage, Color.red, Color.black);
             }
         }
     }
