@@ -11,5 +11,7 @@ namespace Definitions.Data
         public float maxHp; // 最大HP
         public float rotateSpeed; // 回転速度
         public float moveForce; // 移動時に加える力の大きさ
+        public float knockBackForce; // ノックバック時に加える力の大きさ
+        public float parriedDuration; // 被パリィ時の停止時間
     }
 }
