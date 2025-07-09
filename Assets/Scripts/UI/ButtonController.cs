@@ -1,10 +1,8 @@
-using System;
-using Enum;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using Cysharp.Threading.Tasks;
-using Sound;
+using Definitions.Enum;
+using Managers;
 
 namespace UI
 {
@@ -48,20 +46,15 @@ namespace UI
 
         public void OnClick()
         {
-            SoundManager.Instance.PlayOneShot(OutGameEnums.SoundType.Button);
+            SoundManager.Instance.PlaySe(OutGameEnums.SoundType.Button);
             
             switch (type)
             {
                 case OutGameEnums.ButtonType.Start:
-                    UIManager.Instance.HideTitleUI(); 
-                    GameManager.Instance.StartGameAsync().Forget(); break;
+                    GameManager.Instance.StartGame(); break;
                 
                 case OutGameEnums.ButtonType.Quit:
                     GameManager.Instance.QuitGame(); break;
-                
-                case OutGameEnums.ButtonType.Restart:
-                    UIManager.Instance.HideOverlayUI();
-                    GameManager.Instance.RestartGameAsync().Forget(); break;
             }
         }
     }
