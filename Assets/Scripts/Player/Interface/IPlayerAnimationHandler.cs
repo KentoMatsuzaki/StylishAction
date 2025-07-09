@@ -41,6 +41,9 @@ namespace Player.Interface
         
         /// <summary>防御アニメーションを再生する</summary>
         void PlayGuardAnimation();
+        
+        /// <summary>防御時の攻撃命中アニメーションを再生する</summary>
+        void PlayGuardHitAnimation(Action onFinished);
 
         /// <summary>通常攻撃アニメーションを再生する</summary>
         void PlayAttackNAnimation(Action onFinished);
@@ -61,7 +64,10 @@ namespace Player.Interface
         void PlayAttackEAnimation();
         
         /// <summary>被弾アニメーションを再生する</summary>
-        void PlayDamageAnimation();
+        void PlayDamageAnimation(Action onFinished);
+        
+        /// <summary>被弾アニメーションを停止する</summary>
+        void CancelDamageAnimation();
 
         /// <summary>死亡アニメーションを再生する</summary>
         void PlayDeadAnimation();
