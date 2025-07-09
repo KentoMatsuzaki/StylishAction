@@ -1,3 +1,5 @@
+using Definitions.Enum;
+using Managers;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -6,10 +8,6 @@ namespace Camera
     /// <summary>ターゲットを背後から追従するカメラ挙動を制御するクラス</summary>
     public class FollowCamera : MonoBehaviour
     {
-        [Header("ターゲット")] 
-        [SerializeField] private Transform player;
-        [SerializeField] private Transform enemy;
-        
         [Header("カメラ設定")] 
         [SerializeField] private float playerFocusHeight;
         [SerializeField] private float enemyFocusHeight;
@@ -23,28 +21,7 @@ namespace Camera
         private float _yaw = 180f;
         private float _pitch;
         private Vector2 _lookInput;
-        private Transform _lockOnTarget;
-        
-        public static FollowCamera Instance { get; private set; }
-        public bool IsLockingOnEnemy => _lockOnTarget == enemy;
-        
-        //-------------------------------------------------------------------------------
-        // 初期設定
-        //-------------------------------------------------------------------------------
-
-        private void Awake()
-        {
-            if (Instance != null)
-            {
-                Destroy(gameObject);
-            }
-            else
-            {
-                Instance = this;
-            }
-
-            _lockOnTarget = player;
-        }
+        private bool _isLockOn = false;
 
         //-------------------------------------------------------------------------------
         // 更新処理
@@ -52,11 +29,6 @@ namespace Camera
 
         private void LateUpdate()
         {
-            if (_lockOnTarget != player && !enemy.gameObject.activeInHierarchy)
-            {
-                SwitchLockOnTarget();
-            }
-            
             UpdateCameraAngles();
             UpdateCameraPosition();
             UpdateCameraRotation();
@@ -69,7 +41,17 @@ namespace Camera
         /// <summary>PlayerInputから呼ばれる</summary>
         public void OnLook(InputAction.CallbackContext context)
         {
+            if (_isLockOn) return;
             _lookInput = context.ReadValue<Vector2>();
+        }
+        
+        //-------------------------------------------------------------------------------
+        // ロックオンのコールバック
+        //-------------------------------------------------------------------------------
+
+        public void OnLockOn(InputAction.CallbackContext context)
+        {
+            LockOnEnemy();
         }
         
         //-------------------------------------------------------------------------------
@@ -77,10 +59,11 @@ namespace Camera
         //-------------------------------------------------------------------------------
 
         /// <summary>カメラの焦点を取得する</summary>
-        private Vector3 GetLockOnPosition()
+        private Vector3 GetFocusPosition()
         {
-            return _lockOnTarget == player ? 
-                player.position + Vector3.up * playerFocusHeight : enemy.position + Vector3.up * enemyFocusHeight;
+            return _isLockOn
+                ? GameManager.Instance.Enemy.transform.position + Vector3.up * enemyFocusHeight
+                : GameManager.Instance.Player.transform.position + Vector3.up * playerFocusHeight;
         }
 
         /// <summary>カメラの角度を更新する</summary>
@@ -94,24 +77,38 @@ namespace Camera
         /// <summary>カメラの位置を更新する</summary>
         private void UpdateCameraPosition()
         {
-            var rot = Quaternion.Euler(_pitch, _yaw, 0f);
-            var offset = rot * new Vector3(0f, offsetY, offsetZ);
-            transform.position = player.position + offset;
+            if (_isLockOn)
+            {
+                GameManager.Instance.Player.transform.LookAt(GameManager.Instance.Enemy.transform.position);
+                transform.localPosition = new Vector3(0, offsetY, offsetZ);
+                transform.localRotation = Quaternion.identity;
+            }
+            else
+            {
+                var rot = Quaternion.Euler(_pitch, _yaw, 0f);
+                var offset = rot * new Vector3(0f, offsetY, offsetZ);
+                transform.position = GameManager.Instance.Player.transform.position + offset;
+            }
         }
         
         /// <summary>カメラの回転を更新する</summary>
         private void UpdateCameraRotation()
         {
-            transform.LookAt(GetLockOnPosition());
+            transform.LookAt(GetFocusPosition());
         }
-        
-        //-------------------------------------------------------------------------------
-        // ロックオンに関する処理
-        //-------------------------------------------------------------------------------
-        
-        public void SwitchLockOnTarget()
+
+        private void LockOnEnemy()
         {
-            _lockOnTarget = _lockOnTarget == player ? enemy : player;
+            _isLockOn = !_isLockOn;
+
+            if (_isLockOn)
+            {
+                transform.SetParent(GameManager.Instance.Player.transform);
+            }
+            else
+            {
+                transform.SetParent(null, true);
+            }
         }
     }
 }
