@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using Definitions.Const;
 using Definitions.Enum;
 using Enemy.Interface;
@@ -27,6 +29,8 @@ namespace Enemy.Handler
             { InGameEnums.EnemyAttackType.Explosion, InGameConsts.DeathExplosionAnimState },
             { InGameEnums.EnemyAttackType.Waterfall, InGameConsts.DeathWaterfallAnimState },
         };
+        
+        public bool IsPlayingMoveAnimation { get; set; }
         
         //-------------------------------------------------------------------------------
         // 初期化に関する処理
@@ -76,8 +80,40 @@ namespace Enemy.Handler
 
         public void PlayMoveAnimation()
         {
-            if (!_animator.GetCurrentAnimatorStateInfo(0).IsName(InGameConsts.DeathMoveAnimState)) 
-                _animator.CrossFade(InGameConsts.DeathMoveAnimState, 0.05f);
+            IsPlayingMoveAnimation = true;
+            _animator.CrossFade(InGameConsts.DeathMoveAnimState, 0.05f);
+        }
+        
+        //-------------------------------------------------------------------------------
+        // 被パリィアニメーション
+        //-------------------------------------------------------------------------------
+
+        public void PlayParriedAnimation()
+        {
+            _animator.CrossFade(InGameConsts.DeathParriedAnimState, 0.05f);
+        }
+
+        public void PlayRecoveryAnimation()
+        {
+            _animator.CrossFade(InGameConsts.DeathRecoveryAnimState, 0.05f);
+        }
+        
+        //-------------------------------------------------------------------------------
+        // 死亡アニメーション
+        //-------------------------------------------------------------------------------
+
+        public void PlayDieAnimation()
+        {
+            _animator.CrossFade(InGameConsts.DeathDieAnimState, 0.05f);
+        }
+        
+        //-------------------------------------------------------------------------------
+        // アニメーションの待機処理
+        //-------------------------------------------------------------------------------
+
+        public async UniTask WaitUntilAnimationComplete()
+        {
+            await UniTask.WaitUntil(() => _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f);
         }
     }
 }
