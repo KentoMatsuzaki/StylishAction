@@ -1,3 +1,6 @@
+using Definitions.Enum;
+using Managers;
+using Player.Attack;
 using UnityEngine;
 using Player.Interface;
 
@@ -8,6 +11,47 @@ namespace Player.Handler
     /// </summary>
     public class CyberAttackHandler : MonoBehaviour, IPlayerAttackHandler
     {
+        [SerializeField] private PlayerAttacker atkEAttacker;
         
+        //-------------------------------------------------------------------------------
+        // 攻撃制御に関する処理
+        //-------------------------------------------------------------------------------
+
+        public void RotateTowardsEnemyInstantly()
+        {
+            var enemyPos = GameManager.Instance.Enemy.transform.position;
+            var dir = new Vector3(enemyPos.x, 0, enemyPos.z) - new Vector3(transform.position.x,
+                0, transform.position.z);
+            transform.rotation = Quaternion.LookRotation(dir);
+        }
+
+        //-------------------------------------------------------------------------------
+        // アニメーションイベント
+        //-------------------------------------------------------------------------------
+
+        public void EnableAtkEAttacker()
+        {
+            atkEAttacker.EnableCollider();
+        }
+
+        public void DisableAtkEAttacker()
+        {
+            atkEAttacker.DisableCollider();
+        }
+
+        public void PlayAtkNSound()
+        {
+            SoundManager.Instance.PlaySe(OutGameEnums.SoundType.AttackN);
+        }
+
+        public void PlayAtkSSound1()
+        {
+            SoundManager.Instance.PlaySe(OutGameEnums.SoundType.AttackS1);
+        }
+        
+        public void PlayAtkSSound2()
+        {
+            SoundManager.Instance.PlaySe(OutGameEnums.SoundType.AttackS2);
+        }
     }
 }
