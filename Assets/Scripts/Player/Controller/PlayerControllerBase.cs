@@ -17,13 +17,14 @@ namespace Player.Controller
         protected IPlayerStateHandler StateHandler;　       // 状態ハンドラー
         protected IPlayerAttackHandler AttackHandler;       // 攻撃ハンドラー
         protected IPlayerMovementHandler MovementHandler;   // 移動ハンドラー
+        protected IPlayerParticleHandler ParticleHandler;   // パーティクルハンドラー
         protected IPlayerAnimationHandler AnimationHandler; // アニメーションハンドラー
 
-        protected ReactiveProperty<float> CurrentHp = new(); // 現在のHP
-        public IReadOnlyReactiveProperty<float> PlayerHp => CurrentHp;
-        protected ReactiveProperty<float> CurrentSp = new(); // 現在のSP
+        private readonly ReactiveProperty<float> _currentHp = new(); // 現在のHP
+        public IReadOnlyReactiveProperty<float> PlayerHp => _currentHp;
+        protected readonly ReactiveProperty<float> CurrentSp = new(); // 現在のSP
         public IReadOnlyReactiveProperty<float> PlayerSp => CurrentSp;
-        protected ReactiveProperty<float> CurrentEp = new(); // 現在のEP
+        protected readonly ReactiveProperty<float> CurrentEp = new(); // 現在のEP
         public IReadOnlyReactiveProperty<float> PlayerEp => CurrentEp;
         
         public float MaxHp { get; private set; } // 最大HP
@@ -51,6 +52,7 @@ namespace Player.Controller
             StateHandler = GetComponent<IPlayerStateHandler>();
             AttackHandler = GetComponent<IPlayerAttackHandler>();
             MovementHandler = GetComponent<IPlayerMovementHandler>();
+            ParticleHandler = GetComponent<IPlayerParticleHandler>();
             AnimationHandler = GetComponent<IPlayerAnimationHandler>();
         }
 
@@ -61,7 +63,7 @@ namespace Player.Controller
             BaseStats = baseStats;
             
             // 各種パラメーターの初期値を初期化する
-            CurrentHp.Value = BaseStats.maxHp;
+            _currentHp.Value = BaseStats.maxHp;
             CurrentSp.Value = BaseStats.maxSp;
             CurrentEp.Value = 0f;
             
@@ -88,20 +90,29 @@ namespace Player.Controller
         public abstract void OnAttackEInput(InputAction.CallbackContext context);
         
         //-------------------------------------------------------------------------------
-        // 被弾時の処理
+        // 敵の攻撃が命中した際の処理
         //-------------------------------------------------------------------------------
 
-        /// <summary>敵の攻撃を受けた際に呼ばれる被弾処理</summary>
+        /// <summary>敵の攻撃を受けた際に呼ばれる処理</summary>
         /// <param name="enemy">攻撃を実行した敵のAI制御クラス</param>
-        /// <param name="attackStats">攻撃パラメーター</param>
+        /// <param name="damage">攻撃のダメージ</param>
         /// <param name="hitPosition">攻撃がヒットしたワールド座標</param>
-        public abstract void OnHit(EnemyAIBase enemy, EnemyAttackStats attackStats, Vector3 hitPosition);
+        public abstract void OnHit(EnemyAIBase enemy, float damage, Vector3 hitPosition);
 
         /// <summary>ダメージの数値だけHPを減少させ、適切な状態遷移を行う</summary>
         protected void ApplyDamage(float damage)
         {
-            CurrentHp.Value = Mathf.Max(0f, CurrentHp.Value - damage);
-            StateHandler.ChangeState(CurrentHp.Value > 0 ? InGameEnums.PlayerStateType.Damage : InGameEnums.PlayerStateType.Dead);
+            _currentHp.Value = Mathf.Max(0f, _currentHp.Value - damage);
+            StateHandler.ChangeState(_currentHp.Value > 0 ? InGameEnums.PlayerStateType.Damage : InGameEnums.PlayerStateType.Dead);
+        }
+        
+        //-------------------------------------------------------------------------------
+        // EPに関する処理
+        //-------------------------------------------------------------------------------
+
+        public void IncreaseEp()
+        {
+            CurrentEp.Value = Mathf.Min(BaseStats.maxEp, CurrentEp.Value += 1);
         }
     }
 }
