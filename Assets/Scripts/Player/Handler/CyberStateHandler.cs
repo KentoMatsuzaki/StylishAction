@@ -59,7 +59,7 @@ namespace Player.Handler
             // 移動状態
             _invalidMap[InGameEnums.PlayerStateType.Move] = new[] 
             { 
-                _moveState, _rollState, _parryState, _guardState, _attackNState, _attackSState, _attackEState
+                _moveState, _parryState, _guardState, _attackNState, _attackSState, _attackEState
             };
             
             // ダッシュ状態
@@ -145,9 +145,20 @@ namespace Player.Handler
 
         public bool IsInvincible()
         {
-            if (CurrentState.StateType == InGameEnums.PlayerStateType.AttackE || 
+            if (CurrentState.StateType == InGameEnums.PlayerStateType.Roll ||
+                CurrentState.StateType == InGameEnums.PlayerStateType.AttackS ||
+                CurrentState.StateType == InGameEnums.PlayerStateType.AttackE || 
                 CurrentState.StateType == InGameEnums.PlayerStateType.Damage ||
                 CurrentState.StateType == InGameEnums.PlayerStateType.Dead) return true; return false;
+        }
+
+        public bool CanHandleMoveInput()
+        {
+            if (CurrentState.StateType == InGameEnums.PlayerStateType.Idle ||
+                CurrentState.StateType == InGameEnums.PlayerStateType.Move ||
+                CurrentState.StateType == InGameEnums.PlayerStateType.Dash ||
+                CurrentState.StateType == InGameEnums.PlayerStateType.AttackE)
+                return true; return false;
         }
     }
 }
