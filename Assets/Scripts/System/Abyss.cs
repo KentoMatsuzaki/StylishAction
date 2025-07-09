@@ -1,17 +1,14 @@
-using Const;
-using UI;
+using Definitions.Const;
+using Managers;
 using UnityEngine;
 
 public class Abyss : MonoBehaviour
 {
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag(PlayerConst.GameObjectTag))
+        if (other.CompareTag(InGameConsts.PlayerGameObjectTag))
         {
-            // ゲームオーバーUIを表示する
             UIManager.Instance.ShowGameOverUI();
-            // メインUIを非表示にする
-            UIManager.Instance.HideMainUI();
         }
     }
 }
