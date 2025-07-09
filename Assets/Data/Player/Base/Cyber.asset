@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c83eb4ae1414418831691473f9e322f, type: 3}
   m_Name: Cyber
   m_EditorClassIdentifier: 
-  maxHp: 1
+  maxHp: 1000
   maxSp: 1
   maxEp: 1
   moveForce: 75
-  dashForce: 100
+  dashForce: 150
   atkEForce: 75
