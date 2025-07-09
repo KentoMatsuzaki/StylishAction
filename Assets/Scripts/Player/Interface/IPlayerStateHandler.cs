@@ -27,7 +27,10 @@ namespace Player.Interface
         /// <param name="newStateType">新しい状態の種類</param>
         bool CanChangeState(InGameEnums.PlayerStateType newStateType);
 
-        /// <summary>無敵状態であるかどうか</summary>
+        /// <summary>無敵状態であるか</summary>
         bool IsInvincible();
+
+        /// <summary>移動入力を受け付けるか</summary>
+        bool CanHandleMoveInput();
     }
 }
