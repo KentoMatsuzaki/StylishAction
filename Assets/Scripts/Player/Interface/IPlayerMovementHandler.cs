@@ -21,8 +21,9 @@ namespace Player.Interface
         /// <param name="moveForce">加える力の大きさ</param>
         void MoveForward(float moveForce);
 
-        /// <summary>移動の入力値が存在するかどうか</summary>
-        bool IsMoving();
+        /// <summary>入力方向に力を加えて移動させる</summary>
+        /// <param name="moveForce">加える力の大きさ</param>
+        void MoveStrafe(float moveForce);
 
         /// <summary>ルートモーションによる移動を物理演算を用いて再現する</summary>
         /// <param name="deltaPosition">アニメーションによる移動の変化量</param>
@@ -31,5 +32,8 @@ namespace Player.Interface
         /// <summary>カメラの位置を基準に入力方向へ回転させる</summary>
         /// <param name="cameraTransform">カメラの位置</param>
         void RotateTowardsCameraRelativeDir(Transform cameraTransform);
+
+        /// <summary>敵の方向へ回転させる</summary>
+        void RotateTowardsEnemy();
     }
 }
