@@ -10,10 +10,11 @@ namespace Definitions.Const
         //-------------------------------------------------------------------------------
         
         public const string PlayerIdleAnimState = "Idle";         // 待機
-        public const string PlayerMoveInAnimState = "MoveIn";     // 移動（開始）
-        public const string PlayerMoveLoopAnimState = "MoveLoop"; // 移動（ループ）
-        public const string PlayerDashAnimState = "Dash";         // ダッシュ
-        public const string PlayerRollAnimState = "Roll";         // 回避
+        public const string PlayerMoveFreeInAnimState = "Move_Free_In";     // 移動開始（非ロックオン）
+        public const string PlayerMoveFreeLoopAnimState = "Move_Free_Loop"; // 移動ループ（非ロックオン）
+        public const string PlayerMoveLockOnLoopAnimState = "Move_LockOn_Loop"; // 移動ループ（ロックオン）
+        public const string PlayerRollAnimState = "Roll";         // ローリング
+        public const string PlayerSlideAnimState = "Slide";       // スライド 
         public const string PlayerParryAnimState = "Parry";       // パリィ
         public const string PlayerGuardAnimState = "Guard";       // 防御
         public const string PlayerGuardHitAnimState = "GuardHit"; // 防御時の被弾
@@ -28,6 +29,13 @@ namespace Definitions.Const
         public const string PlayerAttackEAnimState = "Atk_E";     // EX攻撃
         public const string PlayerDamageAnimState = "Damage";     // 被弾
         public const string PlayerDeadAnimState = "Dead";         // 死亡
+        
+        //-------------------------------------------------------------------------------
+        // プレイヤーのアニメーションパラメーター
+        //-------------------------------------------------------------------------------
+
+        public const string PlayerMoveInputX = "MoveX"; // 入力方向のX成分
+        public const string PlayerMoveInputY = "MoveY"; // 入力方向のY成分
         
         //-------------------------------------------------------------------------------
         // Death（敵）のアニメーションステート
