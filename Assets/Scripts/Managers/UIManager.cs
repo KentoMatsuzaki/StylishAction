@@ -12,11 +12,17 @@ namespace Managers
     /// <summary>ゲーム全体のUIを管理するクラス</summary>
     public class UIManager : MonoBehaviour
     {
-        [Header("プレイヤーの回避スキル")]
+        [Header("プレイヤーの回避アクション")]
         
-        [SerializeField] private Image rollCoolDownOverlayImage; // クールダウンのオーバーレイ
-        [SerializeField] private Image rollCoolDownGaugeImage;   // クールダウンのゲージ
-        [SerializeField] private Text rollCoolDownText;          // クールダウンのテキスト
+        [SerializeField] private Image rollCoolDownOverlayImage; // クールタイムのオーバーレイ
+        [SerializeField] private Image rollCoolDownGaugeImage;   // クールタイムのゲージ
+        [SerializeField] private Text rollCoolDownText;          // クールタイムのカウント
+        
+        [Header("プレイヤーのパリィアクション")]
+        
+        [SerializeField] private Image parryCoolDownOverlayImage; // クールタイムのオーバーレイ
+        [SerializeField] private Image parryCoolDownGaugeImage;   // クールタイムのゲージ
+        [SerializeField] private Text parryCoolDownText;          // クールタイムのカウント
         
         [SerializeField] private Slider enemyHp;
         [SerializeField] private Slider playerHp;
@@ -71,6 +77,7 @@ namespace Managers
             BindEnemyStats();
             BindPlayerStats();
             BindPlayerRollCoolDown();
+            BindPlayerParryCoolDown();
         }
         
         //-------------------------------------------------------------------------------
@@ -139,23 +146,53 @@ namespace Managers
             }).AddTo(gameObject);
         }
 
+        /// <summary>
+        /// プレイヤーの回避アクションのクールタイムをUIに反映させる
+        /// </summary>
         private void BindPlayerRollCoolDown()
         {
             GameManager.Instance.Player.PlayerRollCoolDown
-                .Subscribe(cd => 
+                .Subscribe(coolDownTime => 
                 {
-                    var isCoolDown = cd > 0;
+                    var isCoolDown = coolDownTime > 0;
 
-                    rollCoolDownOverlayImage.enabled = isCoolDown; 
-                    rollCoolDownGaugeImage.enabled = isCoolDown;
-                    rollCoolDownText.enabled = isCoolDown;
+                    // クールタイム中は各UI要素を表示する
+                    rollCoolDownOverlayImage.enabled = isCoolDown; // クールタイムのオーバーレイ
+                    rollCoolDownGaugeImage.enabled = isCoolDown;   // クールタイムのゲージ
+                    rollCoolDownText.enabled = isCoolDown;         // クールタイムのカウント
 
                     if (isCoolDown)
                     {
-                        // クールダウンの秒数を表示
-                        rollCoolDownText.text = cd.ToString("F1", CultureInfo.InvariantCulture);
-                        // クールダウンのゲージを表示
-                        rollCoolDownGaugeImage.fillAmount = cd / InGameConsts.PlayerRollCoolDown;
+                        // クールタイムの秒数を更新
+                        rollCoolDownText.text = coolDownTime.ToString("F1", CultureInfo.InvariantCulture);
+                        // クールタイムのゲージを更新
+                        rollCoolDownGaugeImage.fillAmount = coolDownTime / InGameConsts.PlayerRollCoolDown;
+                    }
+                })
+                .AddTo(this);
+        }
+        
+        /// <summary>
+        /// プレイヤーのパリィアクションのクールタイムをUIに反映させる
+        /// </summary>
+        private void BindPlayerParryCoolDown()
+        {
+            GameManager.Instance.Player.PlayerParryCoolDown
+                .Subscribe(coolDownTime => 
+                {
+                    var isCoolDown = coolDownTime > 0;
+
+                    // クールタイム中は各UI要素を表示する
+                    parryCoolDownOverlayImage.enabled = isCoolDown; // クールタイムのオーバーレイ
+                    parryCoolDownGaugeImage.enabled = isCoolDown;   // クールタイムのゲージ
+                    parryCoolDownText.enabled = isCoolDown;         // クールタイムのカウント
+
+                    if (isCoolDown)
+                    {
+                        // クールタイムの秒数を更新
+                        parryCoolDownText.text = coolDownTime.ToString("F1", CultureInfo.InvariantCulture);
+                        // クールタイムのゲージを更新
+                        parryCoolDownGaugeImage.fillAmount = coolDownTime / InGameConsts.PlayerParryCoolDown;
                     }
                 })
                 .AddTo(this);
