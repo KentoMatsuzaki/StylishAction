@@ -32,6 +32,8 @@ namespace Player.Controller
         public float MaxEp { get; private set; } // 最大EP
         
         protected PlayerBaseStats BaseStats; // 基本パラメーター
+
+        public bool isLockOnEnemy;
         
         //-------------------------------------------------------------------------------
         // 初期化に関する処理
@@ -81,7 +83,6 @@ namespace Player.Controller
         //-------------------------------------------------------------------------------
 
         public abstract void OnMoveInput(InputAction.CallbackContext context); 
-        public abstract void OnDashInput(InputAction.CallbackContext context); 
         public abstract void OnRollInput(InputAction.CallbackContext context); 
         public abstract void OnParryInput(InputAction.CallbackContext context);
         public abstract void OnGuardInput(InputAction.CallbackContext context);
