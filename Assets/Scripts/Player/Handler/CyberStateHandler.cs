@@ -14,7 +14,6 @@ namespace Player.Handler
     {
         private readonly PlayerState _idleState = new(InGameEnums.PlayerStateType.Idle);       // 待機状態
         private readonly PlayerState _moveState = new(InGameEnums.PlayerStateType.Move);       // 移動状態
-        private readonly PlayerState _dashState = new(InGameEnums.PlayerStateType.Dash);       // ダッシュ状態
         private readonly PlayerState _rollState = new(InGameEnums.PlayerStateType.Roll);       // 回避状態
         private readonly PlayerState _parryState = new(InGameEnums.PlayerStateType.Parry);     // パリィ状態
         private readonly PlayerState _guardState = new(InGameEnums.PlayerStateType.Guard);     // 防御状態
@@ -40,7 +39,6 @@ namespace Player.Handler
             // 各状態とインスタンスを紐づける
             _playerStates[InGameEnums.PlayerStateType.Idle] = _idleState;
             _playerStates[InGameEnums.PlayerStateType.Move] = _moveState;
-            _playerStates[InGameEnums.PlayerStateType.Dash] = _dashState;
             _playerStates[InGameEnums.PlayerStateType.Roll] = _rollState;
             _playerStates[InGameEnums.PlayerStateType.Parry] = _parryState;
             _playerStates[InGameEnums.PlayerStateType.Guard] = _guardState;
@@ -62,58 +60,52 @@ namespace Player.Handler
                 _moveState, _parryState, _guardState, _attackNState, _attackSState, _attackEState
             };
             
-            // ダッシュ状態
-            _invalidMap[InGameEnums.PlayerStateType.Dash] = new[]
-            {
-                _rollState, _parryState, _guardState, _attackNState, _attackSState, _attackEState
-            };
-            
             // 回避状態
             _invalidMap[InGameEnums.PlayerStateType.Roll] = new[]
             {
-                _moveState, _dashState, _parryState, _guardState, _attackNState, _attackSState, _attackEState
+                _moveState, _parryState, _guardState, _attackNState, _attackSState, _attackEState
             };
             
             // パリィ状態
             _invalidMap[InGameEnums.PlayerStateType.Parry] = new[]
             {
-                _moveState, _dashState, _rollState, _guardState, _attackNState, _attackSState, _attackEState
+                _moveState, _rollState, _guardState, _attackNState, _attackSState, _attackEState
             };
             
             // 防御状態
             _invalidMap[InGameEnums.PlayerStateType.Guard] = new[]
             {
-                _moveState, _dashState, _rollState, _parryState, _attackNState, _attackSState, _attackEState
+                _moveState, _rollState, _parryState, _attackNState, _attackSState, _attackEState
             };
             
             // 通常攻撃
             _invalidMap[InGameEnums.PlayerStateType.AttackN] = new[]
             {
-                _moveState, _dashState, _rollState, _parryState, _guardState, _attackSState, _attackEState
+                _moveState, _rollState, _parryState, _guardState, _attackSState, _attackEState
             };
             
             // 特殊攻撃
             _invalidMap[InGameEnums.PlayerStateType.AttackS] = new[]
             {
-                _moveState, _dashState, _rollState, _parryState, _guardState, _attackNState, _attackEState
+                _moveState, _rollState, _parryState, _guardState, _attackNState, _attackEState
             };
             
             // EX攻撃
             _invalidMap[InGameEnums.PlayerStateType.AttackE] = new[]
             {
-                _moveState, _dashState, _rollState, _parryState, _guardState, _attackNState, _attackSState
+                _moveState, _rollState, _parryState, _guardState, _attackNState, _attackSState
             };
             
             // 被弾状態
             _invalidMap[InGameEnums.PlayerStateType.Damage] = new[]
             {
-                _moveState, _dashState, _rollState, _parryState, _guardState, _attackNState, _attackSState, _attackEState
+                _moveState, _rollState, _parryState, _guardState, _attackNState, _attackSState, _attackEState
             };
             
             // 死亡状態
             _invalidMap[InGameEnums.PlayerStateType.Dead] = new[]
             {
-                _moveState, _dashState, _rollState, _parryState, _guardState, _attackNState, _attackSState, _attackEState
+                _moveState, _rollState, _parryState, _guardState, _attackNState, _attackSState, _attackEState
             };
             
             // 初期状態は待機状態に設定する
@@ -156,7 +148,6 @@ namespace Player.Handler
         {
             if (CurrentState.StateType == InGameEnums.PlayerStateType.Idle ||
                 CurrentState.StateType == InGameEnums.PlayerStateType.Move ||
-                CurrentState.StateType == InGameEnums.PlayerStateType.Dash ||
                 CurrentState.StateType == InGameEnums.PlayerStateType.AttackE)
                 return true; return false;
         }
