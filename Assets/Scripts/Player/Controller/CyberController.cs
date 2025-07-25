@@ -19,6 +19,7 @@ namespace Player.Controller
     public class CyberController : PlayerControllerBase
     {
         private IDisposable _rollDisposable;
+        private IDisposable _parryDisposable;
         
         //-------------------------------------------------------------------------------
         // 初期化に関する処理
@@ -96,7 +97,7 @@ namespace Player.Controller
 
         public override void OnRollInput(InputAction.CallbackContext context)
         {
-            // 入力を開始した場合
+            // 入力を開始した時の処理
             if (context.started) 
             {
                 // クールタイム中は処理を抜ける
@@ -121,8 +122,21 @@ namespace Player.Controller
 
         public override void OnParryInput(InputAction.CallbackContext context)
         {
-            if (context.started) // 入力開始時
+            // 入力を開始した時の処理
+            if (context.started) 
             {
+                // クールタイム中は処理を抜ける
+                if (ParryCoolDown.Value > 0) return;
+                // クールタイムを設定する
+                ParryCoolDown.Value = InGameConsts.PlayerParryCoolDown;
+                // クールタイムの購読を破棄する
+                _parryDisposable?.Dispose();
+                // クールタイムを購読する
+                _parryDisposable = Observable.EveryUpdate()
+                    .TakeWhile(_ => ParryCoolDown.Value > 0)
+                    .Subscribe(_ => ParryCoolDown.Value -= Time.deltaTime, () => ParryCoolDown.Value = 0)
+                    .AddTo(this);
+                // パリィ状態に遷移する
                 StateHandler.ChangeState(InGameEnums.PlayerStateType.Parry);
             }
         }
