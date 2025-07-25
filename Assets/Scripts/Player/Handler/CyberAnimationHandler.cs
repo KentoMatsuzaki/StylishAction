@@ -91,15 +91,27 @@ namespace Player.Handler
         // 移動アニメーション
         //-------------------------------------------------------------------------------
 
-        public void PlayMoveAnimation()
+        public void SetMoveParameter(Vector2 moveInput)
         {
-            _animator.CrossFade(InGameConsts.PlayerMoveInAnimState, 0.05f);
-            _moveAnimDisposable = _animator.ObserveNormalizedTime(InGameConsts.PlayerMoveInAnimState, loop: false)
+            _animator.SetFloat(InGameConsts.PlayerMoveInputX, moveInput.x);
+            _animator.SetFloat(InGameConsts.PlayerMoveInputY, moveInput.y);
+        }
+
+        public void ResetMoveParameter()
+        {
+            _animator.SetFloat(InGameConsts.PlayerMoveInputX, 0);
+            _animator.SetFloat(InGameConsts.PlayerMoveInputY, 0);
+        }
+        
+        public void PlayFreeMoveAnimation()
+        {
+            _animator.CrossFade(InGameConsts.PlayerMoveFreeInAnimState, 0.05f);
+            _moveAnimDisposable = _animator.ObserveNormalizedTime(InGameConsts.PlayerMoveFreeInAnimState, loop: false)
                 .Where(t => t >= 1.0f)
                 .First()
                 .Subscribe(_ =>
                 {
-                    _animator.CrossFade(InGameConsts.PlayerMoveLoopAnimState, 0.05f);
+                    _animator.CrossFade(InGameConsts.PlayerMoveFreeLoopAnimState, 0.05f);
                 });
         }
 
@@ -108,14 +120,10 @@ namespace Player.Handler
             _moveAnimDisposable?.Dispose();
             _moveAnimDisposable = null;
         }
-        
-        //-------------------------------------------------------------------------------
-        // ダッシュアニメーション
-        //-------------------------------------------------------------------------------
 
-        public void PlayDashAnimation()
+        public void PlayLockOnMoveAnimation()
         {
-            _animator.CrossFade(InGameConsts.PlayerDashAnimState, 0.05f);
+            _animator.CrossFade(InGameConsts.PlayerMoveLockOnLoopAnimState, 0.05f);
         }
         
         //-------------------------------------------------------------------------------
@@ -135,6 +143,15 @@ namespace Player.Handler
         {
             _rollAnimDisposable?.Dispose();
             _rollAnimDisposable = null;
+        }
+
+        public void PlaySlideAnimation(Action onFinished)
+        {
+            _animator.CrossFade(InGameConsts.PlayerSlideAnimState, 0.05f);
+            _rollAnimDisposable = _animator.ObserveNormalizedTime(InGameConsts.PlayerSlideAnimState, loop: false)
+                .Where(t => t >= 0.85f)
+                .First()
+                .Subscribe(_ => onFinished?.Invoke());
         }
         
         //-------------------------------------------------------------------------------
