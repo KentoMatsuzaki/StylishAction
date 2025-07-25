@@ -14,7 +14,6 @@ namespace Definitions.Enum
         {
             Idle,    // 待機状態
             Move,    // 移動状態
-            Dash,    // ダッシュ状態
             Roll,    // 回避状態
             Parry,   // パリィ状態
             Guard,   // 防御状態
