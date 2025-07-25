@@ -1,25 +1,28 @@
-using System;
-using Cysharp.Threading.Tasks;
-using Definitions.Const;
 using DG.Tweening;
 using TMPro;
 using UI;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Globalization;
+using Definitions.Const;
 
 namespace Managers
 {
     /// <summary>ゲーム全体のUIを管理するクラス</summary>
     public class UIManager : MonoBehaviour
     {
+        [Header("プレイヤーの回避スキル")]
+        
+        [SerializeField] private Image rollCoolDownOverlayImage; // クールダウンのオーバーレイ
+        [SerializeField] private Image rollCoolDownGaugeImage;   // クールダウンのゲージ
+        [SerializeField] private Text rollCoolDownText;          // クールダウンのテキスト
+        
         [SerializeField] private Slider enemyHp;
         [SerializeField] private Slider playerHp;
-        [SerializeField] private Slider playerSp;
         [SerializeField] private Image playerEpGauge;
         [SerializeField] private Image playerEpImage;
-
-        [SerializeField] private Image dashIcon;
+        
         [SerializeField] private Image rollIcon;
         [SerializeField] private Image atkNIcon;
         [SerializeField] private Image atkSIcon;
@@ -48,19 +51,31 @@ namespace Managers
         public static UIManager Instance;
 
         //-------------------------------------------------------------------------------
-        // 初期化に関する処理
+        // 初期化処理
         //-------------------------------------------------------------------------------
 
         private void Awake()
         {
-            if (Instance == null) Instance = this; else Destroy(gameObject);
+            if (Instance == null)
+            {
+                Instance = this;
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
         }
-
+        
         public void Initialize()
         {
             BindEnemyStats();
             BindPlayerStats();
+            BindPlayerRollCoolDown();
         }
+        
+        //-------------------------------------------------------------------------------
+        // UIのバインド処理
+        //-------------------------------------------------------------------------------
 
         private void BindEnemyStats()
         {
@@ -86,18 +101,6 @@ namespace Managers
                 {
                     ShowGameOverUI();
                 }
-                
-            }).AddTo(gameObject);
-            
-            GameManager.Instance.Player.PlayerSp.Subscribe(currentSp =>
-            {
-                playerSp.value = currentSp / GameManager.Instance.Player.MaxSp;
-                
-                dashIcon.color = currentSp >= InGameConsts.PlayerDashSpCost ? _colorActive : _colorInactive;
-                rollIcon.color = currentSp >= InGameConsts.PlayerRollSpCost ? _colorActive : _colorInactive;
-                atkSIcon.color = currentSp >= InGameConsts.PlayerAtkSSpCost ? _colorActive : _colorInactive;
-                parryIcon.color = currentSp >= InGameConsts.PlayerParrySpCost ? _colorActive : _colorInactive;
-                guardIcon.color = currentSp >= InGameConsts.PlayerGuardSpCost ? _colorActive : _colorInactive;
                 
             }).AddTo(gameObject);
             
@@ -135,9 +138,31 @@ namespace Managers
 
             }).AddTo(gameObject);
         }
+
+        private void BindPlayerRollCoolDown()
+        {
+            GameManager.Instance.Player.PlayerRollCoolDown
+                .Subscribe(cd => 
+                {
+                    var isCoolDown = cd > 0;
+
+                    rollCoolDownOverlayImage.enabled = isCoolDown; 
+                    rollCoolDownGaugeImage.enabled = isCoolDown;
+                    rollCoolDownText.enabled = isCoolDown;
+
+                    if (isCoolDown)
+                    {
+                        // クールダウンの秒数を表示
+                        rollCoolDownText.text = cd.ToString("F1", CultureInfo.InvariantCulture);
+                        // クールダウンのゲージを表示
+                        rollCoolDownGaugeImage.fillAmount = cd / InGameConsts.PlayerRollCoolDown;
+                    }
+                })
+                .AddTo(this);
+        }
         
         //-------------------------------------------------------------------------------
-        // UI管理に関する処理
+        // UI全体の処理
         //-------------------------------------------------------------------------------
 
         /// <summary>メインシーンのUIを表示する</summary>
@@ -179,7 +204,7 @@ namespace Managers
         }
         
         //-------------------------------------------------------------------------------
-        // 動的UIの処理
+        // ダメージUIの処理
         //-------------------------------------------------------------------------------
 
         /// <summary>
