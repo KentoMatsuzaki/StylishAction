@@ -22,13 +22,15 @@ namespace Player.Controller
 
         private readonly ReactiveProperty<float> _currentHp = new(); // 現在のHP
         public IReadOnlyReactiveProperty<float> PlayerHp => _currentHp;
-        protected readonly ReactiveProperty<float> CurrentSp = new(); // 現在のSP
-        public IReadOnlyReactiveProperty<float> PlayerSp => CurrentSp;
+        
         protected readonly ReactiveProperty<float> CurrentEp = new(); // 現在のEP
         public IReadOnlyReactiveProperty<float> PlayerEp => CurrentEp;
         
+        protected readonly ReactiveProperty<float> RollCoolDown = new(); // 回避のクールタイム
+        
+        public IReadOnlyReactiveProperty<float> PlayerRollCoolDown => RollCoolDown;
+        
         public float MaxHp { get; private set; } // 最大HP
-        public float MaxSp { get; private set; } // 最大SP
         public float MaxEp { get; private set; } // 最大EP
         
         protected PlayerBaseStats BaseStats; // 基本パラメーター
@@ -66,12 +68,10 @@ namespace Player.Controller
             
             // 各種パラメーターの初期値を初期化する
             _currentHp.Value = BaseStats.maxHp;
-            CurrentSp.Value = BaseStats.maxSp;
             CurrentEp.Value = 0f;
             
             // 各種パラメーターの最大値を初期化する
             MaxHp = BaseStats.maxHp;
-            MaxSp = BaseStats.maxSp;
             MaxEp = BaseStats.maxEp;
         }
 
