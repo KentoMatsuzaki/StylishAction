@@ -1,10 +1,14 @@
+using System;
 using Definitions.Const;
 using Definitions.Enum;
 using Enemy.AI;
 using Managers;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Utilities;
 using GameManager = Managers.GameManager;
+using UniRx;
+using Observable = UniRx.Observable;
 
 namespace Player.Controller
 {
@@ -14,6 +18,8 @@ namespace Player.Controller
     /// </summary>
     public class CyberController : PlayerControllerBase
     {
+        private IDisposable _rollDisposable;
+        
         //-------------------------------------------------------------------------------
         // 初期化に関する処理
         //-------------------------------------------------------------------------------
@@ -40,8 +46,6 @@ namespace Player.Controller
         {
             // 現在の状態の更新処理（Update）を呼ぶ
             StateHandler.CurrentState.OnUpdate?.Invoke();
-            // SPを回復させる
-            CurrentSp.Value = Mathf.Min(MaxSp, CurrentSp.Value + Time.deltaTime * InGameConsts.PlayerSpRegenerateRate);
             // 敵をロックオンしている場合は、敵の方向に回転させる
             if (isLockOnEnemy)
             {
@@ -92,13 +96,22 @@ namespace Player.Controller
 
         public override void OnRollInput(InputAction.CallbackContext context)
         {
-            if (context.started) // 入力開始時
+            // 入力を開始した場合
+            if (context.started) 
             {
-                if (CurrentSp.Value >= InGameConsts.PlayerRollSpCost)
-                {
-                    CurrentSp.Value -= InGameConsts.PlayerRollSpCost;
-                    StateHandler.ChangeState(InGameEnums.PlayerStateType.Roll);
-                }
+                // クールタイム中は処理を抜ける
+                if (RollCoolDown.Value > 0) return;
+                // クールタイムを設定する
+                RollCoolDown.Value = InGameConsts.PlayerRollCoolDown;
+                // クールタイムの購読を破棄する
+                _rollDisposable?.Dispose();
+                // クールタイムを購読する
+                _rollDisposable = Observable.EveryUpdate()
+                    .TakeWhile(_ => RollCoolDown.Value > 0)
+                    .Subscribe(_ => RollCoolDown.Value -= Time.deltaTime, () => RollCoolDown.Value = 0)
+                    .AddTo(this);
+                // 回避状態に遷移する
+                StateHandler.ChangeState(InGameEnums.PlayerStateType.Roll);
             }
         }
         
@@ -110,11 +123,7 @@ namespace Player.Controller
         {
             if (context.started) // 入力開始時
             {
-                if (CurrentSp.Value >= InGameConsts.PlayerParrySpCost)
-                {
-                    CurrentSp.Value -= InGameConsts.PlayerParrySpCost;
-                    StateHandler.ChangeState(InGameEnums.PlayerStateType.Parry);
-                }
+                StateHandler.ChangeState(InGameEnums.PlayerStateType.Parry);
             }
         }
         
@@ -157,11 +166,7 @@ namespace Player.Controller
         {
             if (context.performed) // 入力実行時
             {
-                if (!AnimationHandler.IsPlayingAtkSAnim && CurrentSp.Value >= InGameConsts.PlayerAtkSSpCost)
-                {
-                    CurrentSp.Value -= InGameConsts.PlayerAtkSSpCost;
-                    StateHandler.ChangeState(InGameEnums.PlayerStateType.AttackS);
-                }
+                StateHandler.ChangeState(InGameEnums.PlayerStateType.AttackS);
             }
         }
         
@@ -287,12 +292,7 @@ namespace Player.Controller
 
         private void OnGuardUpdate()
         {
-            CurrentSp.Value = Mathf.Max(0f, CurrentSp.Value - InGameConsts.PlayerGuardSpCost);
-            
-            if (CurrentSp.Value < InGameConsts.PlayerGuardSpCost)
-            {
-                StateHandler.ChangeState(InGameEnums.PlayerStateType.Idle);
-            }
+            StateHandler.ChangeState(InGameEnums.PlayerStateType.Idle);
         }
 
         private void OnGuardExit()
