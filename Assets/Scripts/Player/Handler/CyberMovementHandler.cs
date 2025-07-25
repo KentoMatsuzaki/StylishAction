@@ -1,3 +1,4 @@
+using Managers;
 using Player.Interface;
 using UnityEngine;
 
@@ -40,8 +41,15 @@ namespace Player.Handler
             if (MoveDirection != Vector3.zero) 
                 _rb.AddForce(transform.forward * moveForce, ForceMode.Force);
         }
-        
-        public bool IsMoving() => MoveDirection != Vector3.zero;
+
+        public void MoveStrafe(float moveForce)
+        {
+            if (MoveDirection != Vector3.zero)
+            {
+                Vector3 worldDirection = transform.TransformDirection(MoveDirection.normalized);
+                _rb.AddForce(worldDirection * moveForce, ForceMode.Force);
+            }
+        }
 
         public void ApplyRootMotion(Vector3 deltaPosition)
         {
@@ -65,6 +73,11 @@ namespace Player.Handler
             
             // 求めた方向へ回転させる
             if (dir != Vector3.zero) transform.rotation = Quaternion.LookRotation(dir); 
+        }
+
+        public void RotateTowardsEnemy()
+        {
+            transform.LookAt(GameManager.Instance.Enemy.transform);
         }
     }
 }
