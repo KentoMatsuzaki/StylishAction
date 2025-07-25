@@ -63,14 +63,9 @@ namespace Definitions.Const
         public const string EnemyGameObjectTag = "Enemy";
         
         //-------------------------------------------------------------------------------
-        // プレイヤーのステータス
+        // プレイヤーのクールタイム
         //-------------------------------------------------------------------------------
 
-        public const float PlayerSpRegenerateRate = 0.05f;
-        public const float PlayerDashSpCost = 0.001f;
-        public const float PlayerRollSpCost = 0.125f;
-        public const float PlayerParrySpCost = 0.25f;
-        public const float PlayerGuardSpCost = 0.005f;
-        public const float PlayerAtkSSpCost = 0.25f;
+        public const float PlayerRollCoolDown = 5.0f;
     }
 }
