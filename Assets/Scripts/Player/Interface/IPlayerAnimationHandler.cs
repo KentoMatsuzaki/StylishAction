@@ -18,17 +18,26 @@ namespace Player.Interface
         /// <summary>待機アニメーションを再生する</summary>
         void PlayIdleAnimation();
         
-        /// <summary>移動アニメーションを再生する</summary>
-        void PlayMoveAnimation();
+        /// <summary>移動アニメーション（非ロックオン）を再生する</summary>
+        void PlayFreeMoveAnimation();
+
+        /// <summary>移動パラメーターを設定する</summary>
+        void SetMoveParameter(Vector2 moveInput);
+
+        /// <summary>移動パラメーターを初期化する</summary>
+        void ResetMoveParameter();
+        
+        /// <summary>移動アニメーション（ロックオン）を再生する</summary>
+        void PlayLockOnMoveAnimation();
         
         /// <summary>移動アニメーションを中止する</summary>
         void CancelMoveAnimation();
         
-        /// <summary>ダッシュアニメーションを再生する</summary>
-        void PlayDashAnimation();
-        
-        /// <summary>回避アニメーションを再生する</summary>
+        /// <summary>回避アニメーション（ローリング）を再生する</summary>
         void PlayRollAnimation(Action onFinished);
+        
+        /// <summary>回避アニメーション（スライド）を再生する</summary>
+        void PlaySlideAnimation(Action onFinished);
         
         /// <summary>回避アニメーションを中止する</summary>
         void CancelRollAnimation();
