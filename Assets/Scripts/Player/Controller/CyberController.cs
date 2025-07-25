@@ -1,5 +1,4 @@
 using Definitions.Const;
-using Definitions.Data;
 using Definitions.Enum;
 using Enemy.AI;
 using Managers;
@@ -23,7 +22,6 @@ namespace Player.Controller
         {
             StateHandler.SetStateAction(InGameEnums.PlayerStateType.Idle, OnIdleEnter);
             StateHandler.SetStateAction(InGameEnums.PlayerStateType.Move, OnMoveEnter, OnMoveUpdate, OnMoveExit, OnMoveFixedUpdate);
-            StateHandler.SetStateAction(InGameEnums.PlayerStateType.Dash, OnDashEnter, OnDashUpdate, null, OnDashFixedUpdate);
             StateHandler.SetStateAction(InGameEnums.PlayerStateType.Roll, OnRollEnter, null, OnRollExit, OnRollFixedUpdate);
             StateHandler.SetStateAction(InGameEnums.PlayerStateType.Parry, OnParryEnter, null, OnParryExit);
             StateHandler.SetStateAction(InGameEnums.PlayerStateType.Guard, OnGuardEnter, OnGuardUpdate, OnGuardExit);
@@ -44,6 +42,11 @@ namespace Player.Controller
             StateHandler.CurrentState.OnUpdate?.Invoke();
             // SPを回復させる
             CurrentSp.Value = Mathf.Min(MaxSp, CurrentSp.Value + Time.deltaTime * InGameConsts.PlayerSpRegenerateRate);
+            // 敵をロックオンしている場合は、敵の方向に回転させる
+            if (isLockOnEnemy)
+            {
+                MovementHandler.RotateTowardsEnemy();
+            }
         }
 
         private void FixedUpdate()
@@ -62,10 +65,11 @@ namespace Player.Controller
             
             if (context.performed) // 入力実行時
             {
-                MovementHandler.SetMoveDirection(context.ReadValue<Vector2>()); // 移動方向を設定する
+                var moveInput = context.ReadValue<Vector2>();
+                MovementHandler.SetMoveDirection(moveInput); // 移動方向を設定する
+                AnimationHandler.SetMoveParameter(moveInput); // 移動パラメーターを設定する
 
-                if (StateHandler.CurrentState.StateType != InGameEnums.PlayerStateType.Dash &&
-                    StateHandler.CurrentState.StateType != InGameEnums.PlayerStateType.AttackE)
+                if (StateHandler.CurrentState.StateType != InGameEnums.PlayerStateType.AttackE)
                 {
                     StateHandler.ChangeState(InGameEnums.PlayerStateType.Move); // 移動状態に遷移する
                 }
@@ -73,31 +77,12 @@ namespace Player.Controller
             else if (context.canceled) // 入力終了時
             {
                 MovementHandler.ResetMoveDirection(); // 移動方向を初期化する
+                AnimationHandler.ResetMoveParameter(); // 移動パラメーターを初期化する
 
                 if (StateHandler.CurrentState.StateType != InGameEnums.PlayerStateType.AttackE)
                 {
                     StateHandler.ChangeState(InGameEnums.PlayerStateType.Idle); // 待機状態に遷移する
                 }
-            }
-        }
-        
-        //-------------------------------------------------------------------------------
-        // ダッシュ入力のコールバックイベント
-        //-------------------------------------------------------------------------------
-        
-        public override void OnDashInput(InputAction.CallbackContext context)
-        {
-            if (context.performed) // 入力実行時
-            {
-                if (MovementHandler.IsMoving())
-                {
-                    StateHandler.ChangeState(InGameEnums.PlayerStateType.Dash);
-                }
-            }
-            else if (context.canceled) // 入力終了時
-            {
-                StateHandler.ChangeState(MovementHandler.IsMoving() ? 
-                    InGameEnums.PlayerStateType.Move : InGameEnums.PlayerStateType.Idle);
             }
         }
         
@@ -210,12 +195,22 @@ namespace Player.Controller
 
         private void OnMoveEnter()
         {
-            AnimationHandler.PlayMoveAnimation(); // 移動アニメーションを再生する
+            if (isLockOnEnemy)
+            {
+                AnimationHandler.PlayLockOnMoveAnimation(); // 移動アニメーションを再生する
+            }
+            else
+            {
+                AnimationHandler.PlayFreeMoveAnimation(); // 移動アニメーションを再生する
+            }
         }
 
         private void OnMoveUpdate()
         {
-            MovementHandler.RotateTowardsCameraRelativeDir(GameManager.Instance.MainCamera.transform);
+            if (!isLockOnEnemy)
+            {
+                MovementHandler.RotateTowardsCameraRelativeDir(GameManager.Instance.MainCamera.transform);
+            }
         }
 
         private void OnMoveExit()
@@ -225,34 +220,14 @@ namespace Player.Controller
         
         private void OnMoveFixedUpdate()
         {
-            MovementHandler.MoveForward(BaseStats.moveForce); // 正面方向に移動させる
-        }
-        
-        //-------------------------------------------------------------------------------
-        // ダッシュ状態のアクション
-        //-------------------------------------------------------------------------------
-
-        private void OnDashEnter()
-        {
-            AnimationHandler.PlayDashAnimation(); // ダッシュアニメーションを再生する
-        }
-
-        private void OnDashUpdate()
-        {
-            MovementHandler.RotateTowardsCameraRelativeDir(GameManager.Instance.MainCamera.transform);
-            
-            CurrentSp.Value = Mathf.Max(0f, CurrentSp.Value - InGameConsts.PlayerDashSpCost);
-            
-            if (CurrentSp.Value < InGameConsts.PlayerDashSpCost)
+            if (isLockOnEnemy)
             {
-                StateHandler.ChangeState(MovementHandler.IsMoving() ? 
-                    InGameEnums.PlayerStateType.Move : InGameEnums.PlayerStateType.Idle);
+                MovementHandler.MoveStrafe(BaseStats.strafeForce); // 入力方向に移動させる
             }
-        }
-
-        private void OnDashFixedUpdate()
-        {
-            MovementHandler.MoveForward(BaseStats.dashForce); // 正面方向に移動させる
+            else
+            {
+                MovementHandler.MoveForward(BaseStats.moveForce); // 正面方向に移動させる
+            }
         }
         
         //-------------------------------------------------------------------------------
@@ -261,9 +236,18 @@ namespace Player.Controller
 
         private void OnRollEnter()
         {
-            AnimationHandler.PlayRollAnimation(
-                () => StateHandler.ChangeState(InGameEnums.PlayerStateType.Idle));
-            SoundManager.Instance.PlaySe(OutGameEnums.SoundType.Rolling);
+            if (isLockOnEnemy)
+            {
+                AnimationHandler.PlaySlideAnimation(
+                    () => StateHandler.ChangeState(InGameEnums.PlayerStateType.Idle));
+                SoundManager.Instance.PlaySe(OutGameEnums.SoundType.Rolling);
+            }
+            else
+            {
+                AnimationHandler.PlayRollAnimation(
+                    () => StateHandler.ChangeState(InGameEnums.PlayerStateType.Idle));
+                SoundManager.Instance.PlaySe(OutGameEnums.SoundType.Rolling);
+            }
         }
 
         private void OnRollExit()
