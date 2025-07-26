@@ -21,6 +21,7 @@ namespace Player.Handler
         private IDisposable _rollAnimDisposable;
         private IDisposable _parryAnimDisposable;
         private IDisposable _guardAnimDisposable;
+        private IDisposable _guardHitAnimDisposable;
         private IDisposable _damageAnimDisposable;
         
         private CompositeDisposable _atkNDisposable = new();
@@ -177,15 +178,25 @@ namespace Player.Handler
         // 防御アニメーション
         //-------------------------------------------------------------------------------
 
-        public void PlayGuardAnimation()
+        public void PlayGuardAnimation(Action onFinished)
         {
             _animator.CrossFade(InGameConsts.PlayerGuardAnimState, 0.05f);
+            _guardAnimDisposable = _animator.ObserveNormalizedTime(InGameConsts.PlayerGuardAnimState, loop: false)
+                .Where(t => t >= 1.0f)
+                .First()
+                .Subscribe(_ => onFinished?.Invoke());
+        }
+
+        public void CancelGuardAnimation()
+        {
+            _guardAnimDisposable?.Dispose();
+            _guardAnimDisposable = null;
         }
 
         public void PlayGuardHitAnimation(Action onFinished)
         {
             _animator.CrossFade(InGameConsts.PlayerGuardHitAnimState, 0.05f);
-            _guardAnimDisposable = _animator.ObserveNormalizedTime(InGameConsts.PlayerGuardHitAnimState, loop: false)
+            _guardHitAnimDisposable = _animator.ObserveNormalizedTime(InGameConsts.PlayerGuardHitAnimState, loop: false)
                 .Where(t => t >= 1.0f)
                 .First()
                 .Subscribe(_ => onFinished?.Invoke());
@@ -193,8 +204,8 @@ namespace Player.Handler
 
         public void CancelGuardHitAnimation()
         {
-            _guardAnimDisposable?.Dispose();
-            _guardAnimDisposable = null;
+            _guardHitAnimDisposable?.Dispose();
+            _guardHitAnimDisposable = null;
         }
         
         //-------------------------------------------------------------------------------
