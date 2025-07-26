@@ -68,5 +68,6 @@ namespace Definitions.Const
 
         public const float PlayerRollCoolDown = 5.0f;
         public const float PlayerParryCoolDown = 5.0f;
+        public const float PlayerGuardCoolDown = 5.0f;
     }
 }
