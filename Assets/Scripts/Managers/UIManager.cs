@@ -30,6 +30,11 @@ namespace Managers
         [SerializeField] private Image guardCoolDownGaugeImage;   // クールタイムのゲージ
         [SerializeField] private Text guardCoolDownText;          // クールタイムのカウント
         
+        [Header("プレイヤーの特殊攻撃アクション")]
+        [SerializeField] private Image atkSCoolDownOverlayImage; // クールタイムのオーバーレイ
+        [SerializeField] private Image atkSCoolDownGaugeImage;   // クールタイムのゲージ
+        [SerializeField] private Text atkSCoolDownText;          // クールタイムのカウント
+        
         [SerializeField] private Slider enemyHp;
         [SerializeField] private Slider playerHp;
         [SerializeField] private Image playerEpGauge;
@@ -85,6 +90,7 @@ namespace Managers
             BindPlayerRollCoolDown();
             BindPlayerParryCoolDown();
             BindPlayerGuardCoolDown();
+            BindPlayerAtkSCoolDown();
         }
         
         //-------------------------------------------------------------------------------
@@ -226,6 +232,32 @@ namespace Managers
                         guardCoolDownText.text = coolDownTime.ToString("F1", CultureInfo.InvariantCulture);
                         // クールタイムのゲージを更新
                         guardCoolDownGaugeImage.fillAmount = coolDownTime / InGameConsts.PlayerGuardCoolDown;
+                    }
+                })
+                .AddTo(this);
+        }
+        
+        /// <summary>
+        /// プレイヤーの特殊攻撃アクションのクールタイムをUIに反映させる
+        /// </summary>
+        private void BindPlayerAtkSCoolDown()
+        {
+            GameManager.Instance.Player.PlayerAtkSCoolDown
+                .Subscribe(coolDownTime => 
+                {
+                    var isCoolDown = coolDownTime > 0;
+
+                    // クールタイム中は各UI要素を表示する
+                    atkSCoolDownOverlayImage.enabled = isCoolDown; // クールタイムのオーバーレイ
+                    atkSCoolDownGaugeImage.enabled = isCoolDown;   // クールタイムのゲージ
+                    atkSCoolDownText.enabled = isCoolDown;         // クールタイムのカウント
+
+                    if (isCoolDown)
+                    {
+                        // クールタイムの秒数を更新
+                        atkSCoolDownText.text = coolDownTime.ToString("F1", CultureInfo.InvariantCulture);
+                        // クールタイムのゲージを更新
+                        atkSCoolDownGaugeImage.fillAmount = coolDownTime / InGameConsts.PlayerGuardCoolDown;
                     }
                 })
                 .AddTo(this);
