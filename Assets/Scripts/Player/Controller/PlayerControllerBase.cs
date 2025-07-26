@@ -34,6 +34,10 @@ namespace Player.Controller
         
         public IReadOnlyReactiveProperty<float> PlayerParryCoolDown => ParryCoolDown;
         
+        protected readonly ReactiveProperty<float> GuardCoolDown = new(); // 防御のクールタイム
+        
+        public IReadOnlyReactiveProperty<float> PlayerGuardCoolDown => GuardCoolDown;
+        
         public float MaxHp { get; private set; } // 最大HP
         public float MaxEp { get; private set; } // 最大EP
         
