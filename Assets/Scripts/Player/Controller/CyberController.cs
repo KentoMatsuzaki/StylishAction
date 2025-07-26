@@ -5,10 +5,7 @@ using Enemy.AI;
 using Managers;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Utilities;
-using GameManager = Managers.GameManager;
 using UniRx;
-using Observable = UniRx.Observable;
 
 namespace Player.Controller
 {
@@ -21,6 +18,7 @@ namespace Player.Controller
         private IDisposable _rollDisposable;
         private IDisposable _parryDisposable;
         private IDisposable _guardDisposable;
+        private IDisposable _atkSDisposable;
         
         //-------------------------------------------------------------------------------
         // 初期化に関する処理
@@ -192,6 +190,18 @@ namespace Player.Controller
             // 入力を開始した時の処理
             if (context.performed) 
             {
+                // クールタイム中は処理を抜ける
+                if (AtkSCoolDown.Value > 0) return;
+                // クールタイムを設定する
+                AtkSCoolDown.Value = InGameConsts.PlayerAtkSCoolDown;
+                // クールタイムの購読を破棄する
+                _atkSDisposable?.Dispose();
+                // クールタイムを購読する
+                _atkSDisposable = Observable.EveryUpdate()
+                    .TakeWhile(_ => AtkSCoolDown.Value > 0)
+                    .Subscribe(_ => AtkSCoolDown.Value -= Time.deltaTime, () => AtkSCoolDown.Value = 0)
+                    .AddTo(this);
+                // 特殊攻撃状態に遷移する
                 StateHandler.ChangeState(InGameEnums.PlayerStateType.AttackS);
             }
         }
