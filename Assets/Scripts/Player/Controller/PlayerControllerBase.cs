@@ -27,16 +27,17 @@ namespace Player.Controller
         public IReadOnlyReactiveProperty<float> PlayerEp => CurrentEp;
         
         protected readonly ReactiveProperty<float> RollCoolDown = new(); // 回避のクールタイム
-        
         public IReadOnlyReactiveProperty<float> PlayerRollCoolDown => RollCoolDown;
         
         protected readonly ReactiveProperty<float> ParryCoolDown = new(); // パリィのクールタイム
-        
         public IReadOnlyReactiveProperty<float> PlayerParryCoolDown => ParryCoolDown;
         
         protected readonly ReactiveProperty<float> GuardCoolDown = new(); // 防御のクールタイム
-        
         public IReadOnlyReactiveProperty<float> PlayerGuardCoolDown => GuardCoolDown;
+        
+        protected readonly ReactiveProperty<float> AtkSCoolDown = new(); // 特殊攻撃のクールタイム
+        public IReadOnlyReactiveProperty<float> PlayerAtkSCoolDown => AtkSCoolDown;
+        
         
         public float MaxHp { get; private set; } // 最大HP
         public float MaxEp { get; private set; } // 最大EP
