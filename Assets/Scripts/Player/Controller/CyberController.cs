@@ -20,6 +20,7 @@ namespace Player.Controller
     {
         private IDisposable _rollDisposable;
         private IDisposable _parryDisposable;
+        private IDisposable _guardDisposable;
         
         //-------------------------------------------------------------------------------
         // 初期化に関する処理
@@ -31,7 +32,7 @@ namespace Player.Controller
             StateHandler.SetStateAction(InGameEnums.PlayerStateType.Move, OnMoveEnter, OnMoveUpdate, OnMoveExit, OnMoveFixedUpdate);
             StateHandler.SetStateAction(InGameEnums.PlayerStateType.Roll, OnRollEnter, null, OnRollExit, OnRollFixedUpdate);
             StateHandler.SetStateAction(InGameEnums.PlayerStateType.Parry, OnParryEnter, null, OnParryExit);
-            StateHandler.SetStateAction(InGameEnums.PlayerStateType.Guard, OnGuardEnter, OnGuardUpdate, OnGuardExit);
+            StateHandler.SetStateAction(InGameEnums.PlayerStateType.Guard, OnGuardEnter, null, OnGuardExit);
             StateHandler.SetStateAction(InGameEnums.PlayerStateType.AttackN, OnAttackNEnter, null, OnAttackNExit, OnAttackNFixedUpdate);
             StateHandler.SetStateAction(InGameEnums.PlayerStateType.AttackS, OnAttackSEnter, null, OnAttackSExit, OnAttackSFixedUpdate);
             StateHandler.SetStateAction(InGameEnums.PlayerStateType.AttackE, OnAttackEEnter, OnAttackEUpdate, OnAttackEExit, OnAttackEFixedUpdate);
@@ -61,7 +62,7 @@ namespace Player.Controller
         }
 
         //-------------------------------------------------------------------------------
-        // 移動入力のコールバックイベント
+        // 移動アクションが入力された時に呼ばれるコールバックイベント
         //-------------------------------------------------------------------------------
         
         public override void OnMoveInput(InputAction.CallbackContext context)
@@ -92,7 +93,7 @@ namespace Player.Controller
         }
         
         //-------------------------------------------------------------------------------
-        // 回避入力のコールバックイベント
+        // 回避アクションが入力された時に呼ばれるコールバックイベント
         //-------------------------------------------------------------------------------
 
         public override void OnRollInput(InputAction.CallbackContext context)
@@ -117,7 +118,7 @@ namespace Player.Controller
         }
         
         //-------------------------------------------------------------------------------
-        // パリィ入力のコールバックイベント
+        // パリィアクションが入力された時に呼ばれるコールバックイベント
         //-------------------------------------------------------------------------------
 
         public override void OnParryInput(InputAction.CallbackContext context)
@@ -142,28 +143,38 @@ namespace Player.Controller
         }
         
         //-------------------------------------------------------------------------------
-        // 防御入力のコールバックイベント
+        // 防御アクションが入力された時に呼ばれるコールバックイベント
         //-------------------------------------------------------------------------------
 
         public override void OnGuardInput(InputAction.CallbackContext context)
         {
-            if (context.started) // 入力開始時
+            // 入力を開始した時の処理
+            if (context.started) 
             {
+                // クールタイム中は処理を抜ける
+                if (GuardCoolDown.Value > 0) return;
+                // クールタイムを設定する
+                GuardCoolDown.Value = InGameConsts.PlayerGuardCoolDown;
+                // クールタイムの購読を破棄する
+                _guardDisposable?.Dispose();
+                // クールタイムを購読する
+                _guardDisposable = Observable.EveryUpdate()
+                    .TakeWhile(_ => GuardCoolDown.Value > 0)
+                    .Subscribe(_ => GuardCoolDown.Value -= Time.deltaTime, () => GuardCoolDown.Value = 0)
+                    .AddTo(this);
+                // 防御状態に遷移する
                 StateHandler.ChangeState(InGameEnums.PlayerStateType.Guard);
-            }
-            else if (context.canceled) // 入力終了時
-            {
-                StateHandler.ChangeState(InGameEnums.PlayerStateType.Idle);
             }
         }
         
         //-------------------------------------------------------------------------------
-        // 通常攻撃入力のコールバックイベント
+        // 通常攻撃アクションが入力された時に呼ばれるコールバックイベント
         //-------------------------------------------------------------------------------
 
         public override void OnAttackNInput(InputAction.CallbackContext context)
         {
-            if (context.performed) // 入力実行時
+            // 入力を開始した時の処理
+            if (context.performed) 
             {
                 if (!AnimationHandler.IsPlayingAtkNAnim)
                 {
@@ -173,24 +184,26 @@ namespace Player.Controller
         }
         
         //-------------------------------------------------------------------------------
-        // 特殊攻撃入力のコールバックイベント
+        // 特殊攻撃アクションが入力された時に呼ばれるコールバックイベント
         //-------------------------------------------------------------------------------
 
         public override void OnAttackSInput(InputAction.CallbackContext context)
         {
-            if (context.performed) // 入力実行時
+            // 入力を開始した時の処理
+            if (context.performed) 
             {
                 StateHandler.ChangeState(InGameEnums.PlayerStateType.AttackS);
             }
         }
         
         //-------------------------------------------------------------------------------
-        // EX攻撃入力のコールバックイベント
+        // EX攻撃アクションが入力された時に呼ばれるコールバックイベント
         //-------------------------------------------------------------------------------
 
         public override void OnAttackEInput(InputAction.CallbackContext context)
         {
-            if (context.performed) // 入力実行時
+            // 入力を実行した時の処理
+            if (context.performed) 
             {
                 StateHandler.ChangeState(
                     StateHandler.CurrentState.StateType == InGameEnums.PlayerStateType.AttackE ? 
@@ -301,16 +314,13 @@ namespace Player.Controller
         private void OnGuardEnter()
         {
             ParticleHandler.PlayGuardParticle();
-            AnimationHandler.PlayGuardAnimation();
-        }
-
-        private void OnGuardUpdate()
-        {
-            StateHandler.ChangeState(InGameEnums.PlayerStateType.Idle);
+            AnimationHandler.PlayGuardAnimation(
+                () => StateHandler.ChangeState(InGameEnums.PlayerStateType.Idle));
         }
 
         private void OnGuardExit()
         {
+            AnimationHandler.CancelGuardAnimation();
             ParticleHandler.StopGuardParticle();
         }
         
@@ -400,6 +410,7 @@ namespace Player.Controller
 
         private void OnDamageExit()
         {
+            AnimationHandler.CancelGuardHitAnimation();
             AnimationHandler.CancelDamageAnimation();
         }
 
