@@ -49,10 +49,16 @@ namespace Player.Interface
         void CancelParryAnimation();
         
         /// <summary>防御アニメーションを再生する</summary>
-        void PlayGuardAnimation();
+        void PlayGuardAnimation(Action onFinished);
+        
+        /// <summary>防御アニメーションを中止する</summary>
+        void CancelGuardAnimation();
         
         /// <summary>防御時の攻撃命中アニメーションを再生する</summary>
         void PlayGuardHitAnimation(Action onFinished);
+        
+        /// <summary>防御時の攻撃命中アニメーションを中止する</summary>
+        void CancelGuardHitAnimation();
 
         /// <summary>通常攻撃アニメーションを再生する</summary>
         void PlayAttackNAnimation(Action onFinished);
