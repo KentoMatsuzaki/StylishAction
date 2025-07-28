@@ -1,5 +1,6 @@
 using System;
 using Definitions.Const;
+using Definitions.Data;
 using Definitions.Enum;
 using Enemy.AI;
 using Managers;
@@ -19,10 +20,19 @@ namespace Player.Controller
         private IDisposable _parryDisposable;
         private IDisposable _guardDisposable;
         private IDisposable _atkSDisposable;
+        private IDisposable _atkECoolDownDisposable;
+        private IDisposable _atkEDurationDisposable;
+        private TrailRenderer[] _trails;
         
         //-------------------------------------------------------------------------------
         // 初期化に関する処理
         //-------------------------------------------------------------------------------
+
+        public override void Initialize(PlayerBaseStats baseStats)
+        {
+            base.Initialize(baseStats);
+            _trails = GetComponentsInChildren<TrailRenderer>();
+        }
 
         protected override void InitializeState()
         {
@@ -49,7 +59,7 @@ namespace Player.Controller
             // 敵をロックオンしている場合は、敵の方向に回転させる
             if (isLockOnEnemy)
             {
-                MovementHandler.RotateTowardsEnemy();
+                MovementHandler.RotateTowardsEnemyInstantly();
             }
         }
 
@@ -99,6 +109,8 @@ namespace Player.Controller
             // 入力を開始した時の処理
             if (context.started) 
             {
+                // 入力を受け付けない場合は処理を抜ける
+                if (!StateHandler.CanHandleRollInput()) return;
                 // クールタイム中は処理を抜ける
                 if (RollCoolDown.Value > 0) return;
                 // クールタイムを設定する
@@ -124,6 +136,8 @@ namespace Player.Controller
             // 入力を開始した時の処理
             if (context.started) 
             {
+                // 入力を受け付けない場合は処理を抜ける
+                if (!StateHandler.CanHandleParryInput()) return;
                 // クールタイム中は処理を抜ける
                 if (ParryCoolDown.Value > 0) return;
                 // クールタイムを設定する
@@ -149,6 +163,8 @@ namespace Player.Controller
             // 入力を開始した時の処理
             if (context.started) 
             {
+                // 入力を受け付けない場合は処理を抜ける
+                if (!StateHandler.CanHandleGuardInput()) return;
                 // クールタイム中は処理を抜ける
                 if (GuardCoolDown.Value > 0) return;
                 // クールタイムを設定する
@@ -190,6 +206,8 @@ namespace Player.Controller
             // 入力を開始した時の処理
             if (context.performed) 
             {
+                // 入力を受け付けない場合は処理を抜ける
+                if (!StateHandler.CanHandleAtkSInput()) return;
                 // クールタイム中は処理を抜ける
                 if (AtkSCoolDown.Value > 0) return;
                 // クールタイムを設定する
@@ -215,9 +233,36 @@ namespace Player.Controller
             // 入力を実行した時の処理
             if (context.performed) 
             {
-                StateHandler.ChangeState(
-                    StateHandler.CurrentState.StateType == InGameEnums.PlayerStateType.AttackE ? 
-                        InGameEnums.PlayerStateType.Idle : InGameEnums.PlayerStateType.AttackE);
+                // 入力を受け付けない場合は処理を抜ける
+                if (!StateHandler.CanHandleAtkEInput()) return;
+                // クールタイム中または持続時間の継続中は処理を抜ける
+                if (AtkECoolDown.Value > 0 || AtkEDuration.Value > 0) return; 
+                
+                // 持続時間を設定する
+                AtkEDuration.Value = InGameConsts.PlayerAtkEDuration;
+                // 持続時間の購読を破棄する
+                _atkEDurationDisposable?.Dispose();
+                // 持続時間を購読する
+                _atkEDurationDisposable = Observable.EveryUpdate()
+                    .TakeWhile(_ => AtkEDuration.Value > 0)
+                    .Subscribe(_ => AtkEDuration.Value -= Time.deltaTime, () =>
+                    {
+                        // クールタイムを設定する
+                        AtkECoolDown.Value = InGameConsts.PlayerAtkECoolDown;
+                        // クールタイムの購読を破棄する
+                        _atkECoolDownDisposable?.Dispose();
+                        // クールタイムを購読する
+                        _atkECoolDownDisposable = Observable.EveryUpdate()
+                            .TakeWhile(_ => AtkECoolDown.Value > 0)
+                            .Subscribe(_ => AtkECoolDown.Value -= Time.deltaTime, () => AtkECoolDown.Value = 0)
+                            .AddTo(this);
+                        
+                        StateHandler.ChangeState(InGameEnums.PlayerStateType.Idle);
+                    })
+                    .AddTo(this);
+                    
+                // EX攻撃状態に遷移させる
+                StateHandler.ChangeState(InGameEnums.PlayerStateType.AttackE);
             }
         }
         
@@ -299,7 +344,7 @@ namespace Player.Controller
 
         private void OnRollFixedUpdate()
         {
-            MovementHandler.ApplyRootMotion(AnimationHandler.DeltaPosition);
+            MovementHandler.ApplyRootMotion(AnimationHandler.DeltaPosition * 1.5f);
         }
         
         //-------------------------------------------------------------------------------
@@ -364,16 +409,26 @@ namespace Player.Controller
             AttackHandler.RotateTowardsEnemyInstantly();
             AnimationHandler.PlayAttackSAnimation(
                 () => StateHandler.ChangeState(InGameEnums.PlayerStateType.Idle));
+
+            foreach (var trail in _trails)
+            {
+                trail.enabled = true;
+            }
         }
 
         private void OnAttackSExit()
         {
             AnimationHandler.CancelAttackSAnimation();
+            
+            foreach (var trail in _trails)
+            {
+                trail.enabled = false;
+            }
         }
 
         private void OnAttackSFixedUpdate()
         {
-            MovementHandler.ApplyRootMotion(AnimationHandler.DeltaPosition);
+            MovementHandler.ApplyRootMotion(AnimationHandler.DeltaPosition * 1.5f);
         }
         
         //-------------------------------------------------------------------------------
@@ -389,13 +444,6 @@ namespace Player.Controller
         private void OnAttackEUpdate()
         {
             MovementHandler.RotateTowardsCameraRelativeDir(GameManager.Instance.MainCamera.transform);
-
-            CurrentEp.Value = Mathf.Max(0f, CurrentEp.Value - Time.deltaTime * MaxEp * 0.1f);
-
-            if (CurrentEp.Value <= 0)
-            {
-                StateHandler.ChangeState(InGameEnums.PlayerStateType.Idle);
-            }
         }
 
         private void OnAttackEExit()
