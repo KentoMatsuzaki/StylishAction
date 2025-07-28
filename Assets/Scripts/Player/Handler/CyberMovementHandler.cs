@@ -75,9 +75,12 @@ namespace Player.Handler
             if (dir != Vector3.zero) transform.rotation = Quaternion.LookRotation(dir); 
         }
 
-        public void RotateTowardsEnemy()
+        public void RotateTowardsEnemyInstantly()
         {
-            transform.LookAt(GameManager.Instance.Enemy.transform);
+            var enemyPos = GameManager.Instance.Enemy.transform.position;
+            var dir = new Vector3(enemyPos.x, 0, enemyPos.z) - new Vector3(transform.position.x,
+                0, transform.position.z);
+            transform.rotation = Quaternion.LookRotation(dir);
         }
     }
 }
