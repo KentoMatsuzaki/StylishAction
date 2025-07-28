@@ -1,3 +1,4 @@
+using Definitions.Const;
 using Definitions.Data;
 using Definitions.Enum;
 using Enemy.AI;
@@ -23,9 +24,6 @@ namespace Player.Controller
         private readonly ReactiveProperty<float> _currentHp = new(); // 現在のHP
         public IReadOnlyReactiveProperty<float> PlayerHp => _currentHp;
         
-        protected readonly ReactiveProperty<float> CurrentEp = new(); // 現在のEP
-        public IReadOnlyReactiveProperty<float> PlayerEp => CurrentEp;
-        
         protected readonly ReactiveProperty<float> RollCoolDown = new(); // 回避のクールタイム
         public IReadOnlyReactiveProperty<float> PlayerRollCoolDown => RollCoolDown;
         
@@ -38,9 +36,13 @@ namespace Player.Controller
         protected readonly ReactiveProperty<float> AtkSCoolDown = new(); // 特殊攻撃のクールタイム
         public IReadOnlyReactiveProperty<float> PlayerAtkSCoolDown => AtkSCoolDown;
         
+        protected readonly ReactiveProperty<float> AtkECoolDown = new(); // EX攻撃のクールタイム
+        public IReadOnlyReactiveProperty<float> PlayerAtkECoolDown => AtkECoolDown;
+        
+        protected readonly ReactiveProperty<float> AtkEDuration = new(); // EX攻撃の持続時間
+        public IReadOnlyReactiveProperty<float> PlayerAtkEDuration => AtkEDuration;
         
         public float MaxHp { get; private set; } // 最大HP
-        public float MaxEp { get; private set; } // 最大EP
         
         protected PlayerBaseStats BaseStats; // 基本パラメーター
 
@@ -52,11 +54,18 @@ namespace Player.Controller
 
         /// <summary>プレイヤーの初期化処理を行う</summary>
         /// <param name="baseStats">プレイヤーの基本パラメーター</param>
-        public void Initialize(PlayerBaseStats baseStats)
+        public virtual void Initialize(PlayerBaseStats baseStats)
         {
             InitializeComponent();
             InitializeStats(baseStats);
             InitializeState();
+            
+            // クールタイムを設定する
+            AtkECoolDown.Value = InGameConsts.PlayerAtkECoolDown;
+            // クールタイムを購読する
+            Observable.EveryUpdate()
+                .TakeWhile(_ => AtkECoolDown.Value > 0)
+                .Subscribe(_ => AtkECoolDown.Value -= Time.deltaTime, () => AtkECoolDown.Value = 0);
         }
 
         /// <summary>コンポーネントを初期化する</summary>
@@ -75,13 +84,11 @@ namespace Player.Controller
             // 基本パラメーターを初期化する
             BaseStats = baseStats;
             
-            // 各種パラメーターの初期値を初期化する
+            // 体力の初期値を初期化する
             _currentHp.Value = BaseStats.maxHp;
-            CurrentEp.Value = 0f;
             
-            // 各種パラメーターの最大値を初期化する
+            // 体力の最大値を初期化する
             MaxHp = BaseStats.maxHp;
-            MaxEp = BaseStats.maxEp;
         }
 
         /// <summary>状態を初期化する</summary>
@@ -114,15 +121,6 @@ namespace Player.Controller
         {
             _currentHp.Value = Mathf.Max(0f, _currentHp.Value - damage);
             StateHandler.ChangeState(_currentHp.Value > 0 ? InGameEnums.PlayerStateType.Damage : InGameEnums.PlayerStateType.Dead);
-        }
-        
-        //-------------------------------------------------------------------------------
-        // EPに関する処理
-        //-------------------------------------------------------------------------------
-
-        public void IncreaseEp()
-        {
-            CurrentEp.Value = Mathf.Min(BaseStats.maxEp, CurrentEp.Value += 1);
         }
     }
 }
