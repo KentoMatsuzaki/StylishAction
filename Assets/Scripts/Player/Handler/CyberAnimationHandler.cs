@@ -25,25 +25,17 @@ namespace Player.Handler
         private IDisposable _damageAnimDisposable;
         
         private CompositeDisposable _atkNDisposable = new();
-        private CompositeDisposable _atkSDisposable = new();
+        private IDisposable _atkSDisposable;
 
         private int _atkNAnimLoopCount;
-        private int _atkSAnimLoopCount;
 
         private int AtkNAnimLoopCount
         {
             get => _atkNAnimLoopCount;
             set => _atkNAnimLoopCount = value >= AtkNAnimStateMap.Count ? 0 : value;
         }
-
-        private int AtkSAnimLoopCount
-        {
-            get => _atkSAnimLoopCount;
-            set => _atkSAnimLoopCount = value >= AtkSAnimStateMap.Count ? 0 : value;
-        }
         
         public bool IsPlayingAtkNAnim { get; private set; }
-        public bool IsPlayingAtkSAnim { get; private set; }
 
         private static readonly Dictionary<int, string> AtkNAnimStateMap = new()
         {
@@ -52,13 +44,6 @@ namespace Player.Handler
             { 2, InGameConsts.PlayerAttackNAnimState3 },
             { 3, InGameConsts.PlayerAttackNAnimState4 },
             { 4, InGameConsts.PlayerAttackNAnimState5 }
-        };
-
-        private static readonly Dictionary<int, string> AtkSAnimStateMap = new()
-        {
-            { 0, InGameConsts.PlayerAttackSAnimState1 },
-            { 1, InGameConsts.PlayerAttackSAnimState2 },
-            { 2, InGameConsts.PlayerAttackSAnimState3 }
         };
         
         //-------------------------------------------------------------------------------
@@ -245,29 +230,17 @@ namespace Player.Handler
 
         public void PlayAttackSAnimation(Action onFinished)
         {
-            var atkSAnimState = AtkSAnimStateMap[AtkSAnimLoopCount];
-            _animator.CrossFade(atkSAnimState, 0.05f);
-            
-            AtkSAnimLoopCount += 1;
-            IsPlayingAtkSAnim = true;
-
-            _atkSDisposable.Add(_animator.ObserveNormalizedTime(atkSAnimState, loop: false)
-                .Where(t => t >= 0.65f)
+            _animator.CrossFade(InGameConsts.PlayerAttackSAnimState, 0.05f);
+            _atkSDisposable = _animator.ObserveNormalizedTime(InGameConsts.PlayerAttackSAnimState, loop: false)
+                .Where(t => t >= 0.9f)
                 .First()
-                .Subscribe(_ =>
-                {
-                    IsPlayingAtkSAnim = false;
-                }));
-
-            _atkSDisposable.Add(_animator.ObserveNormalizedTime(atkSAnimState, loop: false)
-                .Where(t => t >= 0.95f)
-                .First()
-                .Subscribe(_ => onFinished?.Invoke()));
+                .Subscribe(_ => onFinished?.Invoke());
         }
 
         public void CancelAttackSAnimation()
         {
-            _atkSDisposable?.Clear();
+            _atkSDisposable?.Dispose();
+            _atkSDisposable = null;
         }
         
         //-------------------------------------------------------------------------------
@@ -286,9 +259,7 @@ namespace Player.Handler
         public void ResetAttackContext()
         {
             AtkNAnimLoopCount = 0;
-            AtkSAnimLoopCount = 0;
             IsPlayingAtkNAnim = false;
-            IsPlayingAtkSAnim = false;
         }
         
         //-------------------------------------------------------------------------------
