@@ -4,7 +4,6 @@ using Definitions.Data;
 using Definitions.Enum;
 using Enemy.AI;
 using Managers;
-using Player.Controller;
 using UnityEngine;
 
 namespace Player.Attack
@@ -15,8 +14,8 @@ namespace Player.Attack
     /// </summary>
     public class PlayerAttacker : AttackerBase
     {
+        [SerializeField] private bool isColliderDisabled;
         [SerializeField] private PlayerAttackStats attackStats; // 攻撃のパラメーター
-        private PlayerControllerBase _player;
         
         //-------------------------------------------------------------------------------
         // 初期化に関する処理
@@ -25,8 +24,7 @@ namespace Player.Attack
         protected override void Awake()
         {
             base.Awake();
-            Collider.enabled = true;
-            _player = GetComponentInParent<PlayerControllerBase>();
+            Collider.enabled = !isColliderDisabled;
         }
         
         //-------------------------------------------------------------------------------
@@ -43,12 +41,6 @@ namespace Player.Attack
                 var damage = Random.Range(attackStats.damage * 0.75f, attackStats.damage);
                 enemy.OnHit(damage, hitPos); // 攻撃命中時の処理を呼ぶ
                 ShowDamageUI(hitPos, damage); // ダメージUIを表示する
-
-                if (attackStats.attackType == InGameEnums.PlayerAttackType.Normal)
-                {
-                    _player.IncreaseEp();
-                    Debug.Log($"{_player.PlayerEp}");
-                }
             }
         }
 
