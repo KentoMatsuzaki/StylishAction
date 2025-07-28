@@ -32,5 +32,20 @@ namespace Player.Interface
 
         /// <summary>移動入力を受け付けるか</summary>
         bool CanHandleMoveInput();
+
+        /// <summary>回避アクションの入力を受け付けるか</summary>
+        public bool CanHandleRollInput();
+        
+        /// <summary>パリィアクションの入力を受け付けるか</summary>
+        public bool CanHandleParryInput();
+        
+        /// <summary>防御アクションの入力を受け付けるか</summary>
+        public bool CanHandleGuardInput();
+        
+        /// <summary>特殊攻撃アクションの入力を受け付けるか</summary>
+        public bool CanHandleAtkSInput();
+        
+        /// <summary>EX攻撃アクションの入力を受け付けるか</summary>
+        public bool CanHandleAtkEInput();
     }
 }
