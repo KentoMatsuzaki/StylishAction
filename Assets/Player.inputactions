@@ -42,15 +42,6 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Dash",
-                    "type": "Button",
-                    "id": "9a1d61e0-66f8-4041-8876-faae8e0e574e",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "Roll",
                     "type": "Button",
                     "id": "8ddea5b2-9c0d-46bb-b8e0-2540cc5b6127",
@@ -160,17 +151,6 @@
                     "processors": "",
                     "groups": "Key Board + Mouse",
                     "action": "Look",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "41a65446-870f-421b-ad68-ce50eba02fcb",
-                    "path": "<Keyboard>/leftShift",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Key Board + Mouse",
-                    "action": "Dash",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
