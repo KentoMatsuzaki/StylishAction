@@ -23,9 +23,7 @@ namespace Definitions.Const
         public const string PlayerAttackNAnimState3 = "Atk_N_03"; // 通常攻撃（3段目）
         public const string PlayerAttackNAnimState4 = "Atk_N_04"; // 通常攻撃（4段目）
         public const string PlayerAttackNAnimState5 = "Atk_N_05"; // 通常攻撃（5段目）
-        public const string PlayerAttackSAnimState1 = "Atk_S_01"; // 特殊攻撃（1段目）
-        public const string PlayerAttackSAnimState2 = "Atk_S_02"; // 特殊攻撃（2段目）
-        public const string PlayerAttackSAnimState3 = "Atk_S_03"; // 特殊攻撃（3段目）
+        public const string PlayerAttackSAnimState = "Atk_S";     // 特殊攻撃
         public const string PlayerAttackEAnimState = "Atk_E";     // EX攻撃
         public const string PlayerDamageAnimState = "Damage";     // 被弾
         public const string PlayerDeadAnimState = "Dead";         // 死亡
@@ -66,9 +64,11 @@ namespace Definitions.Const
         // プレイヤーのクールタイム
         //-------------------------------------------------------------------------------
 
-        public const float PlayerRollCoolDown = 5.0f;
-        public const float PlayerParryCoolDown = 5.0f;
+        public const float PlayerRollCoolDown = 2.5f;
+        public const float PlayerParryCoolDown = 10.0f;
         public const float PlayerGuardCoolDown = 5.0f;
-        public const float PlayerAtkSCoolDown = 5.0f;
+        public const float PlayerAtkSCoolDown = 10.0f;
+        public const float PlayerAtkECoolDown = 30.0f;
+        public const float PlayerAtkEDuration = 10.0f;
     }
 }
