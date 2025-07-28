@@ -111,6 +111,10 @@ namespace Camera
             {
                 transform.SetParent(null, true);
                 GameManager.Instance.Player.isLockOnEnemy = false;
+                Vector3 dir = transform.forward;
+                Vector3 flatDir = new Vector3(dir.x, 0f, dir.z).normalized;
+                _yaw = Quaternion.LookRotation(flatDir).eulerAngles.y;
+                _pitch = Mathf.Asin(dir.y) * Mathf.Rad2Deg;
             }
         }
     }
