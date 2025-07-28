@@ -33,7 +33,7 @@ namespace Player.Interface
         /// <param name="cameraTransform">カメラの位置</param>
         void RotateTowardsCameraRelativeDir(Transform cameraTransform);
 
-        /// <summary>敵の方向へ回転させる</summary>
-        void RotateTowardsEnemy();
+        /// <summary>敵の方向へ即座に回転させる</summary>
+        void RotateTowardsEnemyInstantly();
     }
 }
