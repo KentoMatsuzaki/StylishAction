@@ -12,9 +12,6 @@ namespace Player.Interface
         /// <summary>通常攻撃アニメーションを再生しているか</summary>
         bool IsPlayingAtkNAnim { get; }
         
-        /// <summary>特殊攻撃アニメーションを再生しているか</summary>
-        bool IsPlayingAtkSAnim { get; }
-        
         /// <summary>待機アニメーションを再生する</summary>
         void PlayIdleAnimation();
         
