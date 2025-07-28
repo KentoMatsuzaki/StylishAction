@@ -11,6 +11,7 @@ namespace Player.Handler
     /// </summary>
     public class CyberAttackHandler : MonoBehaviour, IPlayerAttackHandler
     {
+        [SerializeField] private PlayerAttacker atkSAttacker;
         [SerializeField] private PlayerAttacker atkEAttacker;
         
         //-------------------------------------------------------------------------------
@@ -28,6 +29,16 @@ namespace Player.Handler
         //-------------------------------------------------------------------------------
         // アニメーションイベント
         //-------------------------------------------------------------------------------
+
+        public void EnableAtkSAttacker()
+        {
+            atkSAttacker.EnableCollider();
+        }
+
+        public void DisableAtkSAttacker()
+        {
+            atkSAttacker.DisableCollider();
+        }
 
         public void EnableAtkEAttacker()
         {
