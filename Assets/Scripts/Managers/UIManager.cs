@@ -13,19 +13,16 @@ namespace Managers
     public class UIManager : MonoBehaviour
     {
         [Header("プレイヤーの回避アクション")]
-        
         [SerializeField] private Image rollCoolDownOverlayImage; // クールタイムのオーバーレイ
         [SerializeField] private Image rollCoolDownGaugeImage;   // クールタイムのゲージ
         [SerializeField] private Text rollCoolDownText;          // クールタイムのカウント
         
         [Header("プレイヤーのパリィアクション")]
-        
         [SerializeField] private Image parryCoolDownOverlayImage; // クールタイムのオーバーレイ
         [SerializeField] private Image parryCoolDownGaugeImage;   // クールタイムのゲージ
         [SerializeField] private Text parryCoolDownText;          // クールタイムのカウント
         
         [Header("プレイヤーの防御アクション")]
-        
         [SerializeField] private Image guardCoolDownOverlayImage; // クールタイムのオーバーレイ
         [SerializeField] private Image guardCoolDownGaugeImage;   // クールタイムのゲージ
         [SerializeField] private Text guardCoolDownText;          // クールタイムのカウント
@@ -34,6 +31,12 @@ namespace Managers
         [SerializeField] private Image atkSCoolDownOverlayImage; // クールタイムのオーバーレイ
         [SerializeField] private Image atkSCoolDownGaugeImage;   // クールタイムのゲージ
         [SerializeField] private Text atkSCoolDownText;          // クールタイムのカウント
+        
+        [Header("プレイヤーのEX攻撃アクション")]
+        [SerializeField] private Image atkECoolDownOverlayImage; // クールタイムのオーバーレイ
+        [SerializeField] private Image atkECoolDownGaugeImage;   // クールタイムのゲージ
+        [SerializeField] private Text atkECoolDownText;          // クールタイムのカウント
+        [SerializeField] private Image atkEDurationGaugeImage;   // 持続時間のゲージ
         
         [SerializeField] private Slider enemyHp;
         [SerializeField] private Slider playerHp;
@@ -91,6 +94,8 @@ namespace Managers
             BindPlayerParryCoolDown();
             BindPlayerGuardCoolDown();
             BindPlayerAtkSCoolDown();
+            BindPlayerAtkECoolDown();
+            BindPlayerAtkEDuration();
         }
         
         //-------------------------------------------------------------------------------
@@ -122,40 +127,6 @@ namespace Managers
                     ShowGameOverUI();
                 }
                 
-            }).AddTo(gameObject);
-            
-            GameManager.Instance.Player.PlayerEp.Subscribe(currentEp =>
-            {
-                var isAtkEReady = currentEp >= GameManager.Instance.Player.MaxEp;
-                
-                playerEpGauge.fillAmount = currentEp / GameManager.Instance.Player.MaxEp;
-                playerEpImage.color = isAtkEReady ? _colorReady :_colorActive;
-                atkEIcon.color = isAtkEReady ? _colorActive : _colorInactive;
-
-                if (isAtkEReady && _gaugePulseTween == null)
-                {
-                    _gaugePulseTween = playerEpImage.transform.DOScale(1.5f, 0.5f).SetLoops(-1, LoopType.Yoyo)
-                        .SetEase(Ease.InOutSine);
-                }
-                else if (!isAtkEReady && _gaugePulseTween != null)
-                {
-                    _gaugePulseTween.Kill();
-                    _gaugePulseTween = null;
-                    playerEpImage.transform.localScale = Vector3.one;
-                }
-                
-                if (isAtkEReady && _iconPulseTween == null)
-                {
-                    _iconPulseTween = atkEIcon.transform.DOScale(1.25f, 0.5f).SetLoops(-1, LoopType.Yoyo)
-                        .SetEase(Ease.InOutSine);
-                }
-                else if (!isAtkEReady && _iconPulseTween != null)
-                {
-                    _iconPulseTween.Kill();
-                    _iconPulseTween = null;
-                    atkEIcon.transform.localScale = Vector3.one;
-                }
-
             }).AddTo(gameObject);
         }
 
@@ -257,7 +228,53 @@ namespace Managers
                         // クールタイムの秒数を更新
                         atkSCoolDownText.text = coolDownTime.ToString("F1", CultureInfo.InvariantCulture);
                         // クールタイムのゲージを更新
-                        atkSCoolDownGaugeImage.fillAmount = coolDownTime / InGameConsts.PlayerGuardCoolDown;
+                        atkSCoolDownGaugeImage.fillAmount = coolDownTime / InGameConsts.PlayerAtkSCoolDown;
+                    }
+                })
+                .AddTo(this);
+        }
+        
+        /// <summary>
+        /// プレイヤーのEX攻撃アクションのクールタイムをUIに反映させる
+        /// </summary>
+        private void BindPlayerAtkECoolDown()
+        {
+            GameManager.Instance.Player.PlayerAtkECoolDown
+                .Subscribe(coolDownTime => 
+                {
+                    var isCoolDown = coolDownTime > 0;
+
+                    // クールタイム中は各UI要素を表示する
+                    atkECoolDownOverlayImage.enabled = isCoolDown; // クールタイムのオーバーレイ
+                    atkECoolDownGaugeImage.enabled = isCoolDown;   // クールタイムのゲージ
+                    atkECoolDownText.enabled = isCoolDown;         // クールタイムのカウント
+
+                    if (isCoolDown)
+                    {
+                        // クールタイムの秒数を更新
+                        atkECoolDownText.text = coolDownTime.ToString("F1", CultureInfo.InvariantCulture);
+                        // クールタイムのゲージを更新
+                        atkECoolDownGaugeImage.fillAmount = coolDownTime / InGameConsts.PlayerAtkECoolDown;
+                    }
+                })
+                .AddTo(this);
+        }
+        
+        /// <summary>
+        /// プレイヤーのEX攻撃アクションの持続時間をUIに反映させる
+        /// </summary>
+        private void BindPlayerAtkEDuration()
+        {
+            GameManager.Instance.Player.PlayerAtkEDuration
+                .Subscribe(durationTime => 
+                {
+                    // 持続時間中はゲージを表示する
+                    atkEDurationGaugeImage.enabled = durationTime > 0;
+                    
+                    if (durationTime > 0)
+                    {
+                        // 持続時間のゲージを更新
+                        atkEDurationGaugeImage.fillAmount = durationTime / InGameConsts.PlayerAtkEDuration;
                     }
                 })
                 .AddTo(this);
